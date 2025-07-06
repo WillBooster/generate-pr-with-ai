@@ -27,6 +27,7 @@
     "typecheck": "bun --bun wb typecheck"
   },
   "prettier": "@willbooster/prettier-config",
+  "dependencies": {},
   "devDependencies": {
     "@actions/core": "1.11.1",
     "@ai-sdk/amazon-bedrock": "3.0.0-beta.3",
