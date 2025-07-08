@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -22,7 +22,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -42,7 +42,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -62,7 +62,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -82,7 +82,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -102,7 +102,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -122,7 +122,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -142,7 +142,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -162,7 +162,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -182,7 +182,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -202,7 +202,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -222,7 +222,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -242,7 +242,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -262,7 +262,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -282,7 +282,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -302,7 +302,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -322,7 +322,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -342,7 +342,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -362,7 +362,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -382,7 +382,7 @@
       <envs />
     </TaskOptions>
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-errors $FilePathRelativeToProjectRoot$" />
+      <option name="arguments" value="--bun node_modules/.bin/biome check --fix --no-errors-on-unmatched --skip-parse-errors $FilePathRelativeToProjectRoot$" />
       <option name="checkSyntaxErrors" value="false" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
