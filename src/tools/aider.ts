@@ -25,10 +25,6 @@ export function buildAiderArgs(
     args.prompt,
   ];
 
-  if (args.resolutionPlan?.commitMessage) {
-    aiderArgs.push('--no-auto-commit');
-  }
-
   if (options.dryRun) {
     aiderArgs.push('--dry-run');
   }
