@@ -108,8 +108,9 @@ ${resolutionPlan.plan}
 `.trim()
       : '';
   const issueFence = findDistinctFence(issueText);
+  const isAgentic = options.codingTool !== 'aider';
   const prompt = `
-Modify the code to resolve the following GitHub issue${planText ? ' based on the plan' : ''}.
+Modify the code to resolve the following GitHub issue${planText ? ' based on the plan' : ''}.${isAgentic ? ' After that, commit your changes with a message, following the Conventional Commits specification.' : ''}
 
 # Issue
 
