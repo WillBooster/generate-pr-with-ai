@@ -12,12 +12,14 @@ const REPOMIX_FILE_NAME = 'repomix.result';
 
 export type ResolutionPlan = {
   plan?: string;
+  commitMessage?: string;
   filePaths: string[];
 };
 
 const HEADING_OF_FILE_PATHS_TO_BE_MODIFIED = '# File Paths to be Modified';
 const HEADING_OF_FILE_PATHS_TO_BE_REFERRED = '# File Paths to be Referred';
 const HEADING_OF_PLAN = '# Implementation Plans';
+const HEADING_OF_COMMIT_MESSAGE = '# Commit Message';
 
 export async function planCodeChanges(
   model: string,
@@ -99,11 +101,15 @@ ${fence}`;
     );
     console.info('Planning complete!');
 
-    const extractedPlans = extractHeaderContents(trimCodeBlockFences(planResponse), [HEADING_OF_PLAN]);
-    if (!extractedPlans) {
-      return { filePaths: [] };
+    const extractedContents = extractHeaderContents(trimCodeBlockFences(planResponse), [
+      HEADING_OF_COMMIT_MESSAGE,
+      HEADING_OF_PLAN,
+    ]);
+    if (!extractedContents) {
+      return { filePaths: filePathsToBeModified };
     }
-    return { plan: extractedPlans[0], filePaths: filePathsToBeModified };
+    const [commitMessage, plan] = extractedContents;
+    return { plan, commitMessage: commitMessage?.trim(), filePaths: filePathsToBeModified };
   }
   console.info(`Planning code changes with ${model} (reasoning effort: ${reasoningEffort}) ...`);
   const filesResponse = await callLlmApi(
@@ -122,18 +128,21 @@ ${fence}`;
   );
   console.info('Planning complete!');
 
-  const extractedFilePathLists = extractHeaderContents(trimCodeBlockFences(filesResponse), [
+  const extractedContents = extractHeaderContents(trimCodeBlockFences(filesResponse), [
+    HEADING_OF_COMMIT_MESSAGE,
     HEADING_OF_PLAN,
     HEADING_OF_FILE_PATHS_TO_BE_MODIFIED,
   ]);
-  if (!extractedFilePathLists) {
+  if (!extractedContents) {
     return { filePaths: [] };
   }
 
+  const [commitMessage, plan, filePathsText] = extractedContents;
+
   const filePathRegex = /\B-\s*`?([^`\n]+)`?/g;
-  const matches = [...extractedFilePathLists[1].matchAll(filePathRegex)];
+  const matches = [...(filePathsText ?? '').matchAll(filePathRegex)];
   const filePathsToBeModified = matches.map((match) => match[1].trim());
-  return { plan: extractedFilePathLists[0], filePaths: filePathsToBeModified };
+  return { plan, commitMessage: commitMessage?.trim(), filePaths: filePathsToBeModified };
 }
 
 function buildPromptForSelectingFiles(issueYamlText: string): string {
@@ -171,6 +180,7 @@ You are an expert software developer tasked with creating implementation plans b
 
 Review the following GitHub issue and the provided file contents (which will be provided in a separate message).
 Create a detailed, step-by-step plan outlining how to address the issue effectively.
+Also, provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
 
 Your plan should:
 - Focus on implementation details for each file that needs modification
@@ -183,6 +193,10 @@ ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
+${HEADING_OF_COMMIT_MESSAGE}
+
+<commit message>
+
 ${HEADING_OF_PLAN}
 
 1. <Specific implementation step>
@@ -198,8 +212,9 @@ You are an expert software developer tasked with analyzing GitHub issues and cre
 
 Review the following GitHub issue and the list of available file paths and their contents (which will be provided in a separate message).
 Your task is to:
-1. Create a detailed, step-by-step plan outlining how to resolve the issue effectively
-2. Identify files that need to be modified to resolve the issue
+1. Create a detailed, step-by-step plan outlining how to resolve the issue effectively.
+2. Provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
+3. Identify files that need to be modified to resolve the issue.
 
 Your plan should:
 - Focus on implementation details for each file that needs modification
@@ -212,6 +227,10 @@ ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
+${HEADING_OF_COMMIT_MESSAGE}
+
+<commit message>
+
 ${HEADING_OF_PLAN}
 
 1. <Specific implementation step>

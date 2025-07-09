@@ -188,15 +188,16 @@ ${planText}
   }
 
   // Try commiting changes because coding tool may fail to commit changes due to pre-commit hooks
+  const commitMessage = resolutionPlan?.commitMessage || `fix: Close #${options.issueNumber}`;
   await runCommand('git', ['add', '-A'], { ignoreExitStatus: true });
   if (
     (
-      await runCommand('git', ['commit', '-m', `fix: Close #${options.issueNumber}`], {
+      await runCommand('git', ['commit', '-m', commitMessage], {
         ignoreExitStatus: true,
       })
     ).status !== 0
   ) {
-    await runCommand('git', ['commit', '-m', `fix: Close #${options.issueNumber}`, '--no-verify'], {
+    await runCommand('git', ['commit', '-m', commitMessage, '--no-verify'], {
       ignoreExitStatus: true,
     });
   }
