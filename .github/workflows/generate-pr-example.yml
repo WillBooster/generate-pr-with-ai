@@ -33,6 +33,7 @@ jobs:
           # required options
           issue-number: ${{ github.event.issue.number }}
           # optional options
+          coding-tool: aider
           planning-model: gemini/gemini-2.5-pro
           reasoning-effort: high
           repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"

@@ -142,28 +142,43 @@ ${planText}
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
-    assistantResult = (
-      await runCommand('npx', claudeCodeArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        stdio: 'inherit',
-      })
-    ).stdout;
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would run: ${toolCommand}`));
+      assistantResult = 'Skipped in dry-run mode';
+    } else {
+      assistantResult = (
+        await runCommand('npx', claudeCodeArgs, {
+          env: { ...process.env, NO_COLOR: '1' },
+          stdio: 'inherit',
+        })
+      ).stdout;
+    }
   } else if (options.codingTool === 'codex') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', codexArgs, prompt);
-    assistantResult = (
-      await runCommand('npx', codexArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-      })
-    ).stdout;
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would run: ${toolCommand}`));
+      assistantResult = 'Skipped in dry-run mode';
+    } else {
+      assistantResult = (
+        await runCommand('npx', codexArgs, {
+          env: { ...process.env, NO_COLOR: '1' },
+        })
+      ).stdout;
+    }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
-    assistantResult = (
-      await runCommand('npx', geminiArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-      })
-    ).stdout;
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would run: ${toolCommand}`));
+      assistantResult = 'Skipped in dry-run mode';
+    } else {
+      assistantResult = (
+        await runCommand('npx', geminiArgs, {
+          env: { ...process.env, NO_COLOR: '1' },
+        })
+      ).stdout;
+    }
   }
 
   let assistantResponse = assistantResult.trim();

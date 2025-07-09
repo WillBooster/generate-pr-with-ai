@@ -99,7 +99,15 @@ Gemini CLI:
 npx --yes gen-pr --issue-number 89 --coding-tool gemini
 ```
 
-#### Supported Model Format
+#### For PR ([#103](https://github.com/WillBooster/gen-pr/pull/103))
+
+Codex:
+
+```sh
+npx --yes gen-pr --issue-number 103 --coding-tool codex
+```
+
+### Supported Model Format
 
 The tool requires **model names defined on [llmlite](https://docs.litellm.ai/docs/providers)** in the format `provider/model-name`:
 
@@ -112,7 +120,7 @@ The tool requires **model names defined on [llmlite](https://docs.litellm.ai/doc
 - **OpenRouter**: `openrouter/deepseek/deepseek-r1-0528:free`, `openrouter/deepseek/deepseek-chat-v3-0324:free` and more
 - **Ollama**: `ollama/gemma3n`, `ollama/deepseek-r1`, `ollama/qwen3` and more
 
-#### Environment Variables
+### Environment Variables
 
 Each provider uses standard environment variables for authentication:
 
