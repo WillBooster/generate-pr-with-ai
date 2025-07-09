@@ -17,6 +17,7 @@ export function buildCodexArgs(
   return [
     '--yes',
     '@openai/codex@latest',
+    'exec',
     ...parseCommandLineArgs(options.codexExtraArgs || DEFAULT_CODEX_EXTRA_ARGS),
     args.prompt,
   ];
