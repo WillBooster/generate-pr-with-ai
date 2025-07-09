@@ -161,14 +161,14 @@ Please format your response without any explanatory text as follows:
 \`\`\`md
 ${HEADING_OF_FILE_PATHS_TO_BE_MODIFIED}
 
-- \`<filePath1>\`
-- \`<filePath2>\`
+- \`[filePath1]\`
+- \`[filePath2]\`
 - ...
 
 ${HEADING_OF_FILE_PATHS_TO_BE_REFERRED}
 
-- \`<filePath1>\`
-- \`<filePath2>\`
+- \`[filePath1]\`
+- \`[filePath2]\`
 - ...
 \`\`\`
 `;
@@ -193,15 +193,15 @@ ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
-${HEADING_OF_COMMIT_MESSAGE}
-
-<commit message>
-
 ${HEADING_OF_PLAN}
 
-1. <Specific implementation step>
-2. <Next implementation step>
+1. [Specific implementation step]
+2. [Next implementation step]
 ...
+
+${HEADING_OF_COMMIT_MESSAGE}
+
+[commit message]
 \`\`\`
 `.trim();
 }
@@ -213,8 +213,8 @@ You are an expert software developer tasked with analyzing GitHub issues and cre
 Review the following GitHub issue and the list of available file paths and their contents (which will be provided in a separate message).
 Your task is to:
 1. Create a detailed, step-by-step plan outlining how to resolve the issue effectively.
-2. Provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
-3. Identify files that need to be modified to resolve the issue.
+2. Identify files that need to be modified to resolve the issue.
+3. Provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
 
 Your plan should:
 - Focus on implementation details for each file that needs modification
@@ -227,21 +227,21 @@ ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
-${HEADING_OF_COMMIT_MESSAGE}
-
-<commit message>
-
 ${HEADING_OF_PLAN}
 
-1. <Specific implementation step>
-2. <Next implementation step>
+1. [Specific implementation step]
+2. [Next implementation step]
 ...
 
 ${HEADING_OF_FILE_PATHS_TO_BE_MODIFIED}
 
-- \`<filePath1>\`
-- \`<filePath2>\`
+- \`[filePath1]\`
+- \`[filePath2]\`
 - ...
+
+${HEADING_OF_COMMIT_MESSAGE}
+
+[commit message]
 \`\`\`
 `;
 }
