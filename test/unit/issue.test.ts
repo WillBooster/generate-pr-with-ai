@@ -221,4 +221,56 @@ describe('createIssueInfo', () => {
     },
     { timeout: TIMEOUT }
   );
+
+  // Test for PR #103 - PR with code review comments and "Use Hello" functionality
+  test(
+    'should handle PR #103 (PR with code review comments and Hello change)',
+    async () => {
+      const options: MainOptions = {
+        twoStagePlanning: false,
+        dryRun: false,
+        issueNumber: 103,
+        maxTestAttempts: 3,
+        codingTool: 'aider',
+      };
+
+      const result = await createIssueInfo(options);
+
+      // Basic properties
+      expect(result.author).toBe('WillBooster-bot');
+      expect(result.title).toBe('fix: Close #89');
+
+      // Description content
+      expect(result.description).toContain('Close #89');
+      expect(result.description).toContain('Planning Model:');
+      expect(result.description).toContain('Coding Tool:');
+      expect(result.description).toContain('Codex');
+
+      // PR characteristics
+      expect(result.code_changes).toBeDefined(); // Is a PR
+      expect(result.code_changes).toContain('src/main.ts');
+      expect(result.code_changes).toContain('configureEnvVars();');
+      expect(result.code_changes).toContain("console.log('Hi');");
+
+      // Code review comments functionality - "Use Hello" feature
+      expect(result.comments.length).toBeGreaterThan(0);
+      const reviewComment = result.comments.find((c) => c.body.includes('Use Hello'));
+      expect(reviewComment).toBeDefined();
+      expect(reviewComment?.author).toBe('exKAZUu');
+      expect(reviewComment?.body).toContain('Review comment on `src/main.ts:54`');
+      expect(reviewComment?.body).toContain('```yaml');
+      expect(reviewComment?.body).toContain("code: +  console.log('Hi');");
+      expect(reviewComment?.body).toContain('comment: Use Hello');
+
+      // Referenced issues - should reference #89
+      expect(result.referenced_issues).toBeDefined();
+      expect(result.referenced_issues?.length).toBe(1);
+      expect(result.referenced_issues?.[0].title).toBe('feat: print "Hi" (<- example issue for debugging gen-pr)');
+      expect(result.referenced_issues?.[0].author).toBe('exKAZUu');
+
+      // The PR should show the change that adds console.log('Hi')
+      expect(result.code_changes).toContain("+  console.log('Hi');");
+    },
+    { timeout: TIMEOUT }
+  );
 });

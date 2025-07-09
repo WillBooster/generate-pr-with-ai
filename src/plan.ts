@@ -6,6 +6,7 @@ import { extractHeaderContents, findDistinctFence, trimCodeBlockFences } from '.
 import { runCommand } from './spawn.js';
 import type { ReasoningEffort } from './types.js';
 import { parseCommandLineArgs } from './utils.js';
+import { yamlStringifyOptions } from './yaml.js';
 
 const REPOMIX_FILE_NAME = 'repomix.result';
 
@@ -26,6 +27,9 @@ export async function planCodeChanges(
   repomixExtraArgs?: string
 ): Promise<ResolutionPlan> {
   const issueFence = findDistinctFence(issueContent);
+  const issueYamlText = `${issueFence}yaml
+${YAML.stringify(issueContent, yamlStringifyOptions).trim()}
+${issueFence}`;
 
   // Base repomix command arguments
   const repomixArgs = ['--yes', 'repomix@latest', '--output', REPOMIX_FILE_NAME];
@@ -42,7 +46,7 @@ export async function planCodeChanges(
       [
         {
           role: 'system',
-          content: buildPromptForSelectingFiles(issueFence, issueContent).trim(),
+          content: buildPromptForSelectingFiles(issueYamlText).trim(),
         },
         {
           role: 'user',
@@ -84,7 +88,7 @@ ${fence}`;
       [
         {
           role: 'system',
-          content: buildPromptForPlanningCodeChanges(issueFence, issueContent),
+          content: buildPromptForPlanningCodeChanges(issueYamlText),
         },
         {
           role: 'user',
@@ -107,7 +111,7 @@ ${fence}`;
     [
       {
         role: 'system',
-        content: buildPromptForSelectingFilesAndPlanningCodeChanges(issueFence, issueContent).trim(),
+        content: buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText).trim(),
       },
       {
         role: 'user',
@@ -132,7 +136,7 @@ ${fence}`;
   return { plan: extractedFilePathLists[0], filePaths: filePathsToBeModified };
 }
 
-function buildPromptForSelectingFiles(issueFence: string, issueContent: string): string {
+function buildPromptForSelectingFiles(issueYamlText: string): string {
   return `
 You are an expert software developer tasked with analyzing GitHub issues and identifying relevant files for code changes.
 
@@ -142,9 +146,7 @@ Your task is to identify:
 2. Files that should be REFERRED to (but not modified) to understand the codebase better
 
 GitHub Issue:
-${issueFence}yml
-${YAML.stringify(issueContent).trim()}
-${issueFence}
+${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
@@ -163,7 +165,7 @@ ${HEADING_OF_FILE_PATHS_TO_BE_REFERRED}
 `;
 }
 
-function buildPromptForPlanningCodeChanges(issueFence: string, issueContent: string): string {
+function buildPromptForPlanningCodeChanges(issueYamlText: string): string {
   return `
 You are an expert software developer tasked with creating implementation plans based on GitHub issues.
 
@@ -177,9 +179,7 @@ Your plan should:
 - Exclude testing procedures unless users explicitly request
 
 GitHub Issue:
-${issueFence}yml
-${YAML.stringify(issueContent).trim()}
-${issueFence}
+${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md
@@ -192,7 +192,7 @@ ${HEADING_OF_PLAN}
 `.trim();
 }
 
-function buildPromptForSelectingFilesAndPlanningCodeChanges(issueFence: string, issueContent: string): string {
+function buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText: string): string {
   return `
 You are an expert software developer tasked with analyzing GitHub issues and creating implementation plans.
 
@@ -208,9 +208,7 @@ Your plan should:
 - Exclude testing procedures as those will be handled separately
 
 GitHub Issue:
-${issueFence}yml
-${YAML.stringify(issueContent).trim()}
-${issueFence}
+${issueYamlText}
 
 Please format your response without any explanatory text as follows:
 \`\`\`md

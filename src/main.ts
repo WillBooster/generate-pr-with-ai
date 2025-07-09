@@ -14,6 +14,7 @@ import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
+import { yamlStringifyOptions } from './yaml.js';
 
 /**
  * Options for the main function
@@ -84,7 +85,7 @@ export async function main(options: MainOptions): Promise<void> {
   }
 
   const issueInfo = await createIssueInfo(options);
-  const issueText = YAML.stringify(issueInfo).trim();
+  const issueText = YAML.stringify(issueInfo, yamlStringifyOptions).trim();
 
   const resolutionPlan =
     (options.planningModel &&

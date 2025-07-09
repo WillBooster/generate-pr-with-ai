@@ -109,6 +109,31 @@ export interface IssueComment {
 }
 
 /**
+ * Represents a GitHub PR review comment
+ */
+export interface GitHubReviewComment {
+  /** The comment's unique ID */
+  id: number;
+  /** The comment's author */
+  user: {
+    /** The author's GitHub username */
+    login: string;
+  };
+  /** The comment's content */
+  body: string;
+  /** The file path this comment is on */
+  path: string;
+  /** The line number this comment is on */
+  line: number;
+  /** The diff hunk showing the code context */
+  diff_hunk?: string;
+  /** When the comment was created */
+  created_at: string;
+  /** When the comment was updated */
+  updated_at: string;
+}
+
+/**
  * Represents processed issue information for AI processing
  */
 export interface IssueInfo {

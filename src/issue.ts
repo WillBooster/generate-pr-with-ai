@@ -1,7 +1,10 @@
+import YAML from 'yaml';
 import type { MainOptions } from './main.js';
+import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
-import type { GitHubComment, GitHubIssue, IssueInfo } from './types.js';
+import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
 import { stripHtmlComments } from './utils.js';
+import { yamlStringifyOptions } from './yaml.js';
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
   const processedIssues = new Set<number>();
@@ -53,6 +56,53 @@ async function fetchIssueData(
     });
     if (prDiff.trim()) {
       issueInfo.code_changes = processDiffContent(prDiff.trim());
+    }
+
+    // Fetch PR review comments
+    const { stdout: reviewCommentsResult } = await runCommand(
+      'gh',
+      ['api', `repos/{owner}/{repo}/pulls/${issueNumber}/comments`],
+      { ignoreExitStatus: true }
+    );
+    if (reviewCommentsResult.trim()) {
+      try {
+        const reviewComments: GitHubReviewComment[] = JSON.parse(reviewCommentsResult);
+        // Add review comments to the regular comments
+        const reviewCommentsAsIssueComments = reviewComments.map((rc) => {
+          // Extract the code from the diff_hunk if available
+          let codeContext = '';
+          if (rc.diff_hunk) {
+            // Find the line that was commented on (marked with + or -)
+            const lines = rc.diff_hunk.split('\n');
+            // Look for the line that contains the actual code change
+            // The commented line is usually the one with + or - that contains actual code
+            codeContext =
+              lines
+                .find(
+                  (line) =>
+                    (line.startsWith('+') || line.startsWith('-')) && !line.startsWith('@@') && line.trim().length > 1 // Make sure it's not just a + or - symbol
+                )
+                ?.trim() || '';
+          }
+          const reviewCommentYaml = YAML.stringify(
+            { codeCommented: codeContext, comment: rc.body },
+            yamlStringifyOptions
+          ).trim();
+          const yamlFence = findDistinctFence(reviewCommentYaml);
+          return {
+            author: rc.user.login,
+            body: `Review comment on \`${rc.path}:${rc.line}\`:
+
+${yamlFence}yaml
+${reviewCommentYaml}
+${yamlFence}`,
+          };
+        });
+        issueInfo.comments.push(...reviewCommentsAsIssueComments);
+      } catch (error) {
+        // Ignore JSON parsing errors for review comments
+        console.warn('Failed to parse PR review comments:', error);
+      }
     }
   }
 
