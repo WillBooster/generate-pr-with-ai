@@ -218,10 +218,16 @@ ${planText}
 - **Planning Model:** ${options.planningModel}`;
   }
 
-  const assistantName =
-    options.codingTool === 'aider' ? 'Aider' : options.codingTool === 'claude-code' ? 'Claude Code' : 'Codex';
+  const toolName =
+    options.codingTool === 'aider'
+      ? 'Aider'
+      : options.codingTool === 'claude-code'
+        ? 'Claude Code'
+        : options.codingTool === 'gemini'
+          ? 'Gemini CLI'
+          : 'Codex CLI';
   prBody += `
-- **Coding Tool:** ${assistantName}
+- **Coding Tool:** ${toolName}
 - **Coding Command:** \`${toolCommand}\`
 
 ${truncateText(planText, (planText.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
@@ -229,7 +235,7 @@ ${truncateText(planText, (planText.length / (planText.length + assistantResponse
   if (assistantResponse) {
     const responseFence = findDistinctFence(assistantResponse);
     prBody += `
-# ${assistantName} Log
+# ${toolName} Log
 
 ${responseFence}
 ${truncateText(assistantResponse, (assistantResponse.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
@@ -244,7 +250,7 @@ ${responseFence}`;
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
     console.info(
       ansis.yellow(
-        `PR body would include the ${assistantName.toLowerCase()} response and close issue #${options.issueNumber}`
+        `PR body would include the ${toolName.toLowerCase()} response and close issue #${options.issueNumber}`
       )
     );
   }
