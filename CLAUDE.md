@@ -6,9 +6,10 @@
 
 ## General Instructions
 
-- After making code changes, use `bun check-for-ai` to run type checks and the linter.
-- If you have completely finished your work, run `bun check-all-for-ai` to also execute tests (this may take up to 30 minutes).
-- After `bun check-all-for-ai` passes, commit your changes to the current branch and push.
+- After making code changes, commit them to the current branch using the `--no-verify` option. Make sure to add a new line at the end of your commit message with: `Co-authored-by: WillBooster (Agent) <agent@willbooster.com>`.
+- Once you have committed your changes, run `bun check-for-ai` to perform type checking and linting.
+- When your work is fully complete, run `bun check-all-for-ai` to execute all tests (note: this may take up to 30 minutes).
+- Once `bun check-all-for-ai` passes, commit any remaining changes to the current branch and push.
 
 ## Coding Style
 
