@@ -34,7 +34,7 @@ export async function callLlmApi(
 
     if (reasoningEffort) {
       // Check if the model supports reasoning/thinking features
-      const modelSupportsReasoning = supportsReasoning(provider, modelName);
+      const modelSupportsReasoning = supportsReasoningOptions(provider, modelName);
 
       if (!modelSupportsReasoning) {
         console.warn(
@@ -169,9 +169,9 @@ function getModelInstance(model: string): [LanguageModelV2, string, string] {
 }
 
 /**
- * Check if a model supports reasoning/thinking features
+ * Check if a model supports reasoning/thinking options
  */
-export function supportsReasoning(provider: string, modelName: string): boolean {
+export function supportsReasoningOptions(provider: string, modelName: string): boolean {
   switch (provider) {
     case 'openai':
     case 'azure':
@@ -195,8 +195,8 @@ export function supportsReasoning(provider: string, modelName: string): boolean 
       return /^gemini-2\.5/.test(modelName) || /^claude-(3-7-sonnet|opus-4|sonnet-4)/.test(modelName);
 
     case 'grok':
-      // Grok: all models support reasoning effort
-      return true;
+      // Grok: Grok 3 models support reasoning effort
+      return /^grok-3/.test(modelName);
 
     default:
       return false;
