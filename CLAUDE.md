@@ -6,10 +6,9 @@
 
 ## General Instructions
 
-- After making code changes, commit them to the current branch using the `--no-verify` option. Make sure to add a new line at the end of your commit message with: `Co-authored-by: WillBooster (Agent) <agent@willbooster.com>`.
-- Once you have committed your changes, run `bun check-for-ai` to perform type checking and linting.
+- After making code changes, run `bun check-for-ai` to perform type checking and linting.
+- Once you have checked your changes, commit them to the current branch using the `--no-verify` option. Make sure to add a new line at the end of your commit message with: `Co-authored-by: WillBooster (Claude Code) <agent@willbooster.com>`.
 - When your work is fully complete, run `bun check-all-for-ai` to execute all tests (note: this may take up to 30 minutes).
-- Once `bun check-all-for-ai` passes, commit any remaining changes to the current branch and push.
 
 ## Coding Style
 
