@@ -93,12 +93,12 @@ describe('model reasoning support detection', () => {
     });
 
     test('should correctly identify Grok models as supporting reasoning', () => {
-      expect(supportsReasoningOptions('grok', 'grok-3')).toBe(true);
-      expect(supportsReasoningOptions('grok', 'grok-beta')).toBe(false);
-      expect(supportsReasoningOptions('grok', 'grok-vision-beta')).toBe(false);
-      expect(supportsReasoningOptions('grok', 'grok-2-1212')).toBe(false);
-      expect(supportsReasoningOptions('grok', 'grok-3-fast')).toBe(true);
-      expect(supportsReasoningOptions('grok', 'grok-3-mini')).toBe(true);
+      expect(supportsReasoningOptions('xai', 'grok-3')).toBe(true);
+      expect(supportsReasoningOptions('xai', 'grok-beta')).toBe(false);
+      expect(supportsReasoningOptions('xai', 'grok-vision-beta')).toBe(false);
+      expect(supportsReasoningOptions('xai', 'grok-2-1212')).toBe(false);
+      expect(supportsReasoningOptions('xai', 'grok-3-fast')).toBe(true);
+      expect(supportsReasoningOptions('xai', 'grok-3-mini')).toBe(true);
     });
 
     test('should return false for unsupported providers', () => {

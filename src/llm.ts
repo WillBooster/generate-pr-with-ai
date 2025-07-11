@@ -75,6 +75,16 @@ export async function callLlmApi(
           //     reasoningConfig: { type: 'enabled', budgetTokens: thinkingBudget },
           //   } satisfies BedrockProviderOptions,
           // };
+        } else if (provider === 'xai') {
+          // The latest AI SDK doesn't work on Bedrock with reasoning.
+          console.log(
+            `Note: The current AI SDK doesn't work on Bedrock with reasoning. Model ${modelName} will use default reasoning settings.`
+          );
+          // requestParams.providerOptions = {
+          //   bedrock: {
+          //     reasoningConfig: { type: 'enabled', budgetTokens: thinkingBudget },
+          //   } satisfies BedrockProviderOptions,
+          // };
         }
       }
     }
@@ -154,7 +164,7 @@ function getModelInstance(model: string): [LanguageModelV2, string, string] {
       return [vertexProvider(modelName), provider, modelName];
     }
 
-    case 'grok': {
+    case 'xai': {
       // cf. https://ai-sdk.dev/providers/ai-sdk-providers/xai
       const grokProvider = createXai();
       return [grokProvider(modelName), provider, modelName];
@@ -194,7 +204,7 @@ export function supportsReasoningOptions(provider: string, modelName: string): b
       // Vertex: Gemini 2.5 models and Claude 3.7/4 models support thinking budget
       return /^gemini-2\.5/.test(modelName) || /^claude-(3-7-sonnet|opus-4|sonnet-4)/.test(modelName);
 
-    case 'grok':
+    case 'xai':
       // Grok: Grok 3 models support reasoning effort
       return /^grok-3/.test(modelName);
 

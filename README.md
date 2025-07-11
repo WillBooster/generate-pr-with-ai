@@ -73,10 +73,10 @@ DeepSeek R1 on OpenRouter (`openrouter/deepseek/deepseek-r1-0528:free`) for plan
 npx --yes gen-pr --issue-number 89 --planning-model openrouter/deepseek/deepseek-r1-0528:free --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --coding-tool gemini
 ```
 
-Grok 4 (`grok/grok-4`) for planning and Aider for coding:
+Grok 4 (`xai/grok-4`) for planning and Aider for coding:
 
 ```sh
-npx --yes gen-pr --issue-number 89 --planning-model grok/grok-4 --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --aider-extra-args="--model gemini/gemini-2.5-pro --edit-format diff-fenced --test-cmd='yarn check-for-ai' --auto-test"
+npx --yes gen-pr --issue-number 89 --planning-model xai/grok-4 --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --aider-extra-args="--model gemini/gemini-2.5-pro --edit-format diff-fenced --test-cmd='yarn check-for-ai' --auto-test"
 ```
 
 Local Gemma 3n via Ollama (`ollama/gemma3n`) for planning and Aider for coding:
@@ -123,7 +123,7 @@ The tool requires **model names defined on [llmlite](https://docs.litellm.ai/doc
 - **Anthropic**: `anthropic/claude-4-sonnet-latest`, `anthropic/claude-3-5-haiku-latest` and more
 - **AWS Bedrock**: `bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0`, `bedrock/us.anthropic.claude-3-5-haiku-20241022-v1:0` and more
 - **Google Vertex AI**: `vertex/gemini-2.5-pro`, `vertex/gemini-2.5-flash` and more
-- **Grok (xAI)**: `grok/grok-4`, `grok/grok-3`, `grok/grok-3-mini` and more
+- **xAI**: `xai/grok-4`, `xai/grok-3`, `xai/grok-3-mini` and more
 - **OpenRouter**: `openrouter/deepseek/deepseek-r1-0528:free`, `openrouter/deepseek/deepseek-chat-v3-0324:free` and more
 - **Ollama**: `ollama/gemma3n`, `ollama/deepseek-r1`, `ollama/qwen3` and more
 
