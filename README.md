@@ -138,7 +138,7 @@ Each provider uses standard environment variables for authentication:
   - **Azure OpenAI**: `AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_VERSION`
   - **AWS Bedrock**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` (or `AWS_REGION_NAME`)
   - **Google Vertex AI**: `GOOGLE_APPLICATION_CREDENTIALS` or default service account
-  - **Grok (xAI)**: `XAI_API_KEY`
+  - **xAI**: `XAI_API_KEY`
   - **OpenRouter**: `OPENROUTER_API_KEY`
   - **Ollama**: `OLLAMA_BASE_URL` (default: `http://localhost:11434`), `OLLAMA_API_KEY` (optional)
 - Coding Tools
