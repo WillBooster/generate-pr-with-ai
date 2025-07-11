@@ -123,7 +123,7 @@ The tool requires **model names defined on [llmlite](https://docs.litellm.ai/doc
 - **Anthropic**: `anthropic/claude-4-sonnet-latest`, `anthropic/claude-3-5-haiku-latest` and more
 - **AWS Bedrock**: `bedrock/us.anthropic.claude-sonnet-4-20250514-v1:0`, `bedrock/us.anthropic.claude-3-5-haiku-20241022-v1:0` and more
 - **Google Vertex AI**: `vertex/gemini-2.5-pro`, `vertex/gemini-2.5-flash` and more
-- **Grok (xAI)**: `grok/grok-3`, `grok/grok-beta`, `grok/grok-vision-beta` and more
+- **Grok (xAI)**: `grok/grok-4`, `grok/grok-3`, `grok/grok-3-mini` and more
 - **OpenRouter**: `openrouter/deepseek/deepseek-r1-0528:free`, `openrouter/deepseek/deepseek-chat-v3-0324:free` and more
 - **Ollama**: `ollama/gemma3n`, `ollama/deepseek-r1`, `ollama/qwen3` and more
 
