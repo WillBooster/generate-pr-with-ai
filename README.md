@@ -76,7 +76,7 @@ npx --yes gen-pr --issue-number 89 --planning-model openrouter/deepseek/deepseek
 Grok 4 (`grok/grok-4`) for planning and Aider for coding:
 
 ```sh
-npx --yes gen-pr --issue-number 89 --planning-model grok/grok-4 --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --aider-extra-args="--model grok/grok-4 --edit-format diff-fenced --test-cmd='yarn check-for-ai' --auto-test"
+npx --yes gen-pr --issue-number 89 --planning-model grok/grok-4 --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --aider-extra-args="--model gemini/gemini-2.5-pro --edit-format diff-fenced --test-cmd='yarn check-for-ai' --auto-test"
 ```
 
 Local Gemma 3n via Ollama (`ollama/gemma3n`) for planning and Aider for coding:
