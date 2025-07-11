@@ -33,12 +33,12 @@ export async function callLlmApi(
     };
 
     if (reasoningEffort) {
-      // Check if the model supports reasoning/thinking features
+      // Check if the model supports reasoning/thinking options
       const modelSupportsReasoning = supportsReasoningOptions(provider, modelName);
 
       if (!modelSupportsReasoning) {
         console.warn(
-          `Model ${model} does not support reasoning/thinking features. Ignoring reasoning effort parameter.`
+          `Model ${model} does not support reasoning/thinking options. Ignoring reasoning effort parameter.`
         );
       } else {
         const thinkingBudget = getThinkingBudget(reasoningEffort);
