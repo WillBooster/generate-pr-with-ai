@@ -5,6 +5,7 @@ import { createGoogleGenerativeAI, type GoogleGenerativeAIProviderOptions } from
 import { createVertex } from '@ai-sdk/google-vertex';
 import { createOpenAI, type OpenAIResponsesProviderOptions } from '@ai-sdk/openai';
 import type { LanguageModelV2 } from '@ai-sdk/provider';
+import { createXai } from '@ai-sdk/xai';
 import { generateText, type ModelMessage } from 'ai';
 import { callV4ProviderApi } from './llmv4.js';
 import type { ReasoningEffort } from './types.js';
@@ -153,9 +154,15 @@ function getModelInstance(model: string): [LanguageModelV2, string, string] {
       return [vertexProvider(modelName), provider, modelName];
     }
 
+    case 'grok': {
+      // cf. https://ai-sdk.dev/providers/ai-sdk-providers/xai
+      const grokProvider = createXai();
+      return [grokProvider(modelName), provider, modelName];
+    }
+
     default:
       console.error(
-        `Unsupported provider: ${provider}. Supported providers: openai, azure, google, anthropic, bedrock, vertex, openrouter, ollama`
+        `Unsupported provider: ${provider}. Supported providers: openai, azure, google, anthropic, bedrock, vertex, grok, openrouter, ollama`
       );
       process.exit(1);
   }
@@ -186,6 +193,10 @@ export function supportsReasoning(provider: string, modelName: string): boolean 
     case 'vertex':
       // Vertex: Gemini 2.5 models and Claude 3.7/4 models support thinking budget
       return /^gemini-2\.5/.test(modelName) || /^claude-(3-7-sonnet|opus-4|sonnet-4)/.test(modelName);
+
+    case 'grok':
+      // Grok: all models support reasoning effort
+      return true;
 
     default:
       return false;

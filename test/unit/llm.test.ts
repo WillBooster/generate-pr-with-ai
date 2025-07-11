@@ -92,6 +92,15 @@ describe('model reasoning support detection', () => {
       expect(supportsReasoning('azure', 'gpt-35-turbo')).toBe(false);
     });
 
+    test('should correctly identify Grok models as supporting reasoning', () => {
+      expect(supportsReasoning('grok', 'grok-3')).toBe(true);
+      expect(supportsReasoning('grok', 'grok-beta')).toBe(true);
+      expect(supportsReasoning('grok', 'grok-vision-beta')).toBe(true);
+      expect(supportsReasoning('grok', 'grok-2-1212')).toBe(true);
+      expect(supportsReasoning('grok', 'grok-3-fast')).toBe(true);
+      expect(supportsReasoning('grok', 'grok-3-mini')).toBe(true);
+    });
+
     test('should return false for unsupported providers', () => {
       expect(supportsReasoning('unsupported', 'any-model')).toBe(false);
       expect(supportsReasoning('unknown', 'test-model')).toBe(false);

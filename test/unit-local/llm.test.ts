@@ -45,6 +45,10 @@ describe('callLlmApi', () => {
     }
   );
 
+  test.skipIf(!process.env.XAI_API_KEY)('should call Grok API successfully', async () => {
+    expect(await callLlmApi('grok/grok-beta', testMessages)).toContain('Hi');
+  });
+
   describe('reasoning effort with thinking budget', () => {
     test.skipIf(!process.env.OPENAI_API_KEY)('should work with OpenAI reasoning effort low', async () => {
       expect(await callLlmApi('openai/o4-mini', testMessages, 'low')).toContain('Hi');
@@ -70,6 +74,10 @@ describe('callLlmApi', () => {
         );
       }
     );
+
+    test.skipIf(!process.env.XAI_API_KEY)('should work with Grok reasoning effort', async () => {
+      expect(await callLlmApi('grok/grok-beta', testMessages, 'low')).toContain('Hi');
+    });
   });
 
   describe('error handling', () => {
