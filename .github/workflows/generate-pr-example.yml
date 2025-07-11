@@ -72,7 +72,7 @@ jobs:
           # OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
           # OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
 
-          ## Grok (xAI)
+          ## xAI
           # XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
 
           ########## for coding tools ##########
