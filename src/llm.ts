@@ -45,7 +45,7 @@ export async function callLlmApi(
         if (provider === 'openai') {
           requestParams.providerOptions = {
             openai: {
-              reasoningEffort: reasoningEffort as string,
+              reasoningEffort,
             } satisfies OpenAIResponsesProviderOptions,
           };
         } else if (provider === 'anthropic') {
@@ -76,15 +76,11 @@ export async function callLlmApi(
           //   } satisfies BedrockProviderOptions,
           // };
         } else if (provider === 'xai') {
-          // The latest AI SDK doesn't work on Bedrock with reasoning.
-          console.log(
-            `Note: The current AI SDK doesn't work on Bedrock with reasoning. Model ${modelName} will use default reasoning settings.`
-          );
-          // requestParams.providerOptions = {
-          //   bedrock: {
-          //     reasoningConfig: { type: 'enabled', budgetTokens: thinkingBudget },
-          //   } satisfies BedrockProviderOptions,
-          // };
+          requestParams.providerOptions = {
+            xai: {
+              reasoningEffort,
+            },
+          };
         }
       }
     }
