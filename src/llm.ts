@@ -6,9 +6,10 @@ import { createVertex } from '@ai-sdk/google-vertex';
 import { createOpenAI, type OpenAIResponsesProviderOptions } from '@ai-sdk/openai';
 import type { LanguageModelV2 } from '@ai-sdk/provider';
 import { createXai } from '@ai-sdk/xai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, type ModelMessage } from 'ai';
+import { createOllama } from 'ollama-ai-provider-v2';
 import YAML from 'yaml';
-import { callV4ProviderApi } from './llmv4.js';
 import type { ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
@@ -21,12 +22,7 @@ export async function callLlmApi(
   reasoningEffort?: ReasoningEffort
 ): Promise<string> {
   try {
-    // Special handling for Ollama and OpenRouter using AI SDK v4
-    if (model.startsWith('ollama/') || model.startsWith('openrouter/')) {
-      return await callV4ProviderApi(model, messages, reasoningEffort);
-    }
-
-    const [modelInstance, provider, modelName] = getModelInstance(model);
+    const [modelInstance, provider, modelName] = getModelInstance(model, reasoningEffort);
 
     // Build the request parameters
     const requestParams: Parameters<typeof generateText>[0] = {
@@ -83,6 +79,9 @@ export async function callLlmApi(
               reasoningEffort,
             },
           };
+        } else if (provider === 'openrouter') {
+          // OpenRouter reasoning effort is handled during model creation in getModelInstance
+          // No additional provider options needed here
         }
       }
     }
@@ -114,7 +113,7 @@ export function logResult(model: string, result: { text: string; usage?: unknown
   );
 }
 
-function getModelInstance(model: string): [LanguageModelV2, string, string] {
+function getModelInstance(model: string, reasoningEffort?: ReasoningEffort): [LanguageModelV2, string, string] {
   // Only support llmlite format (provider/model)
   if (!model.includes('/')) {
     console.error(`Model must be in format 'provider/model'. Got: ${model}`);
@@ -167,6 +166,35 @@ function getModelInstance(model: string): [LanguageModelV2, string, string] {
       return [grokProvider(modelName), provider, modelName];
     }
 
+    case 'openrouter': {
+      // cf. https://github.com/OpenRouterTeam/ai-sdk-provider
+      const openrouterProvider = createOpenRouter({
+        apiKey: process.env.OPENROUTER_API_KEY,
+        headers: {
+          'HTTP-Referer': 'https://github.com/WillBooster/gen-pr',
+          'X-Title': 'gen-pr',
+        },
+      });
+      const modelOptions = reasoningEffort
+        ? {
+            reasoning: {
+              effort: reasoningEffort,
+            },
+          }
+        : {};
+      return [openrouterProvider(modelName, modelOptions), provider, modelName];
+    }
+
+    case 'ollama': {
+      // cf. https://github.com/sgomez/ollama-ai-provider
+      const ollamaBaseURL = `${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api`;
+      const ollamaProvider = createOllama({
+        baseURL: ollamaBaseURL,
+        ...(process.env.OLLAMA_API_KEY && { apiKey: process.env.OLLAMA_API_KEY }),
+      });
+      return [ollamaProvider(modelName), provider, modelName];
+    }
+
     default:
       console.error(
         `Unsupported provider: ${provider}. Supported providers: openai, azure, google, anthropic, bedrock, vertex, grok, openrouter, ollama`
@@ -204,6 +232,16 @@ export function supportsReasoningOptions(provider: string, modelName: string): b
     case 'xai':
       // Grok: Grok 3 models support reasoning effort
       return /^grok-3/.test(modelName);
+
+    case 'openrouter':
+      // OpenRouter: Support reasoning for specific models that support it
+      // This includes models like DeepSeek R1, o1 models, etc.
+      return /^(deepseek\/deepseek-r1|openai\/o[134]|anthropic\/claude-(opus-4|sonnet-4|3-7-sonnet))/.test(modelName);
+
+    case 'ollama':
+      // Ollama: Generally doesn't support reasoning effort, but some models might
+      // For now, return false as most local models don't support this feature
+      return false;
 
     default:
       return false;
