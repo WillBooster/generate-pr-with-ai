@@ -225,9 +225,8 @@ export function supportsReasoningOptions(provider: string, modelName: string): b
       // Grok: Grok 3 models support reasoning effort
       return /^grok-3/.test(modelName);
 
-    // We can always pass reasoningEffort to OpenRouter and Ollama without errors.
+    // We can always pass reasoningEffort to OpenRouter without errors.
     case 'openrouter':
-    case 'ollama':
       return true;
 
     default:
