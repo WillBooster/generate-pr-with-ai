@@ -2,11 +2,16 @@ import type { ModelMessage } from 'ai';
 import { generateText, type Message } from 'ai-v4';
 import { createOllama } from 'ollama-ai-provider-v2';
 import { logResult } from './llm.js';
+import type { ReasoningEffort } from './types.js';
 
 /**
  * Call AI SDK v4 provider API (for Ollama)
  */
-export async function callV4ProviderApi(model: string, messages: ModelMessage[]): Promise<string> {
+export async function callV4ProviderApi(
+  model: string,
+  messages: ModelMessage[],
+  reasoningEffort?: ReasoningEffort
+): Promise<string> {
   try {
     const [provider, ...modelParts] = model.split('/');
     const modelName = modelParts.join('/'); // Handle cases where model name itself contains '/'
@@ -24,7 +29,7 @@ export async function callV4ProviderApi(model: string, messages: ModelMessage[])
 
     const result = await generateText({
       model: providerModel,
-      providerOptions: { ollama: { think: true } },
+      providerOptions: reasoningEffort ? { ollama: { think: true } } : undefined,
       messages: convertToV4Messages(messages),
     });
     logResult(model, result);

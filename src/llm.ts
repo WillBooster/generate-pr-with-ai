@@ -24,7 +24,7 @@ export async function callLlmApi(
   try {
     // Special handling for Ollama using AI SDK v4
     if (model.startsWith('ollama/')) {
-      return await callV4ProviderApi(model, messages);
+      return await callV4ProviderApi(model, messages, reasoningEffort);
     }
 
     const [modelInstance, provider, modelName] = getModelInstance(model, reasoningEffort);

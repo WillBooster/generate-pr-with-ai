@@ -16,6 +16,13 @@
       ],
       enabled: false,
     },
+    // Don't upgrade ollama-ai-provider-v2 because ollama-ai-provider-v2 v0.0.9 seems broken.
+    {
+      matchPackageNames: [
+        'ollama-ai-provider-v2',
+      ],
+      enabled: false,
+    },
     // Don't upgrade AI SDK packages because renovate wrongly updates them to canary versions.
     {
       matchPackageNames: [

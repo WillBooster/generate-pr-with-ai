@@ -61,7 +61,7 @@ describe('callLlmApi', () => {
     { timeout: 30000 }
   );
 
-  test.only(
+  test(
     'should call Ollama API successfully',
     async () => {
       expect(await callLlmApi('ollama/gemma3:1b', testMessages)).toContain('Hi');
