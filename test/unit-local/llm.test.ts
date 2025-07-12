@@ -61,7 +61,7 @@ describe('callLlmApi', () => {
     { timeout: 30000 }
   );
 
-  test.skipIf(!process.env.OLLAMA_BASE_URL && !process.env.OLLAMA_API_KEY)(
+  test.only(
     'should call Ollama API successfully',
     async () => {
       expect(await callLlmApi('ollama/gemma3:1b', testMessages)).toContain('Hi');
