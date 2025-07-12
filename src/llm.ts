@@ -8,9 +8,8 @@ import type { LanguageModelV2 } from '@ai-sdk/provider';
 import { createXai } from '@ai-sdk/xai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, type ModelMessage } from 'ai';
-import { createOllama } from 'ollama-ai-provider-v2';
-import type { OllamaProviderOptions } from 'ollama-ai-provider-v2/internal';
 import YAML from 'yaml';
+import { callV4ProviderApi } from './llmv4.js';
 import type { ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
@@ -23,6 +22,11 @@ export async function callLlmApi(
   reasoningEffort?: ReasoningEffort
 ): Promise<string> {
   try {
+    // Special handling for Ollama using AI SDK v4
+    if (model.startsWith('ollama/')) {
+      return await callV4ProviderApi(model, messages);
+    }
+
     const [modelInstance, provider, modelName] = getModelInstance(model, reasoningEffort);
 
     // Build the request parameters
@@ -80,8 +84,6 @@ export async function callLlmApi(
               reasoningEffort,
             },
           };
-        } else if (provider === 'ollama') {
-          requestParams.providerOptions = { ollama: { think: true } satisfies OllamaProviderOptions };
         }
       }
     }
@@ -183,16 +185,6 @@ function getModelInstance(model: string, reasoningEffort?: ReasoningEffort): [La
           }
         : {};
       return [openrouterProvider(modelName, modelOptions), provider, modelName];
-    }
-
-    case 'ollama': {
-      // cf. https://github.com/sgomez/ollama-ai-provider
-      const ollamaBaseURL = `${process.env.OLLAMA_BASE_URL || 'http://localhost:11434'}/api`;
-      const ollamaProvider = createOllama({
-        baseURL: ollamaBaseURL,
-        ...(process.env.OLLAMA_API_KEY && { apiKey: process.env.OLLAMA_API_KEY }),
-      });
-      return [ollamaProvider(modelName), provider, modelName];
     }
 
     default:
