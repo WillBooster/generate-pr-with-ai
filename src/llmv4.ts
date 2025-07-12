@@ -46,10 +46,7 @@ export async function callV4ProviderApi(
         baseURL: ollamaBaseURL,
         ...(process.env.OLLAMA_API_KEY && { apiKey: process.env.OLLAMA_API_KEY }),
       });
-      providerModel = ollama.chat(
-        modelName,
-        reasoningEffort ? ({ think: true } as any) : undefined
-      );
+      providerModel = ollama.chat(modelName, reasoningEffort ? ({ think: true } as any) : undefined);
     } else {
       throw new Error(`Unsupported v4 provider: ${provider}`);
     }
