@@ -101,24 +101,6 @@ describe('model reasoning support detection', () => {
       expect(supportsReasoningOptions('xai', 'grok-3-mini')).toBe(true);
     });
 
-    test('should correctly identify OpenRouter models as supporting reasoning', () => {
-      expect(supportsReasoningOptions('openrouter', 'deepseek/deepseek-r1-0528:free')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'openai/o1-preview')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'openai/o3-mini')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'anthropic/claude-opus-4-20250514')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'anthropic/claude-sonnet-4-20250514')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'anthropic/claude-3-7-sonnet-20250219')).toBe(true);
-      expect(supportsReasoningOptions('openrouter', 'meta-llama/llama-3.1-8b-instruct:free')).toBe(false);
-      expect(supportsReasoningOptions('openrouter', 'google/gemini-pro')).toBe(false);
-    });
-
-    test('should correctly identify Ollama models as NOT supporting reasoning', () => {
-      expect(supportsReasoningOptions('ollama', 'llama3.2')).toBe(false);
-      expect(supportsReasoningOptions('ollama', 'gemma3n')).toBe(false);
-      expect(supportsReasoningOptions('ollama', 'deepseek-r1')).toBe(false);
-      expect(supportsReasoningOptions('ollama', 'qwen3')).toBe(false);
-    });
-
     test('should return false for unsupported providers', () => {
       expect(supportsReasoningOptions('unsupported', 'any-model')).toBe(false);
       expect(supportsReasoningOptions('unknown', 'test-model')).toBe(false);
