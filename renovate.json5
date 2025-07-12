@@ -25,6 +25,7 @@
         '@ai-sdk/google',
         '@ai-sdk/google-vertex',
         '@ai-sdk/openai',
+        '@ai-sdk/xai',
         'ai',
       ],
       enabled: false,
