@@ -53,6 +53,22 @@ describe('callLlmApi', () => {
     { timeout: 60000 }
   );
 
+  test.skipIf(!process.env.OPENROUTER_API_KEY)(
+    'should call OpenRouter API successfully',
+    async () => {
+      expect(await callLlmApi('openrouter/deepseek/deepseek-chat-v3-0324:free', testMessages)).toContain('Hi');
+    },
+    { timeout: 30000 }
+  );
+
+  test.skipIf(!process.env.OLLAMA_BASE_URL && !process.env.OLLAMA_API_KEY)(
+    'should call Ollama API successfully',
+    async () => {
+      expect(await callLlmApi('ollama/llama3.2', testMessages)).toContain('Hi');
+    },
+    { timeout: 30000 }
+  );
+
   describe('reasoning effort with thinking budget', () => {
     test.skipIf(!process.env.OPENAI_API_KEY)('should work with OpenAI reasoning effort low', async () => {
       expect(await callLlmApi('openai/o4-mini', testMessages, 'low')).toContain('Hi');
@@ -82,6 +98,14 @@ describe('callLlmApi', () => {
     test.skipIf(!process.env.XAI_API_KEY)('should work with Grok reasoning effort', async () => {
       expect(await callLlmApi('xai/grok-3-mini', testMessages, 'low')).toContain('Hi');
     });
+
+    test.skipIf(!process.env.OPENROUTER_API_KEY)(
+      'should work with OpenRouter reasoning effort',
+      async () => {
+        expect(await callLlmApi('openrouter/deepseek/deepseek-r1-0528:free', testMessages, 'low')).toContain('Hi');
+      },
+      { timeout: 60000 }
+    );
   });
 
   describe('error handling', () => {
