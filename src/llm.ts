@@ -9,6 +9,7 @@ import { createXai } from '@ai-sdk/xai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateText, type ModelMessage } from 'ai';
 import { createOllama } from 'ollama-ai-provider-v2';
+import type { OllamaProviderOptions } from 'ollama-ai-provider-v2/internal';
 import YAML from 'yaml';
 import type { ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
@@ -79,9 +80,8 @@ export async function callLlmApi(
               reasoningEffort,
             },
           };
-        } else if (provider === 'openrouter') {
-          // OpenRouter reasoning effort is handled during model creation in getModelInstance
-          // No additional provider options needed here
+        } else if (provider === 'ollama') {
+          requestParams.providerOptions = { ollama: { think: true } satisfies OllamaProviderOptions };
         }
       }
     }
@@ -233,15 +233,10 @@ export function supportsReasoningOptions(provider: string, modelName: string): b
       // Grok: Grok 3 models support reasoning effort
       return /^grok-3/.test(modelName);
 
+    // We can always pass reasoningEffort to OpenRouter and Ollama without errors.
     case 'openrouter':
-      // OpenRouter: Support reasoning for specific models that support it
-      // This includes models like DeepSeek R1, o1 models, etc.
-      return /^(deepseek\/deepseek-r1|openai\/o[134]|anthropic\/claude-(opus-4|sonnet-4|3-7-sonnet))/.test(modelName);
-
     case 'ollama':
-      // Ollama: Generally doesn't support reasoning effort, but some models might
-      // For now, return false as most local models don't support this feature
-      return false;
+      return true;
 
     default:
       return false;
