@@ -123,6 +123,10 @@ ${planText}
 
   const now = new Date();
 
+  // Get current branch name before creating new branch
+  const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
+  const currentBranch = currentBranchResult.stdout.trim();
+
   const branchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
   if (!options.dryRun) {
     await runCommand('git', ['switch', '-C', branchName]);
@@ -209,7 +213,7 @@ ${planText}
   }
 
   // Create a PR using GitHub CLI
-  const prTitle = getHeaderOfFirstCommit();
+  const prTitle = getHeaderOfFirstCommit(currentBranch) || commitMessage;
   let prBody = `Close #${options.issueNumber}`;
 
   if (options.planningModel) {
@@ -281,8 +285,8 @@ function getGitRepoName(): string {
   return repoMatch ? repoMatch[1] : '';
 }
 
-function getHeaderOfFirstCommit(): string {
-  const firstCommitResult = child_process.spawnSync('git', ['log', 'main..HEAD', '--reverse', '--pretty=%s'], {
+function getHeaderOfFirstCommit(baseBranch: string): string {
+  const firstCommitResult = child_process.spawnSync('git', ['log', `${baseBranch}..HEAD`, '--reverse', '--pretty=%s'], {
     encoding: 'utf8',
     stdio: 'pipe',
   });
