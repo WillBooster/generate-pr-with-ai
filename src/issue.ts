@@ -3,7 +3,7 @@ import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
-import { stripHtmlComments } from './utils.js';
+import { omitLargeCodeBlocks, stripHtmlComments } from './utils.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
@@ -39,10 +39,16 @@ async function fetchIssueData(
   const allText = [issue.body, ...issue.comments.map((c) => c.body)].join('\n');
   const referencedNumbers = extractIssueReferences(allText);
 
+  // For PRs, also omit large code blocks from the body
+  const processedBody =
+    issue.url?.includes('/pull/') && !isReferenced
+      ? omitLargeCodeBlocks(stripHtmlComments(issue.body))
+      : stripHtmlComments(issue.body);
+
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: stripHtmlComments(issue.body),
+    description: processedBody,
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
       body: c.body,
@@ -50,6 +56,22 @@ async function fetchIssueData(
   };
 
   if (issue.url?.includes('/pull/') && !isReferenced) {
+    // Fetch PR-specific information
+    const { stdout: prInfoResult } = await runCommand(
+      'gh',
+      ['pr', 'view', issueNumber.toString(), '--json', 'baseRefName,headRefName'],
+      { ignoreExitStatus: true }
+    );
+    if (prInfoResult.trim()) {
+      try {
+        const prInfo = JSON.parse(prInfoResult);
+        issueInfo.baseRefName = prInfo.baseRefName;
+        issueInfo.headRefName = prInfo.headRefName;
+      } catch (error) {
+        console.warn('Failed to parse PR info:', error);
+      }
+    }
+
     const { stdout: prDiff } = await runCommand('gh', ['pr', 'diff', issueNumber.toString()], {
       ignoreExitStatus: true,
       truncateStdout: true,

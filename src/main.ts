@@ -249,9 +249,19 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    await runCommand('gh', ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName]);
+    const prCreateArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+
+    // If targeting a PR, use the PR's head branch as the base branch instead of main
+    if (issueInfo.headRefName) {
+      prCreateArgs.push('--base', issueInfo.headRefName);
+    }
+
+    await runCommand('gh', prCreateArgs);
   } else {
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
+    if (issueInfo.headRefName) {
+      console.info(ansis.yellow(`PR would target branch: ${issueInfo.headRefName} (from source PR)`));
+    }
     console.info(
       ansis.yellow(
         `PR body would include the ${toolName.toLowerCase()} response and close issue #${options.issueNumber}`

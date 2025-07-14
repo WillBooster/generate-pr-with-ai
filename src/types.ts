@@ -149,6 +149,10 @@ export interface IssueInfo {
   code_changes?: string;
   /** Referenced issues and pull requests */
   referenced_issues?: IssueInfo[];
+  /** Base branch name (only present for PRs) */
+  baseRefName?: string;
+  /** Head branch name (only present for PRs) */
+  headRefName?: string;
 }
 
 /**
