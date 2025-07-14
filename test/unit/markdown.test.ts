@@ -260,4 +260,44 @@ describe('findDistinctFence', () => {
     const result = findDistinctFence(content);
     expect(result).toBe('~~~~~~');
   });
+
+  test('should use specified fence character when provided', () => {
+    const content = 'Content with ```backticks``` and ~~~tildes~~~';
+
+    // Force backticks
+    const backticksResult = findDistinctFence(content, '`');
+    expect(backticksResult).toBe('````');
+
+    // Force tildes
+    const tildesResult = findDistinctFence(content, '~');
+    expect(tildesResult).toBe('~~~~');
+  });
+
+  test('should handle specified fence character with longer sequences', () => {
+    const content = 'Content with `````long backticks`````';
+
+    // Force backticks - should use 6 backticks (5 + 1)
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('``````');
+  });
+
+  test('should handle specified fence character with no existing fences', () => {
+    const content = 'Content with no fences';
+
+    // Force backticks
+    const backticksResult = findDistinctFence(content, '`');
+    expect(backticksResult).toBe('```');
+
+    // Force tildes
+    const tildesResult = findDistinctFence(content, '~');
+    expect(tildesResult).toBe('~~~');
+  });
+
+  test('should handle specified fence character with only other type present', () => {
+    const content = 'Content with ~~~tildes~~~';
+
+    // Force backticks even though only tildes are present
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('```');
+  });
 });

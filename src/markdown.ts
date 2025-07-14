@@ -20,7 +20,18 @@ export function extractHeaderContents(text: string, headers: string[]): string[]
   });
 }
 
-export function findDistinctFence(content: string): string {
+export function findDistinctFence(content: string, fenceChar?: '`' | '~'): string {
+  if (fenceChar) {
+    // Use the specified fence character
+    const escapedChar = fenceChar === '`' ? '`' : '~';
+    const regex = new RegExp(`${escapedChar}{3,}`, 'g');
+    const matches = content.match(regex);
+    const maxLength = matches ? Math.max(...matches.map((seq) => seq.length)) : 0;
+    const fenceLength = Math.max(3, maxLength + 1);
+    return fenceChar.repeat(fenceLength);
+  }
+
+  // Auto-detect logic (existing behavior)
   // Find the longest sequence of backticks and tildes in the content
   const backticksMatch = content.match(/```+/g);
   const tildesMatch = content.match(/~~~+/g);
