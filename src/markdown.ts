@@ -34,3 +34,15 @@ export function trimCodeBlockFences(content: string): string {
   // Remove code block fences with any number of backticks or tildes from the beginning and end
   return content.trim().replace(/^(`{3,}|~{3,})[\s\S]*?\n([\s\S]*?)\n\1\s*$/, '$2');
 }
+
+/**
+ * Omit contents of fenced code blocks that exceed the given length.
+ */
+export function stripLargeCodeBlocks(text: string, maxLength = 10000): string {
+  return text.replace(/(`{3,}[^\n]*\n)([\s\S]*?)(`{3,})/g, (_match, openFence, content, closeFence) => {
+    if (content.length > maxLength) {
+      return `${openFence}... (${content.length} characters omitted) ...\n${closeFence}`;
+    }
+    return `${openFence}${content}${closeFence}`;
+  });
+}

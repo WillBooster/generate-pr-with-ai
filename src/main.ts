@@ -127,9 +127,29 @@ ${planText}
   const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
   const currentBranch = currentBranchResult.stdout.trim();
 
+  // If targeting a PR, base new branch on its head branch instead of current
+  let baseBranchForNewPR = currentBranch;
+  if (!options.dryRun) {
+    try {
+      const prView = await runCommand(
+        'gh',
+        ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
+        { ignoreExitStatus: true }
+      );
+      if (prView.stdout) {
+        const { headRefName } = JSON.parse(prView.stdout);
+        // Fetch and switch to the PR's head branch as base
+        await runCommand('git', ['fetch', 'origin', headRefName], { ignoreExitStatus: true });
+        baseBranchForNewPR = headRefName;
+      }
+    } catch {
+      // not a PR or fetch failed, continue with currentBranch
+    }
+  }
+
   const branchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
   if (!options.dryRun) {
-    await runCommand('git', ['switch', '-C', branchName]);
+    await runCommand('git', ['switch', '-C', branchName, baseBranchForNewPR]);
   } else {
     console.info(ansis.yellow(`Would create branch: ${branchName}`));
   }
@@ -249,7 +269,11 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    await runCommand('gh', ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName]);
+    const prCreateArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+    if (baseBranchForNewPR !== currentBranch) {
+      prCreateArgs.push('--base', baseBranchForNewPR);
+    }
+    await runCommand('gh', prCreateArgs);
   } else {
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
     console.info(

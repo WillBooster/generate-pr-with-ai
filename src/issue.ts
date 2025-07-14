@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import type { MainOptions } from './main.js';
-import { findDistinctFence } from './markdown.js';
+import { findDistinctFence, stripLargeCodeBlocks } from './markdown.js';
 import { runCommand } from './spawn.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
 import { stripHtmlComments } from './utils.js';
@@ -42,10 +42,10 @@ async function fetchIssueData(
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: stripHtmlComments(issue.body),
+    description: stripLargeCodeBlocks(stripHtmlComments(issue.body)),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: c.body,
+      body: stripLargeCodeBlocks(c.body),
     })),
   };
 
@@ -89,13 +89,14 @@ async function fetchIssueData(
             yamlStringifyOptions
           ).trim();
           const yamlFence = findDistinctFence(reviewCommentYaml);
-          return {
-            author: rc.user.login,
-            body: `Review comment on \`${rc.path}:${rc.line}\`:
+          const rawBody = `Review comment on \`${rc.path}:${rc.line}\`:
 
 ${yamlFence}yaml
 ${reviewCommentYaml}
-${yamlFence}`,
+${yamlFence}`;
+          return {
+            author: rc.user.login,
+            body: stripLargeCodeBlocks(rawBody),
           };
         });
         issueInfo.comments.push(...reviewCommentsAsIssueComments);
