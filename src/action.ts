@@ -2,24 +2,57 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import core from '@actions/core';
+import YAML from 'yaml';
 import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS } from './defaultOptions.js';
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
 
-// Get inputs
+// Load config file (YAML) from repository root to set default option values
+let configOptions: Record<string, unknown> = {};
+for (const name of ['gen-pr.config.yml', 'gen-pr.config.yaml']) {
+  const cfgPath = path.resolve(process.cwd(), name);
+  if (fs.existsSync(cfgPath)) {
+    try {
+      configOptions = YAML.parse(fs.readFileSync(cfgPath, 'utf8')) as Record<string, unknown>;
+      console.info(`Loaded gen-pr config from ${name}`);
+    } catch (err) {
+      console.error(`Failed to parse config file ${name}:`, err);
+      process.exit(1);
+    }
+    break;
+  }
+}
+
+// Get inputs (GitHub Action inputs override config file values)
 const issueNumber = core.getInput('issue-number', { required: true });
-const planningModel = core.getInput('planning-model', { required: false });
-const twoStagePlanning = core.getInput('two-staged-planning', { required: false }) !== 'false';
-const reasoningEffort = core.getInput('reasoning-effort', { required: false }) as ReasoningEffort | undefined;
-const dryRun = core.getInput('dry-run', { required: false }) === 'true';
-const codingTool = (core.getInput('coding-tool', { required: false }) || DEFAULT_CODING_TOOL) as CodingTool;
-const aiderExtraArgs = core.getInput('aider-extra-args', { required: false });
-const claudeCodeExtraArgs = core.getInput('claude-code-extra-args', { required: false });
-const codexExtraArgs = core.getInput('codex-extra-args', { required: false });
-const repomixExtraArgs = core.getInput('repomix-extra-args', { required: false });
-const testCommand = core.getInput('test-command', { required: false });
-const maxTestAttemptsInput = core.getInput('max-test-attempts', { required: false });
-const maxTestAttempts = maxTestAttemptsInput ? Number.parseInt(maxTestAttemptsInput, 10) : DEFAULT_MAX_TEST_ATTEMPTS;
+const planningModel =
+  core.getInput('planning-model', { required: false }) || (configOptions['planning-model'] as string);
+const twoStagePlanningInput =
+  core.getInput('two-staged-planning', { required: false }) || (configOptions['two-staged-planning'] as string);
+const twoStagePlanning = twoStagePlanningInput !== 'false';
+const reasoningEffort = (core.getInput('reasoning-effort', { required: false }) ||
+  (configOptions['reasoning-effort'] as string)) as ReasoningEffort | undefined;
+const dryRunInput = core.getInput('dry-run', { required: false }) || (configOptions['dry-run'] as string);
+const dryRun = dryRunInput === 'true';
+const codingTool = (core.getInput('coding-tool', { required: false }) ||
+  (configOptions['coding-tool'] as string) ||
+  DEFAULT_CODING_TOOL) as CodingTool;
+const aiderExtraArgs =
+  core.getInput('aider-extra-args', { required: false }) || (configOptions['aider-extra-args'] as string);
+const claudeCodeExtraArgs =
+  core.getInput('claude-code-extra-args', { required: false }) || (configOptions['claude-code-extra-args'] as string);
+const codexExtraArgs =
+  core.getInput('codex-extra-args', { required: false }) || (configOptions['codex-extra-args'] as string);
+const geminiExtraArgs =
+  core.getInput('gemini-extra-args', { required: false }) || (configOptions['gemini-extra-args'] as string);
+const repomixExtraArgs =
+  core.getInput('repomix-extra-args', { required: false }) || (configOptions['repomix-extra-args'] as string);
+const testCommand = core.getInput('test-command', { required: false }) || (configOptions['test-command'] as string);
+const maxTestAttemptsInput =
+  core.getInput('max-test-attempts', { required: false }) || (configOptions['max-test-attempts'] as string | number);
+const maxTestAttempts = maxTestAttemptsInput
+  ? Number.parseInt(String(maxTestAttemptsInput), 10)
+  : DEFAULT_MAX_TEST_ATTEMPTS;
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
@@ -42,6 +75,7 @@ void main({
   aiderExtraArgs,
   claudeCodeExtraArgs,
   codexExtraArgs,
+  geminiExtraArgs,
   codingTool,
   twoStagePlanning,
   dryRun,

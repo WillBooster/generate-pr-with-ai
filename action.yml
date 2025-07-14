@@ -36,6 +36,10 @@ inputs:
     description: 'Additional arguments to pass to the codex command (nothing is always applied)'
     required: false
     default: '--full-auto'
+  gemini-extra-args:
+    description: 'Additional arguments to pass to the gemini command ("--yolo" is always applied)'
+    required: false
+    default: ''
   test-command:
     description: 'Command to run after the coding tool applies changes. If it fails, the assistant will try to fix it.'
     required: false
@@ -67,6 +71,7 @@ runs:
         INPUT_AIDER-EXTRA-ARGS: ${{ inputs.aider-extra-args }}
         INPUT_CLAUDE-CODE-EXTRA-ARGS: ${{ inputs.claude-code-extra-args }}
         INPUT_CODEX-EXTRA-ARGS: ${{ inputs.codex-extra-args }}
+        INPUT_GEMINI-EXTRA-ARGS: ${{ inputs.gemini-extra-args }}
         INPUT_TEST-COMMAND: ${{ inputs.test-command }}
         INPUT_MAX-TEST-ATTEMPTS: ${{ inputs.max-test-attempts }}
         INPUT_DRY-RUN: ${{ inputs.dry-run }}
