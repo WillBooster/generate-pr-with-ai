@@ -249,7 +249,25 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    await runCommand('gh', ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName]);
+    // Determine base branch: target PR's base if sourcing from a PR
+    let baseBranch: string | undefined;
+    {
+      const { stdout: prViewResult } = await runCommand(
+        'gh',
+        ['pr', 'view', options.issueNumber.toString(), '--json', 'baseRefName'],
+        { ignoreExitStatus: true }
+      );
+      try {
+        baseBranch = prViewResult && JSON.parse(prViewResult).baseRefName;
+      } catch {
+        baseBranch = undefined;
+      }
+    }
+    const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+    if (baseBranch) {
+      prArgs.push('--base', baseBranch);
+    }
+    await runCommand('gh', prArgs);
   } else {
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
     console.info(
