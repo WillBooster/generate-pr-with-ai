@@ -60,6 +60,32 @@ See [action.yml](action.yml) and [.github/workflows/generate-pr-example.yml](.gi
 
 ### CLI
 
+#### Configuration File
+
+You can create a configuration file in your project root to set default values for CLI options. The tool will look for `.gen-prrc.json`, `.gen-prrc.yaml`, or `.gen-prrc.yml` in the current directory.
+
+Example `.gen-prrc.json`:
+```json
+{
+  "repomix-extra-args": "--compress --remove-empty-lines --include 'src/**/*.ts'",
+  "aider-extra-args": "--model gemini/gemini-2.5-pro --edit-format diff-fenced",
+  "coding-tool": "aider",
+  "two-staged-planning": true,
+  "max-test-attempts": 3
+}
+```
+
+Example `.gen-prrc.yaml`:
+```yaml
+repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"
+aider-extra-args: "--model gemini/gemini-2.5-pro --edit-format diff-fenced"
+coding-tool: aider
+two-staged-planning: true
+max-test-attempts: 3
+```
+
+Command line arguments will override values from the configuration file.
+
 Here are some examples for creating PRs for issue [#89](https://github.com/WillBooster/gen-pr/issues/89).
 
 #### With Planning (Strongly Recommended for Aider)
