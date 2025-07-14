@@ -49,7 +49,29 @@ async function fetchIssueData(
     })),
   };
 
+  if (issue.url?.includes('/pull/')) {
+    // If it's a PR, remove the log section from the description
+    issueInfo.description = issueInfo.description
+      .replace(/#\s*(?:Aider|Claude Code|Codex CLI|Gemini CLI)\s+Log[\s\S]*/, '')
+      .trim();
+  }
+
   if (issue.url?.includes('/pull/') && !isReferenced) {
+    const { stdout: prBaseRefResult } = await runCommand(
+      'gh',
+      ['pr', 'view', issueNumber.toString(), '--json', 'baseRefName'],
+      { ignoreExitStatus: true }
+    );
+    if (prBaseRefResult.trim()) {
+      try {
+        const prInfo: { baseRefName: string } = JSON.parse(prBaseRefResult);
+        issueInfo.base_branch = prInfo.baseRefName;
+      } catch (error) {
+        // Ignore JSON parsing errors for base branch
+        console.warn('Failed to parse PR base branch info:', error);
+      }
+    }
+
     const { stdout: prDiff } = await runCommand('gh', ['pr', 'diff', issueNumber.toString()], {
       ignoreExitStatus: true,
       truncateStdout: true,
