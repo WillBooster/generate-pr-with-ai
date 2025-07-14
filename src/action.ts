@@ -4,12 +4,12 @@ import path from 'node:path';
 import core from '@actions/core';
 import YAML from 'yaml';
 import {
-  DEFAULT_CODING_TOOL,
-  DEFAULT_MAX_TEST_ATTEMPTS,
-  DEFAULT_REPOMIX_EXTRA_ARGS,
   DEFAULT_AIDER_EXTRA_ARGS,
   DEFAULT_CLAUDE_CODE_EXTRA_ARGS,
   DEFAULT_CODEX_EXTRA_ARGS,
+  DEFAULT_CODING_TOOL,
+  DEFAULT_MAX_TEST_ATTEMPTS,
+  DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
@@ -46,7 +46,7 @@ const ACTION_DEFAULTS: Record<string, string> = {
 function getInputOrConfig(key: string): string {
   const raw = core.getInput(key, { required: false });
   const def = ACTION_DEFAULTS[key];
-  if (configOptions.hasOwnProperty(key) && (raw === '' || raw === def)) {
+  if (Object.hasOwn(configOptions, key) && (raw === '' || raw === def)) {
     return String(configOptions[key]);
   }
   return raw;
@@ -65,9 +65,7 @@ const codexExtraArgs = getInputOrConfig('codex-extra-args');
 const repomixExtraArgs = getInputOrConfig('repomix-extra-args');
 const testCommand = getInputOrConfig('test-command') || undefined;
 const maxTestAttemptsRaw = getInputOrConfig('max-test-attempts');
-const maxTestAttempts = maxTestAttemptsRaw
-  ? Number.parseInt(maxTestAttemptsRaw, 10)
-  : DEFAULT_MAX_TEST_ATTEMPTS;
+const maxTestAttempts = maxTestAttemptsRaw ? Number.parseInt(maxTestAttemptsRaw, 10) : DEFAULT_MAX_TEST_ATTEMPTS;
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
