@@ -2,24 +2,72 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import core from '@actions/core';
-import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS } from './defaultOptions.js';
+import YAML from 'yaml';
+import {
+  DEFAULT_CODING_TOOL,
+  DEFAULT_MAX_TEST_ATTEMPTS,
+  DEFAULT_REPOMIX_EXTRA_ARGS,
+  DEFAULT_AIDER_EXTRA_ARGS,
+  DEFAULT_CLAUDE_CODE_EXTRA_ARGS,
+  DEFAULT_CODEX_EXTRA_ARGS,
+} from './defaultOptions.js';
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
 
+// Load config file (YAML) from repository root to set default option values
+let configOptions: Record<string, unknown> = {};
+for (const name of ['gen-pr.config.yml', 'gen-pr.config.yaml']) {
+  const cfgPath = path.resolve(process.cwd(), name);
+  if (fs.existsSync(cfgPath)) {
+    try {
+      configOptions = YAML.parse(fs.readFileSync(cfgPath, 'utf8')) as Record<string, unknown>;
+      console.info(`Loaded gen-pr config from ${name}`);
+    } catch (err) {
+      console.error(`Failed to parse config file ${name}:`, err);
+      process.exit(1);
+    }
+    break;
+  }
+}
+
+// Map of default values defined in action.yml; used to detect defaults vs user inputs
+const ACTION_DEFAULTS: Record<string, string> = {
+  'two-staged-planning': 'true',
+  'coding-tool': DEFAULT_CODING_TOOL,
+  'repomix-extra-args': DEFAULT_REPOMIX_EXTRA_ARGS,
+  'aider-extra-args': DEFAULT_AIDER_EXTRA_ARGS,
+  'claude-code-extra-args': DEFAULT_CLAUDE_CODE_EXTRA_ARGS,
+  'codex-extra-args': DEFAULT_CODEX_EXTRA_ARGS,
+  'max-test-attempts': DEFAULT_MAX_TEST_ATTEMPTS.toString(),
+  'dry-run': 'false',
+};
+
+// Helper: workflow inputs override config; config overrides action.yml defaults
+function getInputOrConfig(key: string): string {
+  const raw = core.getInput(key, { required: false });
+  const def = ACTION_DEFAULTS[key];
+  if (configOptions.hasOwnProperty(key) && (raw === '' || raw === def)) {
+    return String(configOptions[key]);
+  }
+  return raw;
+}
+
 // Get inputs
 const issueNumber = core.getInput('issue-number', { required: true });
-const planningModel = core.getInput('planning-model', { required: false });
-const twoStagePlanning = core.getInput('two-staged-planning', { required: false }) !== 'false';
-const reasoningEffort = core.getInput('reasoning-effort', { required: false }) as ReasoningEffort | undefined;
-const dryRun = core.getInput('dry-run', { required: false }) === 'true';
-const codingTool = (core.getInput('coding-tool', { required: false }) || DEFAULT_CODING_TOOL) as CodingTool;
-const aiderExtraArgs = core.getInput('aider-extra-args', { required: false });
-const claudeCodeExtraArgs = core.getInput('claude-code-extra-args', { required: false });
-const codexExtraArgs = core.getInput('codex-extra-args', { required: false });
-const repomixExtraArgs = core.getInput('repomix-extra-args', { required: false });
-const testCommand = core.getInput('test-command', { required: false });
-const maxTestAttemptsInput = core.getInput('max-test-attempts', { required: false });
-const maxTestAttempts = maxTestAttemptsInput ? Number.parseInt(maxTestAttemptsInput, 10) : DEFAULT_MAX_TEST_ATTEMPTS;
+const planningModel = getInputOrConfig('planning-model') || undefined;
+const twoStagePlanning = getInputOrConfig('two-staged-planning') !== 'false';
+const reasoningEffort = (getInputOrConfig('reasoning-effort') as ReasoningEffort) || undefined;
+const dryRun = getInputOrConfig('dry-run') === 'true';
+const codingTool = (getInputOrConfig('coding-tool') || DEFAULT_CODING_TOOL) as CodingTool;
+const aiderExtraArgs = getInputOrConfig('aider-extra-args');
+const claudeCodeExtraArgs = getInputOrConfig('claude-code-extra-args');
+const codexExtraArgs = getInputOrConfig('codex-extra-args');
+const repomixExtraArgs = getInputOrConfig('repomix-extra-args');
+const testCommand = getInputOrConfig('test-command') || undefined;
+const maxTestAttemptsRaw = getInputOrConfig('max-test-attempts');
+const maxTestAttempts = maxTestAttemptsRaw
+  ? Number.parseInt(maxTestAttemptsRaw, 10)
+  : DEFAULT_MAX_TEST_ATTEMPTS;
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
