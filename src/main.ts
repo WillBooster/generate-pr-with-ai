@@ -129,7 +129,25 @@ ${planText}
 
   const branchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
   if (!options.dryRun) {
-    await runCommand('git', ['switch', '-C', branchName]);
+    // Determine base branch: target PR's base if sourcing from a PR
+    let baseBranchForSwitch: string | undefined;
+    {
+      const { stdout: prViewResult } = await runCommand(
+        'gh',
+        ['pr', 'view', options.issueNumber.toString(), '--json', 'baseRefName'],
+        { ignoreExitStatus: true }
+      );
+      try {
+        baseBranchForSwitch = prViewResult && JSON.parse(prViewResult).baseRefName;
+      } catch {
+        baseBranchForSwitch = undefined;
+      }
+    }
+    const switchArgs = ['switch', '-C', branchName];
+    if (baseBranchForSwitch) {
+      switchArgs.push(baseBranchForSwitch);
+    }
+    await runCommand('git', switchArgs);
   } else {
     console.info(ansis.yellow(`Would create branch: ${branchName}`));
   }
