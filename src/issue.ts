@@ -1,6 +1,6 @@
 import YAML from 'yaml';
 import type { MainOptions } from './main.js';
-import { findDistinctFence } from './markdown.js';
+import { findDistinctFence, omitLargeCodeBlocks } from './markdown.js';
 import { runCommand } from './spawn.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
 import { stripHtmlComments } from './utils.js';
@@ -27,7 +27,7 @@ async function fetchIssueData(
 
   const { stdout: issueResult } = await runCommand(
     'gh',
-    ['issue', 'view', issueNumber.toString(), '--json', 'author,title,body,labels,comments,url'],
+    ['issue', 'view', issueNumber.toString(), '--json', 'author,title,body,labels,comments,url,headRefName'],
     { ignoreExitStatus: true }
   );
   if (!issueResult) {
@@ -42,12 +42,16 @@ async function fetchIssueData(
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: stripHtmlComments(issue.body),
+    description: omitLargeCodeBlocks(stripHtmlComments(issue.body)),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: c.body,
+      body: omitLargeCodeBlocks(c.body),
     })),
   };
+
+  if (issue.headRefName) {
+    issueInfo.target_branch = issue.headRefName;
+  }
 
   if (issue.url?.includes('/pull/') && !isReferenced) {
     const { stdout: prDiff } = await runCommand('gh', ['pr', 'diff', issueNumber.toString()], {
@@ -85,7 +89,7 @@ async function fetchIssueData(
                 ?.trim() || '';
           }
           const reviewCommentYaml = YAML.stringify(
-            { codeCommented: codeContext, comment: rc.body },
+            { codeCommented: codeContext, comment: omitLargeCodeBlocks(rc.body) },
             yamlStringifyOptions
           ).trim();
           const yamlFence = findDistinctFence(reviewCommentYaml);

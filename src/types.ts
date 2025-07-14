@@ -96,6 +96,8 @@ export interface GitHubIssue {
   title: string;
   /** The URL of the issue or pull request */
   url: string;
+  /** For a PR, the name of the head ref */
+  headRefName?: string;
 }
 
 /**
@@ -149,6 +151,8 @@ export interface IssueInfo {
   code_changes?: string;
   /** Referenced issues and pull requests */
   referenced_issues?: IssueInfo[];
+  /** For a PR, this is the head ref name, which becomes the target branch for the new PR */
+  target_branch?: string;
 }
 
 /**
