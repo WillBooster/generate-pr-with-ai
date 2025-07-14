@@ -139,7 +139,7 @@ npx --yes gen-pr@latest --issue-number 103 --coding-tool codex
 
 ### Config File
 
-You can create a YAML configuration file named `gen-pr.config.yml` or `gen-pr.config.yaml` in the root of your repository to set default values for CLI options. CLI flags will override values in this file. For example:
+You can create a YAML configuration file named `gen-pr.config.yml` or `gen-pr.config.yaml` in the root of your repository to set default values for options. This config file works for both CLI usage and GitHub Actions. Command-line flags (CLI) or workflow inputs (GitHub Actions) will override values in this file. For example:
 
 ```yaml
 repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"
