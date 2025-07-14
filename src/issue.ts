@@ -9,7 +9,7 @@ import { yamlStringifyOptions } from './yaml.js';
 function removeToolLogs(text: string): string {
   // This regex matches headers like "# Aider Log", "# Claude Code Log", etc.,
   // and removes them along with all subsequent content in the string.
-  const logPattern = new RegExp(`^# (Aider|Claude Code|Codex CLI|Gemini CLI) Log[\\s\\S]*`, 'm');
+  const logPattern = /^# (Aider|Claude Code|Codex CLI|Gemini CLI) Log[\s\S]*/m;
   return text.replace(logPattern, '').trim();
 }
 
