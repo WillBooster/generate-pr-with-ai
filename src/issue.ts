@@ -39,7 +39,6 @@ async function fetchIssueData(
   const allText = [issue.body, ...issue.comments.map((c) => c.body)].join('\n');
   const referencedNumbers = extractIssueReferences(allText);
 
-  // Prepare description, stripping HTML comments and any coding tool logs for PR bodies
   const rawBody = stripHtmlComments(issue.body);
   const description = issue.url?.includes('/pull/') ? stripToolLogSections(rawBody) : rawBody;
   const issueInfo: IssueInfo = {
