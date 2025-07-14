@@ -10,11 +10,13 @@ import {
   DEFAULT_MAX_TEST_ATTEMPTS,
   DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
+import { loadConfig } from './config.js';
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
 
 // Parse command line arguments using yargs
 const argv = await yargs(hideBin(process.argv))
+  .config(loadConfig())
   // Options same with the GitHub Actions workflow
   .option('issue-number', {
     alias: 'i',
