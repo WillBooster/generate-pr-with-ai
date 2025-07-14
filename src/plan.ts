@@ -28,7 +28,7 @@ export async function planCodeChanges(
   reasoningEffort?: ReasoningEffort,
   repomixExtraArgs?: string
 ): Promise<ResolutionPlan> {
-  const issueFence = findDistinctFence(issueContent);
+  const issueFence = findDistinctFence(issueContent, '~');
   const issueYamlText = `${issueFence}yaml
 ${YAML.stringify(issueContent, yamlStringifyOptions).trim()}
 ${issueFence}`;
@@ -75,7 +75,7 @@ ${issueFence}`;
     const fileContents = [...filePathsToBeModified, ...filePathsToBeReferred]
       .map((filePath) => {
         const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8').trim() : '';
-        const fence = findDistinctFence(content);
+        const fence = findDistinctFence(content, '~');
         return `# \`${filePath}\`
 
 ${fence}

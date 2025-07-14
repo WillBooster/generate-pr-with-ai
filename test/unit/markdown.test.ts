@@ -200,103 +200,88 @@ More content
 describe('findDistinctFence', () => {
   test('should return default backticks when no fences in content', () => {
     const content = 'Some regular content without any fences';
-    const result = findDistinctFence(content);
+    const result = findDistinctFence(content, '`');
     expect(result).toBe('```');
   });
 
   test('should return tildes when content has backticks', () => {
     const content = 'Some content with ```code``` blocks';
-    const result = findDistinctFence(content);
-    expect(result).toBe('~~~~');
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('````');
   });
 
   test('should return backticks when content has tildes', () => {
     const content = 'Some content with ~~~code~~~ blocks';
-    const result = findDistinctFence(content);
-    expect(result).toBe('````');
+    const result = findDistinctFence(content, '~');
+    expect(result).toBe('~~~~');
   });
 
   test('should handle longer sequences of backticks', () => {
     const content = 'Content with `````long backticks````` sequence';
-    const result = findDistinctFence(content);
-    expect(result).toBe('~~~~~~');
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('`````');
   });
 
   test('should handle longer sequences of tildes', () => {
     const content = 'Content with ~~~~~long tildes~~~~~ sequence';
-    const result = findDistinctFence(content);
-    expect(result).toBe('``````');
+    const result = findDistinctFence(content, '~');
+    expect(result).toBe('~~~~~');
   });
 
   test('should choose shorter fence when both backticks and tildes present', () => {
     const content = 'Content with ```backticks``` and ~~~~~tildes~~~~~';
-    const result = findDistinctFence(content);
-    // backticks need 4, tildes need 6, so choose backticks
+    const result = findDistinctFence(content, '`');
     expect(result).toBe('````');
   });
 
   test('should choose tildes when they need fewer characters', () => {
     const content = 'Content with `````backticks````` and ~~~tildes~~~';
-    const result = findDistinctFence(content);
-    // backticks need 6, tildes need 4, so choose tildes
+    const result = findDistinctFence(content, '~');
     expect(result).toBe('~~~~');
   });
 
   test('should handle equal length sequences by preferring tildes', () => {
     const content = 'Content with ```backticks``` and ~~~tildes~~~';
-    const result = findDistinctFence(content);
-    // Both need 4 characters, should prefer tildes (<=)
-    expect(result).toBe('~~~~');
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('````');
   });
 
   test('should handle empty content', () => {
     const content = '';
-    const result = findDistinctFence(content);
+    const result = findDistinctFence(content, '`');
     expect(result).toBe('```');
   });
 
   test('should handle multiple fence sequences and use the longest', () => {
     const content = 'Content with ```short``` and `````long````` backticks';
-    const result = findDistinctFence(content);
-    expect(result).toBe('~~~~~~');
+    const result = findDistinctFence(content, '`');
+    expect(result).toBe('``````');
   });
 
   test('should use specified fence character when provided', () => {
     const content = 'Content with ```backticks``` and ~~~tildes~~~';
-
-    // Force backticks
     const backticksResult = findDistinctFence(content, '`');
     expect(backticksResult).toBe('````');
-
-    // Force tildes
     const tildesResult = findDistinctFence(content, '~');
     expect(tildesResult).toBe('~~~~');
   });
 
   test('should handle specified fence character with longer sequences', () => {
     const content = 'Content with `````long backticks`````';
-
-    // Force backticks - should use 6 backticks (5 + 1)
     const result = findDistinctFence(content, '`');
     expect(result).toBe('``````');
   });
 
   test('should handle specified fence character with no existing fences', () => {
     const content = 'Content with no fences';
-
-    // Force backticks
     const backticksResult = findDistinctFence(content, '`');
     expect(backticksResult).toBe('```');
-
-    // Force tildes
     const tildesResult = findDistinctFence(content, '~');
     expect(tildesResult).toBe('~~~');
   });
 
   test('should handle specified fence character with only other type present', () => {
     const content = 'Content with ~~~tildes~~~';
-
-    // Force backticks even though only tildes are present
     const result = findDistinctFence(content, '`');
     expect(result).toBe('```');
   });

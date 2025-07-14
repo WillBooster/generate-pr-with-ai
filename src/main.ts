@@ -107,7 +107,7 @@ export async function main(options: MainOptions): Promise<void> {
 ${resolutionPlan.plan}
 `.trim()
       : '';
-  const issueFence = findDistinctFence(issueText);
+  const issueFence = findDistinctFence(issueText, '~');
   const isAgentic = options.codingTool !== 'aider';
   const prompt = `
 Modify the code to resolve the following GitHub issue${planText ? ' based on the plan' : ''}.${isAgentic ? ' After that, commit your changes with a message, following the Conventional Commits specification.' : ''}
@@ -237,7 +237,7 @@ ${planText}
 ${truncateText(planText, (planText.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
 `;
   if (assistantResponse) {
-    const responseFence = findDistinctFence(assistantResponse);
+    const responseFence = findDistinctFence(assistantResponse, '~');
     prBody += `
 # ${toolName} Log
 

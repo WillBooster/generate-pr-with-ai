@@ -91,7 +91,7 @@ async function fetchIssueData(
             { codeCommented: codeContext, comment: rc.body },
             yamlStringifyOptions
           ).trim();
-          const yamlFence = findDistinctFence(reviewCommentYaml);
+          const yamlFence = findDistinctFence(reviewCommentYaml, '~');
           return {
             author: rc.user.login,
             body: `Review comment on \`${rc.path}:${rc.line}\`:
