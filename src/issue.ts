@@ -41,8 +41,7 @@ async function fetchIssueData(
 
   // Prepare description, stripping HTML comments and any coding tool logs for PR bodies
   const rawBody = stripHtmlComments(issue.body);
-  const description =
-    issue.url?.includes('/pull/') ? stripToolLogSections(rawBody) : rawBody;
+  const description = issue.url?.includes('/pull/') ? stripToolLogSections(rawBody) : rawBody;
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,

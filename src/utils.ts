@@ -68,7 +68,5 @@ export function stripHtmlComments(markdownContent: string): string {
  * Strips any top-level heading ending with "Log" and the following fenced code block.
  */
 export function stripToolLogSections(markdownContent: string): string {
-  return markdownContent
-    .replace(/^# .+ Log\s*[\r\n]+`{3,}[\s\S]*?`{3,}/gm, '')
-    .trim();
+  return markdownContent.replace(/^# .+ Log\s*[\r\n]+`{3,}[\s\S]*?`{3,}/gm, '').trim();
 }
