@@ -137,6 +137,17 @@ Codex:
 npx --yes gen-pr@latest --issue-number 103 --coding-tool codex
 ```
 
+### Config File
+
+You can create a YAML configuration file named `gen-pr.config.yml` or `gen-pr.config.yaml` in the root of your repository to set default values for CLI options. CLI flags will override values in this file. For example:
+
+```yaml
+repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"
+aider-extra-args: "--model gemini/gemini-2.5-pro --edit-format diff-fenced --no-gitignore"
+coding-tool: claude-code
+test-command: "yarn check-for-ai"
+```
+
 ### Supported Model Format
 
 The tool requires **model names defined on [llmlite](https://docs.litellm.ai/docs/providers)** in the format `provider/model-name`:
