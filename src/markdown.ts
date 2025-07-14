@@ -20,48 +20,12 @@ export function extractHeaderContents(text: string, headers: string[]): string[]
   });
 }
 
-export function findDistinctFence(content: string, fenceChar?: '`' | '~'): string {
-  if (fenceChar) {
-    // Use the specified fence character
-    const escapedChar = fenceChar === '`' ? '`' : '~';
-    const regex = new RegExp(`${escapedChar}{3,}`, 'g');
-    const matches = content.match(regex);
-    const maxLength = matches ? Math.max(...matches.map((seq) => seq.length)) : 0;
-    const fenceLength = Math.max(3, maxLength + 1);
-    return fenceChar.repeat(fenceLength);
-  }
-
-  // Auto-detect logic (existing behavior)
-  // Find the longest sequence of backticks and tildes in the content
-  const backticksMatch = content.match(/```+/g);
-  const tildesMatch = content.match(/~~~+/g);
-
-  const maxBackticks = backticksMatch ? Math.max(...backticksMatch.map((seq) => seq.length)) : 0;
-  const maxTildes = tildesMatch ? Math.max(...tildesMatch.map((seq) => seq.length)) : 0;
-
-  // Determine which fence character to use
-  if (maxBackticks === 0 && maxTildes === 0) {
-    // No fences found, default to backticks
-    return '```';
-  } else if (maxBackticks === 0) {
-    // Only tildes found, use backticks
-    const fenceLength = Math.max(3, maxTildes + 1);
-    return '`'.repeat(fenceLength);
-  } else if (maxTildes === 0) {
-    // Only backticks found, use tildes
-    const fenceLength = Math.max(3, maxBackticks + 1);
-    return '~'.repeat(fenceLength);
-  } else {
-    // Both found, use the one that requires fewer characters
-    const backticksNeeded = Math.max(3, maxBackticks + 1);
-    const tildesNeeded = Math.max(3, maxTildes + 1);
-
-    if (tildesNeeded <= backticksNeeded) {
-      return '~'.repeat(tildesNeeded);
-    } else {
-      return '`'.repeat(backticksNeeded);
-    }
-  }
+export function findDistinctFence(content: string, fenceChar: '`' | '~'): string {
+  const regex = new RegExp(`${fenceChar}{3,}`, 'g');
+  const matches = content.match(regex);
+  const maxLength = matches ? Math.max(...matches.map((seq) => seq.length)) : 0;
+  const fenceLength = Math.max(3, maxLength + 1);
+  return fenceChar.repeat(fenceLength);
 }
 
 export function trimCodeBlockFences(content: string): string {
