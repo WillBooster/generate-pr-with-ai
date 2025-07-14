@@ -1,4 +1,7 @@
 import process from 'node:process';
+import fs from 'node:fs';
+import path from 'node:path';
+import YAML from 'yaml';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import {
@@ -13,8 +16,24 @@ import {
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
 
-// Parse command line arguments using yargs
+// Load config file (YAML) from repository root to set default option values
+let configOptions: Record<string, unknown> = {};
+for (const name of ['gen-pr.config.yml', 'gen-pr.config.yaml']) {
+  const cfgPath = path.resolve(process.cwd(), name);
+  if (fs.existsSync(cfgPath)) {
+    try {
+      configOptions = YAML.parse(fs.readFileSync(cfgPath, 'utf8')) as Record<string, unknown>;
+      console.info(`Loaded gen-pr config from ${name}`);
+    } catch (err) {
+      console.error(`Failed to parse config file ${name}:`, err);
+      process.exit(1);
+    }
+    break;
+  }
+}
+// Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
+  .config(configOptions)
   // Options same with the GitHub Actions workflow
   .option('issue-number', {
     alias: 'i',
