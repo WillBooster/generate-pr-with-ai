@@ -149,6 +149,8 @@ export interface IssueInfo {
   code_changes?: string;
   /** Referenced issues and pull requests */
   referenced_issues?: IssueInfo[];
+  /** The base branch of the pull request, if applicable */
+  base_branch?: string;
 }
 
 /**

@@ -6,6 +6,13 @@ import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from 
 import { stripHtmlComments } from './utils.js';
 import { yamlStringifyOptions } from './yaml.js';
 
+function removeToolLogs(text: string): string {
+  // This regex matches headers like "# Aider Log", "# Claude Code Log", etc.,
+  // and removes them along with all subsequent content in the string.
+  const logPattern = new RegExp(`^# (Aider|Claude Code|Codex CLI|Gemini CLI) Log[\\s\\S]*`, 'm');
+  return text.replace(logPattern, '').trim();
+}
+
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
   const processedIssues = new Set<number>();
   const issueInfo = await fetchIssueData(options.issueNumber, processedIssues);
@@ -42,10 +49,10 @@ async function fetchIssueData(
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: stripHtmlComments(issue.body),
+    description: removeToolLogs(stripHtmlComments(issue.body)),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: c.body,
+      body: removeToolLogs(c.body),
     })),
   };
 
@@ -56,6 +63,21 @@ async function fetchIssueData(
     });
     if (prDiff.trim()) {
       issueInfo.code_changes = processDiffContent(prDiff.trim());
+    }
+
+    // It's a PR, so fetch base branch name
+    const { stdout: prResult } = await runCommand(
+      'gh',
+      ['pr', 'view', issueNumber.toString(), '--json', 'baseRefName'],
+      { ignoreExitStatus: true }
+    );
+    if (prResult) {
+      try {
+        const prData: { baseRefName: string } = JSON.parse(prResult);
+        issueInfo.base_branch = prData.baseRefName;
+      } catch (error) {
+        console.warn(`Failed to parse PR details for #${issueNumber}:`, error);
+      }
     }
 
     // Fetch PR review comments
