@@ -3,7 +3,7 @@ import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
-import { stripHtmlComments } from './utils.js';
+import { stripHtmlComments, stripToolLogSections } from './utils.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
@@ -39,10 +39,12 @@ async function fetchIssueData(
   const allText = [issue.body, ...issue.comments.map((c) => c.body)].join('\n');
   const referencedNumbers = extractIssueReferences(allText);
 
+  const rawBody = stripHtmlComments(issue.body);
+  const description = issue.url?.includes('/pull/') ? stripToolLogSections(rawBody) : rawBody;
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: stripHtmlComments(issue.body),
+    description,
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
       body: c.body,
@@ -88,7 +90,7 @@ async function fetchIssueData(
             { codeCommented: codeContext, comment: rc.body },
             yamlStringifyOptions
           ).trim();
-          const yamlFence = findDistinctFence(reviewCommentYaml);
+          const yamlFence = findDistinctFence(reviewCommentYaml, '~');
           return {
             author: rc.user.login,
             body: `Review comment on \`${rc.path}:${rc.line}\`:

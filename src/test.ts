@@ -35,8 +35,8 @@ export async function testAndFix(options: MainOptions, resolutionPlan?: Resoluti
       break;
     }
 
-    const stdoutFence = findDistinctFence(testResult.stdout);
-    const stderrFence = findDistinctFence(testResult.stderr);
+    const stdoutFence = findDistinctFence(testResult.stdout, '~');
+    const stderrFence = findDistinctFence(testResult.stderr, '~');
     const prompt = `
 The previous changes were applied, but the test command \`${options.testCommand}\` failed.
 

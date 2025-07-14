@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { extractHeaderContents } from '../../src/markdown.js';
+import { extractHeaderContents, findDistinctFence } from '../../src/markdown.js';
 
 describe('extractHeaderContent', () => {
   test('should extract content between headers in correct order', () => {
@@ -194,5 +194,31 @@ More content
     const result = extractHeaderContents(response, headers);
 
     expect(result).toBeUndefined();
+  });
+});
+
+describe('findDistinctFence', () => {
+  test('should return minimum 3 characters when no fences found', () => {
+    expect(findDistinctFence('Some regular content', '`')).toBe('```');
+    expect(findDistinctFence('Some regular content', '~')).toBe('~~~');
+    expect(findDistinctFence('', '`')).toBe('```');
+    expect(findDistinctFence('', '~')).toBe('~~~');
+  });
+
+  test('should return one more than longest sequence found', () => {
+    expect(findDistinctFence('Content with ```code```', '`')).toBe('````');
+    expect(findDistinctFence('Content with ~~~code~~~', '~')).toBe('~~~~');
+    expect(findDistinctFence('Content with `````long`````', '`')).toBe('``````');
+    expect(findDistinctFence('Content with ~~~~~~~long~~~~~~~', '~')).toBe('~~~~~~~~');
+  });
+
+  test('should use longest sequence when multiple found', () => {
+    expect(findDistinctFence('```short``` and `````long`````', '`')).toBe('``````');
+    expect(findDistinctFence('~~~short~~~ and ~~~~~~~long~~~~~~~', '~')).toBe('~~~~~~~~');
+  });
+
+  test('should ignore other fence character', () => {
+    expect(findDistinctFence('Content with ~~~tildes~~~', '`')).toBe('```');
+    expect(findDistinctFence('Content with ```backticks```', '~')).toBe('~~~');
   });
 });

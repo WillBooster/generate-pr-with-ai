@@ -20,14 +20,12 @@ export function extractHeaderContents(text: string, headers: string[]): string[]
   });
 }
 
-export function findDistinctFence(content: string): string {
-  // Find the longest sequence of backticks in the content to ensure proper escaping
-  const backticksMatch = content.match(/```+/g);
-  const maxBackticks = backticksMatch ? Math.max(...backticksMatch.map((seq) => seq.length)) : 0;
-
-  // Use one more backtick than the maximum found to properly fence the code block
-  const fenceLength = Math.max(3, maxBackticks + 1);
-  return '`'.repeat(fenceLength);
+export function findDistinctFence(content: string, fenceChar: '`' | '~'): string {
+  const regex = new RegExp(`${fenceChar}{3,}`, 'g');
+  const matches = content.match(regex);
+  const maxLength = matches ? Math.max(...matches.map((seq) => seq.length)) : 0;
+  const fenceLength = Math.max(3, maxLength + 1);
+  return fenceChar.repeat(fenceLength);
 }
 
 export function trimCodeBlockFences(content: string): string {
