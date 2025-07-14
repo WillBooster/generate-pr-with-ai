@@ -130,19 +130,7 @@ ${planText}
   const branchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
   if (!options.dryRun) {
     // Determine base branch: target PR's base if sourcing from a PR
-    let baseBranchForSwitch: string | undefined;
-    {
-      const { stdout: prViewResult } = await runCommand(
-        'gh',
-        ['pr', 'view', options.issueNumber.toString(), '--json', 'baseRefName'],
-        { ignoreExitStatus: true }
-      );
-      try {
-        baseBranchForSwitch = prViewResult && JSON.parse(prViewResult).baseRefName;
-      } catch {
-        baseBranchForSwitch = undefined;
-      }
-    }
+    const baseBranchForSwitch = await determineBaseBranch(options.issueNumber);
     const switchArgs = ['switch', '-C', branchName];
     if (baseBranchForSwitch) {
       switchArgs.push(baseBranchForSwitch);
@@ -268,19 +256,7 @@ ${responseFence}`;
   if (!options.dryRun) {
     const repoName = getGitRepoName();
     // Determine base branch: target PR's base if sourcing from a PR
-    let baseBranch: string | undefined;
-    {
-      const { stdout: prViewResult } = await runCommand(
-        'gh',
-        ['pr', 'view', options.issueNumber.toString(), '--json', 'baseRefName'],
-        { ignoreExitStatus: true }
-      );
-      try {
-        baseBranch = prViewResult && JSON.parse(prViewResult).baseRefName;
-      } catch {
-        baseBranch = undefined;
-      }
-    }
+    const baseBranch = await determineBaseBranch(options.issueNumber);
     const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
     if (baseBranch) {
       prArgs.push('--base', baseBranch);
@@ -343,4 +319,22 @@ function buildToolCommandString(command: string, args: string[], prompt: string)
     return arg;
   });
   return `${command} ${escapedArgs.join(' ')}`;
+}
+
+/**
+ * Determines the base branch for a PR by checking if the issue number corresponds to a PR
+ * @param issueNumber The GitHub issue/PR number
+ * @returns The base branch name if the issue is a PR, undefined otherwise
+ */
+async function determineBaseBranch(issueNumber: number): Promise<string | undefined> {
+  const { stdout: prViewResult } = await runCommand(
+    'gh',
+    ['pr', 'view', issueNumber.toString(), '--json', 'baseRefName'],
+    { ignoreExitStatus: true }
+  );
+  try {
+    return prViewResult && JSON.parse(prViewResult).baseRefName;
+  } catch {
+    return undefined;
+  }
 }
