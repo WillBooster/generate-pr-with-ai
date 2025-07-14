@@ -15,14 +15,14 @@ const planningModel = core.getInput('planning-model', { required: false }) || co
 
 const twoStagePlanningInput = core.getInput('two-staged-planning', { required: false });
 const twoStagePlanning =
-  twoStagePlanningInput !== '' ? twoStagePlanningInput !== 'false' : config['two-staged-planning'] ?? true;
+  twoStagePlanningInput !== '' ? twoStagePlanningInput !== 'false' : (config['two-staged-planning'] ?? true);
 
 const reasoningEffort = (core.getInput('reasoning-effort', { required: false }) || config['reasoning-effort']) as
   | ReasoningEffort
   | undefined;
 
 const dryRunInput = core.getInput('dry-run', { required: false });
-const dryRun = dryRunInput !== '' ? dryRunInput === 'true' : config['dry-run'] ?? false;
+const dryRun = dryRunInput !== '' ? dryRunInput === 'true' : (config['dry-run'] ?? false);
 
 const codingTool = (core.getInput('coding-tool', { required: false }) ||
   config['coding-tool'] ||
@@ -44,7 +44,7 @@ const testCommand = core.getInput('test-command', { required: false }) || config
 const maxTestAttemptsInput = core.getInput('max-test-attempts', { required: false });
 const maxTestAttempts = maxTestAttemptsInput
   ? Number.parseInt(maxTestAttemptsInput, 10)
-  : config['max-test-attempts'] ?? DEFAULT_MAX_TEST_ATTEMPTS;
+  : (config['max-test-attempts'] ?? DEFAULT_MAX_TEST_ATTEMPTS);
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(

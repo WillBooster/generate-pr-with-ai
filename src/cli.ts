@@ -1,6 +1,7 @@
 import process from 'node:process';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
+import { loadConfig } from './config.js';
 import {
   DEFAULT_AIDER_EXTRA_ARGS,
   DEFAULT_CLAUDE_CODE_EXTRA_ARGS,
@@ -10,7 +11,6 @@ import {
   DEFAULT_MAX_TEST_ATTEMPTS,
   DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
-import { loadConfig } from './config.js';
 import { main } from './main.js';
 import type { CodingTool, ReasoningEffort } from './types.js';
 
