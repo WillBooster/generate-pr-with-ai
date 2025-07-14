@@ -131,11 +131,9 @@ ${planText}
   let baseBranchForNewPR = currentBranch;
   if (!options.dryRun) {
     try {
-      const prView = await runCommand(
-        'gh',
-        ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
-        { ignoreExitStatus: true }
-      );
+      const prView = await runCommand('gh', ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'], {
+        ignoreExitStatus: true,
+      });
       if (prView.stdout) {
         const { headRefName } = JSON.parse(prView.stdout);
         // Fetch and switch to the PR's head branch as base
