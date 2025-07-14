@@ -21,13 +21,36 @@ export function extractHeaderContents(text: string, headers: string[]): string[]
 }
 
 export function findDistinctFence(content: string): string {
-  // Find the longest sequence of backticks in the content to ensure proper escaping
+  // Find the longest sequence of backticks and tildes in the content
   const backticksMatch = content.match(/```+/g);
-  const maxBackticks = backticksMatch ? Math.max(...backticksMatch.map((seq) => seq.length)) : 0;
+  const tildesMatch = content.match(/~~~+/g);
 
-  // Use one more backtick than the maximum found to properly fence the code block
-  const fenceLength = Math.max(3, maxBackticks + 1);
-  return '`'.repeat(fenceLength);
+  const maxBackticks = backticksMatch ? Math.max(...backticksMatch.map((seq) => seq.length)) : 0;
+  const maxTildes = tildesMatch ? Math.max(...tildesMatch.map((seq) => seq.length)) : 0;
+
+  // Determine which fence character to use
+  if (maxBackticks === 0 && maxTildes === 0) {
+    // No fences found, default to backticks
+    return '```';
+  } else if (maxBackticks === 0) {
+    // Only tildes found, use backticks
+    const fenceLength = Math.max(3, maxTildes + 1);
+    return '`'.repeat(fenceLength);
+  } else if (maxTildes === 0) {
+    // Only backticks found, use tildes
+    const fenceLength = Math.max(3, maxBackticks + 1);
+    return '~'.repeat(fenceLength);
+  } else {
+    // Both found, use the one that requires fewer characters
+    const backticksNeeded = Math.max(3, maxBackticks + 1);
+    const tildesNeeded = Math.max(3, maxTildes + 1);
+
+    if (tildesNeeded <= backticksNeeded) {
+      return '~'.repeat(tildesNeeded);
+    } else {
+      return '`'.repeat(backticksNeeded);
+    }
+  }
 }
 
 export function trimCodeBlockFences(content: string): string {
