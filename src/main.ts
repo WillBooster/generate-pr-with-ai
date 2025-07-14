@@ -123,13 +123,30 @@ ${planText}
 
   const now = new Date();
 
+  // Determine if targeting a pull request to use its head branch as base
+  let targetPrHeadBranch: string | undefined;
+  if (issueInfo.code_changes !== undefined) {
+    const prViewResult = await runCommand(
+      'gh',
+      ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
+      { stdio: 'pipe' }
+    );
+    const { headRefName } = JSON.parse(prViewResult.stdout);
+    targetPrHeadBranch = headRefName;
+  }
   // Get current branch name before creating new branch
   const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
   const currentBranch = currentBranchResult.stdout.trim();
 
   const branchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
   if (!options.dryRun) {
-    await runCommand('git', ['switch', '-C', branchName]);
+    if (targetPrHeadBranch) {
+      // Fetch the PR head branch and create new branch from it
+      await runCommand('git', ['fetch', 'origin', targetPrHeadBranch], { ignoreExitStatus: true });
+      await runCommand('git', ['switch', '-C', branchName, targetPrHeadBranch]);
+    } else {
+      await runCommand('git', ['switch', '-C', branchName]);
+    }
   } else {
     console.info(ansis.yellow(`Would create branch: ${branchName}`));
   }
@@ -236,27 +253,21 @@ ${planText}
 
 ${truncateText(planText, (planText.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
 `;
-  if (assistantResponse) {
-    const responseFence = findDistinctFence(assistantResponse);
-    prBody += `
-# ${toolName} Log
-
-${responseFence}
-${truncateText(assistantResponse, (assistantResponse.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
-${responseFence}`;
-  }
   prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    await runCommand('gh', ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName]);
+    const ghArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+    if (targetPrHeadBranch) {
+      ghArgs.push('--base', targetPrHeadBranch);
+    }
+    await runCommand('gh', ghArgs);
   } else {
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
-    console.info(
-      ansis.yellow(
-        `PR body would include the ${toolName.toLowerCase()} response and close issue #${options.issueNumber}`
-      )
-    );
+    console.info(ansis.yellow(`PR body would close issue #${options.issueNumber}`));
+    if (targetPrHeadBranch) {
+      console.info(ansis.yellow(`Would use base branch: ${targetPrHeadBranch}`));
+    }
   }
 
   console.info(`\nIssue #${options.issueNumber} processed successfully.`);
