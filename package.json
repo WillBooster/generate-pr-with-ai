@@ -47,7 +47,7 @@
     "ai": "5.0.0-beta.14",
     "ai-v4": "npm:ai@4.3.17",
     "ansis": "4.1.0",
-    "build-ts": "15.0.12",
+    "build-ts": "15.0.13",
     "conventional-changelog-conventionalcommits": "9.1.0",
     "dotenv": "17.2.0",
     "lefthook": "1.12.2",

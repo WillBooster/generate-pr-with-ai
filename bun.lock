@@ -23,7 +23,7 @@
         "ai": "5.0.0-beta.14",
         "ai-v4": "npm:ai@4.3.17",
         "ansis": "4.1.0",
-        "build-ts": "15.0.12",
+        "build-ts": "15.0.13",
         "conventional-changelog-conventionalcommits": "9.1.0",
         "dotenv": "17.2.0",
         "lefthook": "1.12.2",
@@ -537,7 +537,7 @@
 
     "@willbooster/prettier-config": ["@willbooster/prettier-config@10.2.0", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-ImWWldMbKujMwg4Kt4UzWank+9YIBgXrkGIo3o0EqgB984t7Dk1qiycbXWVdKARz7L4Y+9hyX6MrB6YLnjJARg=="],
 
-    "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@7.0.1", "", { "dependencies": { "dotenv": "17.0.1", "tree-kill": "1.2.2" } }, "sha512-gC/mCWkmYKeqrEaiNasu4FbnnMuae2BcSu52YE5KuAkAi/2anNlYhfEPd3JfgmOX6asOFaAg61Z0J0tkoWE6WQ=="],
+    "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@7.0.2", "", { "dependencies": { "dotenv": "17.2.0", "tree-kill": "1.2.2" } }, "sha512-cGe1wJyKMszDCZjgrdLE60nEyIfpqbAf8x9JcvAY65TmL2RuTtvFu476KI9xl7tFf8gHiey2pfMBYM27lynqTA=="],
 
     "@willbooster/wb": ["@willbooster/wb@9.0.2", "", { "dependencies": { "chalk": "5.4.1", "dotenv": "17.2.0", "globby": "14.1.0", "kill-port": "2.0.1", "minimal-promise-pool": "5.0.0", "tree-kill": "1.2.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-3Xw7SAzGdslrLSYV40QFMhuVoo8Uplk0Q+lu6glMYKWSL66ZLwrrerK42RrWReme0D7c6Qc3BAE9ilg7v4SxrA=="],
 
@@ -597,7 +597,7 @@
 
     "buffer-from": ["buffer-from@1.1.2", "", {}, "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ=="],
 
-    "build-ts": ["build-ts@15.0.12", "", { "dependencies": { "@babel/core": "7.28.0", "@babel/plugin-proposal-decorators": "7.28.0", "@babel/plugin-proposal-explicit-resource-management": "7.27.4", "@babel/plugin-syntax-import-attributes": "7.27.1", "@babel/plugin-transform-runtime": "7.28.0", "@babel/preset-env": "7.28.0", "@babel/preset-react": "7.27.1", "@babel/preset-typescript": "7.27.1", "@rollup/plugin-babel": "6.0.4", "@rollup/plugin-commonjs": "28.0.6", "@rollup/plugin-json": "6.1.0", "@rollup/plugin-node-resolve": "16.0.1", "@rollup/plugin-replace": "6.0.2", "@rollup/plugin-terser": "0.4.4", "@rollup/pluginutils": "5.2.0", "@willbooster/shared-lib-node": "7.0.1", "babel-plugin-polyfill-corejs3": "0.13.0", "babel-plugin-transform-remove-console": "6.9.4", "chalk": "5.4.1", "core-js": "3.44.0", "core-js-pure": "3.44.0", "date-time": "4.0.0", "pretty-ms": "9.2.0", "rollup": "4.45.0", "rollup-plugin-analyzer": "4.0.0", "rollup-plugin-keep-import": "1.0.3", "rollup-plugin-node-externals": "8.0.1", "rollup-plugin-preserve-directives": "0.4.0", "rollup-plugin-string": "3.0.0", "rollup-plugin-ts": "3.4.5", "signal-exit": "4.1.0", "tsx": "4.20.3", "typescript": "5.8.3", "yargs": "18.0.0" }, "bin": { "build-ts": "bin/index.js" } }, "sha512-olXZRGTKcTGuLMdRRRp9UoF4QSbkuHhoKzB4QOlUG80sw8nL9MGEbdShC9usc9mldq9AGGvgHxFj1tc7teZ7/A=="],
+    "build-ts": ["build-ts@15.0.13", "", { "dependencies": { "@babel/core": "7.28.0", "@babel/plugin-proposal-decorators": "7.28.0", "@babel/plugin-proposal-explicit-resource-management": "7.27.4", "@babel/plugin-syntax-import-attributes": "7.27.1", "@babel/plugin-transform-runtime": "7.28.0", "@babel/preset-env": "7.28.0", "@babel/preset-react": "7.27.1", "@babel/preset-typescript": "7.27.1", "@rollup/plugin-babel": "6.0.4", "@rollup/plugin-commonjs": "28.0.6", "@rollup/plugin-json": "6.1.0", "@rollup/plugin-node-resolve": "16.0.1", "@rollup/plugin-replace": "6.0.2", "@rollup/plugin-terser": "0.4.4", "@rollup/pluginutils": "5.2.0", "@willbooster/shared-lib-node": "7.0.2", "babel-plugin-polyfill-corejs3": "0.13.0", "babel-plugin-transform-remove-console": "6.9.4", "chalk": "5.4.1", "core-js": "3.44.0", "core-js-pure": "3.44.0", "date-time": "4.0.0", "pretty-ms": "9.2.0", "rollup": "4.45.0", "rollup-plugin-analyzer": "4.0.0", "rollup-plugin-keep-import": "1.0.3", "rollup-plugin-node-externals": "8.0.1", "rollup-plugin-preserve-directives": "0.4.0", "rollup-plugin-string": "3.0.0", "rollup-plugin-ts": "3.4.5", "signal-exit": "4.1.0", "tsx": "4.20.3", "typescript": "5.8.3", "yargs": "18.0.0" }, "bin": { "build-ts": "bin/index.js" } }, "sha512-utZ+cmM4k0yDhtipWxsQtyWhl+yXCNnOelWGXlBnpMMuV0NI+QKkj81lPg483MC8E775NaCBgksLaekXV/EZ1w=="],
 
     "bun-types": ["bun-types@1.2.18", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-04+Eha5NP7Z0A9YgDAzMk5PHR16ZuLVa83b26kH5+cp1qZW4F6FmAURngE7INf4tKOvCE69vYvDEwoNl1tGiWw=="],
 
@@ -1294,8 +1294,6 @@
     "@pnpm/network.ca-file/graceful-fs": ["graceful-fs@4.2.10", "", {}, "sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA=="],
 
     "@semantic-release/release-notes-generator/get-stream": ["get-stream@7.0.1", "", {}, "sha512-3M8C1EOFN6r8AMUhwUAACIoXZJEOufDU5+0gFFN5uNs6XYOralD2Pqkl7m046va6x77FwposWXbAhPPIOus7mQ=="],
-
-    "@willbooster/shared-lib-node/dotenv": ["dotenv@17.0.1", "", {}, "sha512-GLjkduuAL7IMJg/ZnOPm9AnWKJ82mSE2tzXLaJ/6hD6DhwGfZaXG77oB8qbReyiczNxnbxQKyh0OE5mXq0bAHA=="],
 
     "ai-v4/@ai-sdk/provider": ["@ai-sdk/provider@1.1.3", "", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-qZMxYJ0qqX/RfnuIaab+zp8UAeJn/ygXXAffR5I4N0n1IrvA6qBsjc8hXLmBiMV2zoXlifkacF7sEFnYnjBcqg=="],
 
