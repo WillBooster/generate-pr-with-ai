@@ -2,7 +2,7 @@ name: Merge wbfy
 on:
   workflow_dispatch:
   schedule:
-    - cron: 31 18,19 * * *
+    - cron: 52 17,18 * * *
 jobs:
   wbfy-merge:
     uses: WillBooster/reusable-workflows/.github/workflows/wbfy-merge.yml@main
