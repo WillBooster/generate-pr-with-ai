@@ -53,10 +53,10 @@
     "lefthook": "1.12.2",
     "ollama-ai-provider-v2": "0.0.8",
     "prettier": "3.6.2",
-    "prettier-plugin-java": "2.7.3",
+    "prettier-plugin-java": "2.7.4",
     "semantic-release": "24.2.7",
     "sort-package-json": "3.4.0",
-    "typescript": "5.8.3",
+    "typescript": "5.9.2",
     "yaml": "2.8.0",
     "yargs": "18.0.0"
   },
