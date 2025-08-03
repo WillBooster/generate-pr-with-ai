@@ -19,7 +19,7 @@
         "@types/yargs": "17.0.33",
         "@willbooster/biome-config": "3.2.0",
         "@willbooster/prettier-config": "10.2.0",
-        "@willbooster/wb": "9.0.3",
+        "@willbooster/wb": "9.0.4",
         "ai": "5.0.0-beta.14",
         "ai-v4": "npm:ai@4.3.17",
         "ansis": "4.1.0",
@@ -539,7 +539,7 @@
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@7.0.3", "", { "dependencies": { "dotenv": "17.2.1", "tree-kill": "1.2.2" } }, "sha512-vFjvBcp05I3n1l6+fbcVUjcGhBypnSXo/c2TsiA3RYzFYtXm3dfAJ09bJg0J+udb+fVjJxHvARQMyZsz/IQeHw=="],
 
-    "@willbooster/wb": ["@willbooster/wb@9.0.3", "", { "dependencies": { "chalk": "5.4.1", "dotenv": "17.2.1", "globby": "14.1.0", "kill-port": "2.0.1", "minimal-promise-pool": "5.0.0", "tree-kill": "1.2.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-O3llP6YrmDQ7IacbvvS4aTeqcZPo1B/zn57Gu8UhAlAsRNOPwixPJADJ4bvGRG+kvieLLqtSYo6PLY3yiwN/XQ=="],
+    "@willbooster/wb": ["@willbooster/wb@9.0.4", "", { "dependencies": { "chalk": "5.4.1", "dotenv": "17.2.1", "globby": "14.1.0", "kill-port": "2.0.1", "minimal-promise-pool": "5.0.0", "tree-kill": "1.2.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-mqTECqYIK3M4b5ki7uVgDCMZXxJu6ow2OHrW6dmeBhbaqjIUE1e/VUlCv0hKgQ3l7F2b4owg3jAMoedeYX/G2w=="],
 
     "acorn": ["acorn@8.15.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg=="],
 
@@ -1265,7 +1265,7 @@
 
     "yoctocolors": ["yoctocolors@2.1.1", "", {}, "sha512-GQHQqAopRhwU8Kt1DDM8NjibDXHC8eoh1erhGAJPEyveY9qqVeXvVikNKrDz69sHowPMorbPUrH/mx8c50eiBQ=="],
 
-    "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
+    "zod": ["zod@4.0.14", "", {}, "sha512-nGFJTnJN6cM2v9kXL+SOBq3AtjQby3Mv5ySGFof5UGRHrRioSJ5iG680cYNjE/yWk671nROcpPj4hAS8nyLhSw=="],
 
     "zod-to-json-schema": ["zod-to-json-schema@3.24.6", "", { "peerDependencies": { "zod": "^3.24.1" } }, "sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg=="],
 
