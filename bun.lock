@@ -651,7 +651,7 @@
 
     "core-js": ["core-js@3.44.0", "", {}, "sha512-aFCtd4l6GvAXwVEh3XbbVqJGHDJt0OZRa+5ePGx3LLwi12WfexqQxcsohb2wgsa/92xtl19Hd66G/L+TaAxDMw=="],
 
-    "core-js-compat": ["core-js-compat@3.44.0", "", { "dependencies": { "browserslist": "^4.25.1" } }, "sha512-JepmAj2zfl6ogy34qfWtcE7nHKAJnKsQFRn++scjVS2bZFllwptzw61BZcZFYBPpUznLfAvh0LGhxKppk04ClA=="],
+    "core-js-compat": ["core-js-compat@3.45.0", "", { "dependencies": { "browserslist": "^4.25.1" } }, "sha512-gRoVMBawZg0OnxaVv3zpqLLxaHmsubEGyTnqdpI/CEBvX4JadI1dMSHxagThprYRtSVbuQxvi6iUatdPxohHpA=="],
 
     "core-js-pure": ["core-js-pure@3.44.0", "", {}, "sha512-gvMQAGB4dfVUxpYD0k3Fq8J+n5bB6Ytl15lqlZrOIXFzxOhtPaObfkQGHtMRdyjIf7z2IeNULwi1jEwyS+ltKQ=="],
 
@@ -693,7 +693,7 @@
 
     "ecdsa-sig-formatter": ["ecdsa-sig-formatter@1.0.11", "", { "dependencies": { "safe-buffer": "^5.0.1" } }, "sha512-nagl3RYrbNv6kQkeJIpt6NJZy8twLB/2vtz6yN9Z4vRKHN4/QZJIEbqohALSgwKdnksuY3k5Addp5lg8sVoVcQ=="],
 
-    "electron-to-chromium": ["electron-to-chromium@1.5.194", "", {}, "sha512-SdnWJwSUot04UR51I2oPD8kuP2VI37/CADR1OHsFOUzZIvfWJBO6q11k5P/uKNyTT3cdOsnyjkrZ+DDShqYqJA=="],
+    "electron-to-chromium": ["electron-to-chromium@1.5.195", "", {}, "sha512-URclP0iIaDUzqcAyV1v2PgduJ9N0IdXmWsnPzPfelvBmjmZzEy6xJcjb1cXj+TbYqXgtLrjHEoaSIdTYhw4ezg=="],
 
     "emoji-regex": ["emoji-regex@10.4.0", "", {}, "sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw=="],
 
