@@ -249,18 +249,18 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    // Determine base branch: target PR's base if sourcing from a PR
+    // Attempt to determine the base branch by fetching the headRefName of the target PR
     let baseBranch: string | undefined;
     {
       const { stdout: prViewResult } = await runCommand(
         'gh',
-        ['pr', 'view', options.issueNumber.toString(), '--json', 'baseRefName'],
+        ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
         { ignoreExitStatus: true }
       );
       try {
-        baseBranch = prViewResult && JSON.parse(prViewResult).baseRefName;
+        baseBranch = prViewResult && JSON.parse(prViewResult).headRefName;
       } catch {
-        baseBranch = undefined;
+        // do nothing
       }
     }
     const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
