@@ -50,6 +50,20 @@ export interface MainOptions {
 
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
 
+async function getBaseBranch(options: MainOptions) {
+  const { stdout: prViewResult } = await runCommand(
+    'gh',
+    ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
+    { ignoreExitStatus: true }
+  );
+  try {
+    return prViewResult && JSON.parse(prViewResult).headRefName;
+  } catch {
+    const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
+    return currentBranchResult.stdout.trim();
+  }
+}
+
 export async function main(options: MainOptions): Promise<void> {
   configureEnvVars();
 
@@ -249,21 +263,7 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    // Attempt to determine the head branch
-    let baseBranch: string | undefined;
-    {
-      const { stdout: prViewResult } = await runCommand(
-        'gh',
-        ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
-        { ignoreExitStatus: true }
-      );
-      try {
-        baseBranch = prViewResult && JSON.parse(prViewResult).headRefName;
-      } catch {
-        const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
-        baseBranch = currentBranchResult.stdout.trim();
-      }
-    }
+    const baseBranch = await getBaseBranch(options);
     const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
     if (baseBranch) {
       prArgs.push('--base', baseBranch);
