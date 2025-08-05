@@ -321,12 +321,7 @@ function buildToolCommandString(command: string, args: string[], prompt: string)
   return `${command} ${escapedArgs.join(' ')}`;
 }
 
-/**
- * Determines the base branch for a PR by checking if the issue number corresponds to a PR
- * @param issueNumber The GitHub issue/PR number
- * @returns The base branch name if the issue is a PR, undefined otherwise
- */
-async function determineBaseBranch(issueNumber: number): Promise<string | undefined> {
+async function determineBaseBranch(issueNumber: number): Promise<string> {
   const { stdout: prViewResult } = await runCommand(
     'gh',
     ['pr', 'view', issueNumber.toString(), '--json', 'baseRefName'],
@@ -335,6 +330,7 @@ async function determineBaseBranch(issueNumber: number): Promise<string | undefi
   try {
     return prViewResult && JSON.parse(prViewResult).baseRefName;
   } catch {
-    return undefined;
+    const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
+    return currentBranchResult.stdout.trim();
   }
 }

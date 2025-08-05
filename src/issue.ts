@@ -27,7 +27,7 @@ async function fetchIssueData(
 
   const { stdout: issueResult } = await runCommand(
     'gh',
-    ['issue', 'view', issueNumber.toString(), '--json', 'author,title,body,labels,comments,url'],
+    ['issue', 'view', issueNumber.toString(), '--json', 'author,title,body,labels,comments,url,baseRefName'],
     { ignoreExitStatus: true }
   );
   if (!issueResult) {
