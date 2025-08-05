@@ -309,18 +309,7 @@ function getHeaderOfFirstCommit(baseBranch: string): string {
     encoding: 'utf8',
     stdio: 'pipe',
   });
-  const firstCommitHeader = firstCommitResult.stdout.trim().split('\n')[0];
-
-  // Fall back to current branch name if no commit header found
-  if (!firstCommitHeader || firstCommitResult.status !== 0) {
-    const currentBranchResult = child_process.spawnSync('git', ['branch', '--show-current'], {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    });
-    return currentBranchResult.stdout.trim();
-  }
-
-  return firstCommitHeader;
+  return firstCommitResult.stdout.trim().split('\n')[0];
 }
 
 /**
