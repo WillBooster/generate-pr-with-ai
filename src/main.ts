@@ -249,7 +249,7 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    // Attempt to determine the base branch by fetching the headRefName of the target PR
+    // Attempt to determine the head branch
     let baseBranch: string | undefined;
     {
       const { stdout: prViewResult } = await runCommand(
