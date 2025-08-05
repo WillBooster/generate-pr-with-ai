@@ -260,7 +260,8 @@ ${responseFence}`;
       try {
         baseBranch = prViewResult && JSON.parse(prViewResult).headRefName;
       } catch {
-        // do nothing
+        const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
+        baseBranch = currentBranchResult.stdout.trim();
       }
     }
     const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
