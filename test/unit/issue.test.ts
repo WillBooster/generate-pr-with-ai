@@ -258,7 +258,7 @@ describe('createIssueInfo', () => {
       expect(reviewComment).toBeDefined();
       expect(reviewComment?.author).toBe('exKAZUu');
       expect(reviewComment?.body).toContain('Review comment on `src/main.ts:54`');
-      expect(reviewComment?.body).toContain('```yaml');
+      expect(reviewComment?.body).toContain('~~~yaml');
       expect(reviewComment?.body).toContain("codeCommented: +  console.log('Hi');");
       expect(reviewComment?.body).toContain('comment: Use Hello');
 
