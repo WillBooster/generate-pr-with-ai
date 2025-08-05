@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import process from 'node:process';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -102,7 +104,16 @@ const argv = await yargs(hideBin(process.argv))
     type: 'string',
   })
   // ----------------------------------------------------------
+  .version(getVersion())
   .help().argv;
+
+function getVersion(): string {
+  let packageJsonDir = import.meta.dir || path.dirname(new URL(import.meta.url).pathname);
+  while (!fs.existsSync(path.join(packageJsonDir, 'package.json'))) {
+    packageJsonDir = path.dirname(packageJsonDir);
+  }
+  return JSON.parse(fs.readFileSync(path.join(packageJsonDir, 'package.json'), 'utf8')).version;
+}
 
 if (argv['working-dir']) {
   process.chdir(argv['working-dir']);
