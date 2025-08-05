@@ -50,18 +50,22 @@ export interface MainOptions {
 
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
 
-async function getBaseBranch(options: MainOptions) {
+async function getBaseBranch(options: MainOptions): Promise<{ baseBranch: string; isPullRequest: boolean }> {
   const { stdout: prViewResult } = await runCommand(
     'gh',
     ['pr', 'view', options.issueNumber.toString(), '--json', 'headRefName'],
     { ignoreExitStatus: true }
   );
   try {
-    return prViewResult && JSON.parse(prViewResult).headRefName;
+    if (prViewResult) {
+      const prData = JSON.parse(prViewResult);
+      return { baseBranch: prData.headRefName, isPullRequest: true };
+    }
   } catch {
-    const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
-    return currentBranchResult.stdout.trim();
+    // Not a PR or error parsing
   }
+  const currentBranchResult = await runCommand('git', ['branch', '--show-current']);
+  return { baseBranch: currentBranchResult.stdout.trim(), isPullRequest: false };
 }
 
 export async function main(options: MainOptions): Promise<void> {
@@ -98,6 +102,9 @@ export async function main(options: MainOptions): Promise<void> {
     }
   }
 
+  // Check if this is a PR early to pass the info to other functions
+  const { isPullRequest } = await getBaseBranch(options);
+
   const issueInfo = await createIssueInfo(options);
   const issueText = YAML.stringify(issueInfo, yamlStringifyOptions).trim();
 
@@ -108,7 +115,8 @@ export async function main(options: MainOptions): Promise<void> {
         issueText,
         options.twoStagePlanning,
         options.reasoningEffort,
-        options.repomixExtraArgs
+        options.repomixExtraArgs,
+        isPullRequest
       ))) ||
     undefined;
   console.info('Resolution plan:', resolutionPlan);
@@ -123,10 +131,12 @@ ${resolutionPlan.plan}
       : '';
   const issueFence = findDistinctFence(issueText, '~');
   const isAgentic = options.codingTool !== 'aider';
+  const itemType = isPullRequest ? 'pull request' : 'issue';
+  const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when making your changes.' : '';
   const prompt = `
-Modify the code to resolve the following GitHub issue${planText ? ' based on the plan' : ''}.${isAgentic ? ' After that, commit your changes with a message, following the Conventional Commits specification.' : ''}
+Modify the code to resolve the following GitHub ${itemType}${planText ? ' based on the plan' : ''}.${extraInstruction}${isAgentic ? ' After that, commit your changes with a message, following the Conventional Commits specification.' : ''}
 
-# Issue
+# ${isPullRequest ? 'Pull Request' : 'Issue'}
 
 ${issueFence}yml
 ${issueText}
@@ -263,7 +273,7 @@ ${responseFence}`;
 
   if (!options.dryRun) {
     const repoName = getGitRepoName();
-    const baseBranch = await getBaseBranch(options);
+    const { baseBranch } = await getBaseBranch(options);
     const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
     if (baseBranch) {
       prArgs.push('--base', baseBranch);
@@ -273,12 +283,12 @@ ${responseFence}`;
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
     console.info(
       ansis.yellow(
-        `PR body would include the ${toolName.toLowerCase()} response and close issue #${options.issueNumber}`
+        `PR body would include the ${toolName.toLowerCase()} response and close ${itemType} #${options.issueNumber}`
       )
     );
   }
 
-  console.info(`\nIssue #${options.issueNumber} processed successfully.`);
+  console.info(`\n${isPullRequest ? 'Pull request' : 'Issue'} #${options.issueNumber} processed successfully.`);
 }
 
 async function reshimToDetectNewTools() {

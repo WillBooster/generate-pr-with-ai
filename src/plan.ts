@@ -26,7 +26,8 @@ export async function planCodeChanges(
   issueContent: string,
   twoStagePlanning: boolean,
   reasoningEffort?: ReasoningEffort,
-  repomixExtraArgs?: string
+  repomixExtraArgs?: string,
+  isPullRequest = false
 ): Promise<ResolutionPlan> {
   const issueFence = findDistinctFence(issueContent, '~');
   const issueYamlText = `${issueFence}yaml
@@ -48,7 +49,7 @@ ${issueFence}`;
       [
         {
           role: 'system',
-          content: buildPromptForSelectingFiles(issueYamlText).trim(),
+          content: buildPromptForSelectingFiles(issueYamlText, isPullRequest).trim(),
         },
         {
           role: 'user',
@@ -90,7 +91,7 @@ ${fence}`;
       [
         {
           role: 'system',
-          content: buildPromptForPlanningCodeChanges(issueYamlText),
+          content: buildPromptForPlanningCodeChanges(issueYamlText, isPullRequest),
         },
         {
           role: 'user',
@@ -117,7 +118,7 @@ ${fence}`;
     [
       {
         role: 'system',
-        content: buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText).trim(),
+        content: buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText, isPullRequest).trim(),
       },
       {
         role: 'user',
@@ -145,16 +146,18 @@ ${fence}`;
   return { plan, commitMessage: commitMessage?.trim(), filePaths: filePathsToBeModified };
 }
 
-function buildPromptForSelectingFiles(issueYamlText: string): string {
+function buildPromptForSelectingFiles(issueYamlText: string, isPullRequest = false): string {
+  const itemType = isPullRequest ? 'pull request' : 'issue';
+  const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when identifying files.' : '';
   return `
-You are an expert software developer tasked with analyzing GitHub issues and identifying relevant files for code changes.
+You are an expert software developer tasked with analyzing GitHub ${itemType}s and identifying relevant files for code changes.
 
-Review the following GitHub issue and the list of available file paths and their contents (which will be provided in a separate message).
+Review the following GitHub ${itemType} and the list of available file paths and their contents (which will be provided in a separate message).${extraInstruction}
 Your task is to identify:
-1. Files that need to be MODIFIED to resolve the issue
+1. Files that need to be MODIFIED to resolve the ${itemType}
 2. Files that should be REFERRED to (but not modified) to understand the codebase better
 
-GitHub Issue:
+GitHub ${isPullRequest ? 'Pull Request' : 'Issue'}:
 ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
@@ -174,12 +177,14 @@ ${HEADING_OF_FILE_PATHS_TO_BE_REFERRED}
 `;
 }
 
-function buildPromptForPlanningCodeChanges(issueYamlText: string): string {
+function buildPromptForPlanningCodeChanges(issueYamlText: string, isPullRequest = false): string {
+  const itemType = isPullRequest ? 'pull request' : 'issue';
+  const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when creating the plan.' : '';
   return `
-You are an expert software developer tasked with creating implementation plans based on GitHub issues.
+You are an expert software developer tasked with creating implementation plans based on GitHub ${itemType}s.
 
-Review the following GitHub issue and the provided file contents (which will be provided in a separate message).
-Create a detailed, step-by-step plan outlining how to address the issue effectively.
+Review the following GitHub ${itemType} and the provided file contents (which will be provided in a separate message).${extraInstruction}
+Create a detailed, step-by-step plan outlining how to address the ${itemType} effectively.
 Also, provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
 
 Your plan should:
@@ -188,7 +193,7 @@ Your plan should:
 - Prefer showing diffs rather than complete file contents when describing changes
 - Exclude testing procedures unless users explicitly request
 
-GitHub Issue:
+GitHub ${isPullRequest ? 'Pull Request' : 'Issue'}:
 ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
@@ -206,14 +211,16 @@ ${HEADING_OF_COMMIT_MESSAGE}
 `.trim();
 }
 
-function buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText: string): string {
+function buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText: string, isPullRequest = false): string {
+  const itemType = isPullRequest ? 'pull request' : 'issue';
+  const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when creating the plan.' : '';
   return `
-You are an expert software developer tasked with analyzing GitHub issues and creating implementation plans.
+You are an expert software developer tasked with analyzing GitHub ${itemType}s and creating implementation plans.
 
-Review the following GitHub issue and the list of available file paths and their contents (which will be provided in a separate message).
+Review the following GitHub ${itemType} and the list of available file paths and their contents (which will be provided in a separate message).${extraInstruction}
 Your task is to:
-1. Create a detailed, step-by-step plan outlining how to resolve the issue effectively.
-2. Identify files that need to be modified to resolve the issue.
+1. Create a detailed, step-by-step plan outlining how to resolve the ${itemType} effectively.
+2. Identify files that need to be modified to resolve the ${itemType}.
 3. Provide a concise and descriptive commit message for the changes, following the Conventional Commits specification.
 
 Your plan should:
@@ -222,7 +229,7 @@ Your plan should:
 - Prefer showing diffs rather than complete file contents when describing changes
 - Exclude testing procedures as those will be handled separately
 
-GitHub Issue:
+GitHub ${isPullRequest ? 'Pull Request' : 'Issue'}:
 ${issueYamlText}
 
 Please format your response without any explanatory text as follows:
