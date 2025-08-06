@@ -1,5 +1,4 @@
 name: Generate PR with Claude Code
-
 on:
   issues:
     types:
@@ -7,15 +6,13 @@ on:
   pull_request:
     types:
       - labeled
-
 jobs:
   test:
     if: contains(github.event.label.name, 'gen-pr-all') || contains(github.event.label.name, 'gen-pr-claude')
     uses: WillBooster/reusable-workflows/.github/workflows/gen-pr.yml@main
     with:
-      github_hosted_runner: true
-      issue-number: ${{ github.event.issue.number || github.event.number }}
       coding-tool: claude-code
+      issue-number: ${{ github.event.issue.number || github.event.number }}
     env:
       GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
