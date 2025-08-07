@@ -8,12 +8,6 @@ import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 
 export async function testAndFix(options: MainOptions, resolutionPlan?: ResolutionPlan): Promise<string> {
-  if (options.dryRun) {
-    console.info(ansis.yellow(`Would run test command: ${options.testCommand}`));
-    console.info(ansis.yellow('Test and fix process skipped in dry-run mode'));
-    return '\n\n## Test and fix skipped in dry-run mode';
-  }
-
   const maxAttempts = options.maxTestAttempts;
   let attempts = 0;
   let fixResult = '';
@@ -77,14 +71,6 @@ export async function runToolFix(
   const toolName =
     options.codingTool === 'aider' ? 'Aider' : options.codingTool === 'claude-code' ? 'Claude Code' : 'Codex';
   let assistantResult: string;
-
-  // Print prompts in dry mode (though this function shouldn't be called in dry mode)
-  if (options.dryRun) {
-    console.info(`\n=== DRY MODE: ${toolName} Fix Prompt ===`);
-    console.info(prompt);
-    console.info(`=== End ${toolName} Fix Prompt ===\n`);
-    return `Dry run mode - ${toolName} fix call skipped`;
-  }
 
   if (options.codingTool === 'aider') {
     const aiderArgs = buildAiderArgs(options, { prompt, resolutionPlan });

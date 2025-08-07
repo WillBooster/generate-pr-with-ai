@@ -104,8 +104,7 @@ export async function main(options: MainOptions): Promise<void> {
         options.twoStagePlanning,
         options.reasoningEffort,
         options.repomixExtraArgs,
-        isPullRequest,
-        options.dryRun
+        isPullRequest
       ))) ||
     undefined;
   console.info('Resolution plan:', resolutionPlan);
@@ -213,7 +212,11 @@ ${planText}`
 
   let toolResponse = toolResult.trim();
   if (options.testCommand) {
-    toolResponse += await testAndFix(options, resolutionPlan);
+    if (!options.dryRun) {
+      toolResponse += await testAndFix(options, resolutionPlan);
+    } else {
+      console.info(ansis.yellow(`Would run test command`));
+    }
   }
 
   // Try commiting changes because coding tool may fail to commit changes due to pre-commit hooks
