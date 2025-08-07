@@ -49,7 +49,7 @@ async function fetchIssueData(
     description: normalizeNewLines(description),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: normalizeNewLines(removeRegexPattern(c.body, options.removePattern || '')),
+      body: normalizeNewLines(c.body),
     })),
   };
 
@@ -91,7 +91,7 @@ async function fetchIssueData(
           const reviewCommentYaml = YAML.stringify(
             {
               codeCommented: codeContext,
-              comment: normalizeNewLines(removeRegexPattern(rc.body, options.removePattern || '')),
+              comment: normalizeNewLines(rc.body),
             },
             yamlStringifyOptions
           ).trim();
