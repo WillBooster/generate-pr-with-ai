@@ -30,3 +30,7 @@ export function stripMetadataSections(markdownContent: string): string {
   const index = markdownContent.indexOf(HEADING_OF_GEN_PR_METADATA);
   return index >= 0 ? markdownContent.substring(0, index) : markdownContent;
 }
+
+export function normalizeNewLines(text: string): string {
+  return text.replaceAll('\r\n', '\n').trim();
+}

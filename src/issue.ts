@@ -2,7 +2,7 @@ import YAML from 'yaml';
 import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
-import { stripHtmlComments, stripMetadataSections } from './text.js';
+import { normalizeNewLines, stripHtmlComments, stripMetadataSections } from './text.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
@@ -44,10 +44,10 @@ async function fetchIssueData(
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description: description.replaceAll('\r\n', '\n').trim(),
+    description: normalizeNewLines(description),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: c.body,
+      body: normalizeNewLines(c.body),
     })),
   };
 
@@ -87,7 +87,7 @@ async function fetchIssueData(
                 ?.trim() || '';
           }
           const reviewCommentYaml = YAML.stringify(
-            { codeCommented: codeContext, comment: rc.body.replaceAll('\r\n', '\n').trim() },
+            { codeCommented: codeContext, comment: normalizeNewLines(rc.body) },
             yamlStringifyOptions
           ).trim();
           const yamlFence = findDistinctFence(reviewCommentYaml, '~');
