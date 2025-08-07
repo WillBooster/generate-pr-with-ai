@@ -1,3 +1,5 @@
+export const HEADING_OF_GEN_PR_METADATA = '## gen-pr Metadata';
+
 /**
  * Truncate long text.
  */
@@ -22,10 +24,9 @@ export function stripHtmlComments(markdownContent: string): string {
 }
 
 /**
- * Removes log sections from a PR body markdown.
- *
- * Strips any top-level heading ending with "Log" and the following fenced code block.
+ * Removes gen-pr metadata sections from a PR body markdown.
  */
-export function stripLogSections(markdownContent: string): string {
-  return markdownContent.replaceAll(/^# .+ Log\s*[\r\n]+~{3,}[\s\S]*?~{3,}/gm, '').trim();
+export function stripMetadataSections(markdownContent: string): string {
+  const index = markdownContent.indexOf(HEADING_OF_GEN_PR_METADATA);
+  return index >= 0 ? markdownContent.substring(0, index) : markdownContent;
 }

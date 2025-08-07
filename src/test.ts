@@ -54,7 +54,7 @@ ${stderrFence}
 Please analyze the output and fix the errors.
 `.trim();
 
-    fixResult += await runAssistantFix(options, prompt, resolutionPlan);
+    fixResult += await runToolFix(options, prompt, resolutionPlan);
   }
 
   return fixResult;
@@ -63,12 +63,12 @@ Please analyze the output and fix the errors.
 /**
  * Helper function to run coding tool with a fix prompt
  */
-export async function runAssistantFix(
+export async function runToolFix(
   options: MainOptions,
   prompt: string,
   resolutionPlan?: ResolutionPlan
 ): Promise<string> {
-  const assistantName =
+  const toolName =
     options.codingTool === 'aider' ? 'Aider' : options.codingTool === 'claude-code' ? 'Claude Code' : 'Codex';
   let assistantResult: string;
 
@@ -99,5 +99,5 @@ export async function runAssistantFix(
     ).stdout;
   }
 
-  return `\n\n# ${assistantName} fix attempt for "${options.testCommand}"\n\n${assistantResult.trim()}`;
+  return `\n\n## ${toolName} fix attempt for "${options.testCommand}"\n\n${assistantResult.trim()}`;
 }

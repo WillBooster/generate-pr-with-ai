@@ -13,7 +13,7 @@ import { findDistinctFence } from './markdown.js';
 import { planCodeChanges } from './plan.js';
 import { runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
-import { truncateText } from './text.js';
+import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
 import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
@@ -109,14 +109,7 @@ export async function main(options: MainOptions): Promise<void> {
     undefined;
   console.info('Resolution plan:', resolutionPlan);
 
-  const planText =
-    resolutionPlan && 'plan' in resolutionPlan && resolutionPlan.plan
-      ? `
-# Plan
-
-${resolutionPlan.plan}
-`.trim()
-      : '';
+  const planText = (resolutionPlan && 'plan' in resolutionPlan && resolutionPlan.plan) || '';
   const issueFence = findDistinctFence(issueText, '~');
   const isAgentic = options.codingTool !== 'aider';
   const itemType = isPullRequest ? 'pull request' : 'issue';
@@ -124,13 +117,18 @@ ${resolutionPlan.plan}
   const prompt = `
 Modify the code to resolve the following GitHub ${itemType}${planText ? ' based on the plan' : ''}.${extraInstruction}${isAgentic ? ' After that, commit your changes with a message, following the Conventional Commits specification.' : ''}
 
-# ${isPullRequest ? 'Pull Request' : 'Issue'}
+## ${isPullRequest ? 'Pull Request' : 'Issue'}
 
 ${issueFence}yml
 ${issueText}
 ${issueFence}
 
-${planText}
+${
+  planText &&
+  `## Plan
+
+${planText}`
+}
 `.trim();
 
   const now = new Date();
@@ -143,12 +141,12 @@ ${planText}
   }
 
   // Execute coding tool
-  let assistantResult: string;
+  let toolResult: string;
   let toolCommand: string;
   if (options.codingTool === 'aider') {
     const aiderArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('aider', aiderArgs, prompt);
-    assistantResult = (
+    toolResult = (
       await runCommand('aider', aiderArgs, {
         env: { ...process.env, NO_COLOR: '1' },
       })
@@ -158,9 +156,9 @@ ${planText}
     toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      assistantResult = 'Skipped in dry-run mode';
+      toolResult = 'Skipped in dry-run mode';
     } else {
-      assistantResult = (
+      toolResult = (
         await runCommand('npx', claudeCodeArgs, {
           env: { ...process.env, NO_COLOR: '1' },
           stdio: 'inherit',
@@ -172,9 +170,9 @@ ${planText}
     toolCommand = buildToolCommandString('npx', codexArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      assistantResult = 'Skipped in dry-run mode';
+      toolResult = 'Skipped in dry-run mode';
     } else {
-      assistantResult = (
+      toolResult = (
         await runCommand('npx', codexArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
@@ -185,9 +183,9 @@ ${planText}
     toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      assistantResult = 'Skipped in dry-run mode';
+      toolResult = 'Skipped in dry-run mode';
     } else {
-      assistantResult = (
+      toolResult = (
         await runCommand('npx', geminiArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
@@ -195,9 +193,9 @@ ${planText}
     }
   }
 
-  let assistantResponse = assistantResult.trim();
+  let toolResponse = toolResult.trim();
   if (options.testCommand) {
-    assistantResponse += await testAndFix(options, resolutionPlan);
+    toolResponse += await testAndFix(options, resolutionPlan);
   }
 
   // Try commiting changes because coding tool may fail to commit changes due to pre-commit hooks
@@ -227,6 +225,8 @@ ${planText}
   if (options.planningModel) {
     prBody += `
 
+${HEADING_OF_GEN_PR_METADATA}
+
 - **Planning Model:** ${options.planningModel}`;
   }
 
@@ -240,17 +240,25 @@ ${planText}
           : 'Codex CLI';
   prBody += `
 - **Coding Tool:** ${toolName}
-- **Coding Command:** \`${toolCommand}\`
-
-${truncateText(planText, (planText.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
-`;
-  if (assistantResponse) {
-    const responseFence = findDistinctFence(assistantResponse, '~');
+- **Coding Command:** \`${toolCommand}\``;
+  if (planText) {
+    const responseFence = findDistinctFence(planText, '~');
     prBody += `
-# ${toolName} Log
+
+### Plan
 
 ${responseFence}
-${truncateText(assistantResponse, (assistantResponse.length / (planText.length + assistantResponse.length)) * MAX_PR_BODY_LENGTH)}
+${truncateText(planText, (toolResponse.length / (planText.length + toolResponse.length)) * MAX_PR_BODY_LENGTH)}
+${responseFence}`;
+  }
+  if (toolResponse) {
+    const responseFence = findDistinctFence(toolResponse, '~');
+    prBody += `
+
+### ${toolName} Log
+
+${responseFence}
+${truncateText(toolResponse, (toolResponse.length / (planText.length + toolResponse.length)) * MAX_PR_BODY_LENGTH)}
 ${responseFence}`;
   }
   prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();

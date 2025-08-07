@@ -15,10 +15,10 @@ export type ResolutionPlan = {
   filePaths: string[];
 };
 
-const HEADING_OF_FILE_PATHS_TO_BE_MODIFIED = '# File Paths to be Modified';
-const HEADING_OF_FILE_PATHS_TO_BE_REFERRED = '# File Paths to be Referred';
-const HEADING_OF_PLAN = '# Implementation Plans';
-const HEADING_OF_COMMIT_MESSAGE = '# Commit Message';
+const HEADING_OF_FILE_PATHS_TO_BE_MODIFIED = '## File Paths to be Modified';
+const HEADING_OF_FILE_PATHS_TO_BE_REFERRED = '## File Paths to be Referred';
+const HEADING_OF_PLAN = '## Implementation Plan';
+const HEADING_OF_COMMIT_MESSAGE = '## Commit Message';
 
 export async function planCodeChanges(
   model: string,
@@ -76,7 +76,7 @@ ${issueFence}`;
       .map((filePath) => {
         const content = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8').trim() : '';
         const fence = findDistinctFence(content, '~');
-        return `# \`${filePath}\`
+        return `## \`${filePath}\`
 
 ${fence}
 ${content}
@@ -180,7 +180,7 @@ function buildPromptForPlanningCodeChanges(issueYamlText: string, isPullRequest 
   const itemType = isPullRequest ? 'pull request' : 'issue';
   const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when creating the plan.' : '';
   return `
-You are an expert software developer tasked with creating implementation plans based on GitHub ${itemType}s.
+You are an expert software developer tasked with creating an implementation plan based on GitHub ${itemType}s.
 
 Review the following GitHub ${itemType} and the provided file contents (which will be provided in a separate message).${extraInstruction}
 Create a detailed, step-by-step plan outlining how to address the ${itemType} effectively.
@@ -214,7 +214,7 @@ function buildPromptForSelectingFilesAndPlanningCodeChanges(issueYamlText: strin
   const itemType = isPullRequest ? 'pull request' : 'issue';
   const extraInstruction = isPullRequest ? ' Consider the comments on the pull request when creating the plan.' : '';
   return `
-You are an expert software developer tasked with analyzing GitHub ${itemType}s and creating implementation plans.
+You are an expert software developer tasked with analyzing GitHub ${itemType}s and creating an implementation plan.
 
 Review the following GitHub ${itemType} and the list of available file paths and their contents (which will be provided in a separate message).${extraInstruction}
 Your task is to:
