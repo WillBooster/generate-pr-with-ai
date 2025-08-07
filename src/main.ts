@@ -133,14 +133,14 @@ ${planText}`
 
   const now = new Date();
   const newBranchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
-  if (!options.dryRun) {
+  if (options.dryRun) {
+    console.info(ansis.yellow(`Would create branch: ${newBranchName}`));
+  } else {
     if (isPullRequest) {
       await runCommand('git', ['fetch', 'origin', baseBranch]);
       await runCommand('git', ['switch', baseBranch]);
     }
     await runCommand('git', ['switch', '--force-create', newBranchName]);
-  } else {
-    console.info(ansis.yellow(`Would create branch: ${newBranchName}`));
   }
 
   // Execute coding tool
@@ -210,10 +210,10 @@ ${planText}`
 
   let toolResponse = toolResult.trim();
   if (options.testCommand) {
-    if (!options.dryRun) {
-      toolResponse += await testAndFix(options, resolutionPlan);
-    } else {
+    if (options.dryRun) {
       console.info(ansis.yellow(`Would run test command`));
+    } else {
+      toolResponse += await testAndFix(options, resolutionPlan);
     }
   }
 
@@ -231,10 +231,10 @@ ${planText}`
       ignoreExitStatus: true,
     });
   }
-  if (!options.dryRun) {
-    await runCommand('git', ['push', 'origin', newBranchName, '--no-verify']);
-  } else {
+  if (options.dryRun) {
     console.info(ansis.yellow(`Would push branch: ${newBranchName} to origin`));
+  } else {
+    await runCommand('git', ['push', 'origin', newBranchName, '--no-verify']);
   }
 
   // Create a PR using GitHub CLI
@@ -274,18 +274,18 @@ ${responseFence}`;
   }
   prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();
 
-  if (!options.dryRun) {
-    const repoName = getGitRepoName();
-    const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
-    prArgs.push('--base', baseBranch);
-    await runCommand('gh', prArgs);
-  } else {
+  if (options.dryRun) {
     console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
     console.info(
       ansis.yellow(
         `PR body would include the ${toolName.toLowerCase()} response and close ${itemType} #${options.issueNumber}`
       )
     );
+  } else {
+    const repoName = getGitRepoName();
+    const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+    prArgs.push('--base', baseBranch);
+    await runCommand('gh', prArgs);
   }
 
   console.info(`\n${isPullRequest ? 'Pull request' : 'Issue'} #${options.issueNumber} processed successfully.`);
