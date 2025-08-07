@@ -11,7 +11,7 @@ jobs:
     if: contains(github.event.label.name, 'gen-pr-all')
     uses: WillBooster/reusable-workflows/.github/workflows/gen-pr.yml@main
     with:
-      coding-tool: codex
+      coding-tool: codex-cli
       issue-number: ${{ github.event.issue.number || github.event.number }}
     secrets:
       GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}

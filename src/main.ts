@@ -25,13 +25,13 @@ import { yamlStringifyOptions } from './yaml.js';
  * Options for the main function
  */
 export interface MainOptions {
-  /** Additional arguments to pass to the aider command */
+  /** Additional arguments to pass to Aider */
   aiderExtraArgs?: string;
-  /** Additional arguments to pass to the claude-code command */
+  /** Additional arguments to pass to Claude Code */
   claudeCodeExtraArgs?: string;
-  /** Additional arguments to pass to the codex command */
+  /** Additional arguments to pass to Codex CLI */
   codexExtraArgs?: string;
-  /** Additional arguments to pass to the gemini command */
+  /** Additional arguments to pass to Gemini CLI */
   geminiExtraArgs?: string;
   /** Coding tool to use */
   codingTool: CodingTool;
@@ -165,7 +165,7 @@ ${planText}`
         })
       ).stdout;
     }
-  } else if (options.codingTool === 'codex') {
+  } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', codexArgs, prompt);
     if (options.dryRun) {
@@ -235,9 +235,9 @@ ${HEADING_OF_GEN_PR_METADATA}
       ? 'Aider'
       : options.codingTool === 'claude-code'
         ? 'Claude Code'
-        : options.codingTool === 'gemini'
-          ? 'Gemini CLI'
-          : 'Codex CLI';
+        : options.codingTool === 'codex-cli'
+          ? 'Codex CLI'
+          : 'Gemini CLI';
   prBody += `
 - **Coding Tool:** ${toolName}
 - **Coding Command:** \`${toolCommand}\``;

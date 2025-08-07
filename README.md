@@ -73,13 +73,13 @@ npx --yes gen-pr@latest --issue-number 89 --coding-tool claude-code
 Codex:
 
 ```sh
-npx --yes gen-pr@latest --issue-number 89 --coding-tool codex
+npx --yes gen-pr@latest --issue-number 89 --coding-tool codex-cli
 ```
 
 Gemini CLI:
 
 ```sh
-npx --yes gen-pr@latest --issue-number 89 --coding-tool gemini
+npx --yes gen-pr@latest --issue-number 89 --coding-tool gemini-cli
 ```
 
 #### With Planning (Strongly Recommended for Aider)
@@ -108,13 +108,13 @@ npx --yes gen-pr@latest --issue-number 89 --planning-model gemini/gemini-2.5-pro
 o4-mini (`openai/o4-mini`) for planning and Codex for coding:
 
 ```sh
-npx --yes gen-pr@latest --issue-number 89 --planning-model openai/o4-mini --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --coding-tool codex
+npx --yes gen-pr@latest --issue-number 89 --planning-model openai/o4-mini --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --coding-tool codex-cli
 ```
 
 DeepSeek R1 on OpenRouter (`openrouter/deepseek/deepseek-r1-0528:free`) for planning and Gemini CLI for coding:
 
 ```sh
-npx --yes gen-pr@latest --issue-number 89 --planning-model openrouter/deepseek/deepseek-r1-0528:free --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --coding-tool gemini
+npx --yes gen-pr@latest --issue-number 89 --planning-model openrouter/deepseek/deepseek-r1-0528:free --reasoning-effort high --repomix-extra-args="--compress --remove-empty-lines --include 'src/**/*.ts'" --coding-tool gemini-cli
 ```
 
 Grok 4 (`xai/grok-4`) for planning and Aider for coding:
@@ -134,7 +134,7 @@ npx --yes gen-pr@latest --issue-number 89 --planning-model ollama/gemma3n --repo
 Codex:
 
 ```sh
-npx --yes gen-pr@latest --issue-number 103 --coding-tool codex
+npx --yes gen-pr@latest --issue-number 103 --coding-tool codex-cli
 ```
 
 ### Config File

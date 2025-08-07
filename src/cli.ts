@@ -49,29 +49,29 @@ const argv = await yargs(hideBin(process.argv))
     alias: 'c',
     description: 'Coding tool to use for making changes',
     type: 'string',
-    choices: ['aider', 'claude-code', 'codex', 'gemini'],
+    choices: ['aider', 'claude-code', 'codex-cli', 'gemini-cli'],
     default: DEFAULT_CODING_TOOL,
   })
   .option('aider-extra-args', {
     alias: 'a',
     description:
-      'Additional arguments to pass to the aider command ("--yes-always --no-check-update --no-show-release-notes" is always applied)',
+      'Additional arguments to pass to Aider ("--yes-always --no-check-update --no-show-release-notes" is always applied)',
     type: 'string',
     default: DEFAULT_AIDER_EXTRA_ARGS,
   })
   .option('claude-code-extra-args', {
     description:
-      'Additional arguments to pass to the claude-code command ("--dangerously-skip-permissions" is always applied, "--print" is applied only in CI)',
+      'Additional arguments to pass to Claude Code ("--dangerously-skip-permissions" is always applied, "--print" is applied only in CI)',
     type: 'string',
     default: DEFAULT_CLAUDE_CODE_EXTRA_ARGS,
   })
   .option('codex-extra-args', {
-    description: 'Additional arguments to pass to the codex command (nothing is always applied)',
+    description: 'Additional arguments to pass to Codex CLI (nothing is always applied)',
     type: 'string',
     default: DEFAULT_CODEX_EXTRA_ARGS,
   })
   .option('gemini-extra-args', {
-    description: 'Additional arguments to pass to the gemini command ("--yolo" is always applied)',
+    description: 'Additional arguments to pass to Gemini CLI ("--yolo" is always applied)',
     type: 'string',
     default: DEFAULT_GEMINI_EXTRA_ARGS,
   })

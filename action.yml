@@ -17,7 +17,7 @@ inputs:
     description: 'Constrains effort on reasoning for reasoning models. Supported values are low, medium, and high. Reducing reasoning effort can result in faster responses and fewer tokens used.'
     required: false
   coding-tool:
-    description: 'Coding tool to use for making changes (aider, claude-code, codex or gemini)'
+    description: 'Coding tool to use for making changes (aider, claude-code, codex-cli or gemini-cli)'
     required: false
     default: 'aider'
   repomix-extra-args:
@@ -25,19 +25,19 @@ inputs:
     required: false
     default: '--compress --remove-empty-lines --include "src/**/*.{ts,tsx},**/*.md"'
   aider-extra-args:
-    description: 'Additional arguments to pass to the aider command ("--yes-always --no-check-update --no-show-release-notes" is always applied)'
+    description: 'Additional arguments to pass to Aider ("--yes-always --no-check-update --no-show-release-notes" is always applied)'
     required: false
     default: '--model gemini/gemini-2.5-pro --edit-format diff-fenced'
   claude-code-extra-args:
-    description: 'Additional arguments to pass to the claude-code command ("--dangerously-skip-permissions --print" is always applied)'
+    description: 'Additional arguments to pass to Claude Code ("--dangerously-skip-permissions --print" is always applied)'
     required: false
     default: '--allowedTools Bash Edit Write'
   codex-extra-args:
-    description: 'Additional arguments to pass to the codex command (nothing is always applied)'
+    description: 'Additional arguments to pass to Codex CLI (nothing is always applied)'
     required: false
     default: '--full-auto'
   gemini-extra-args:
-    description: 'Additional arguments to pass to the gemini command ("--yolo" is always applied)'
+    description: 'Additional arguments to pass to Gemini CLI ("--yolo" is always applied)'
     required: false
     default: ''
   test-command:
