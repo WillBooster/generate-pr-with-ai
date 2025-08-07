@@ -34,3 +34,21 @@ export function stripMetadataSections(markdownContent: string): string {
 export function normalizeNewLines(text: string): string {
   return text.replaceAll('\r\n', '\n').trim();
 }
+
+/**
+ * Removes text matching the specified regex pattern.
+ *
+ * @param text The input text
+ * @param pattern The regex pattern string to remove
+ * @returns The text with matched patterns removed
+ */
+export function removeRegexPattern(text: string, pattern: string): string {
+  if (!pattern) return text;
+  try {
+    const regex = new RegExp(pattern, 'g');
+    return text.replace(regex, '');
+  } catch (error) {
+    console.warn(`Invalid regex pattern "${pattern}":`, error);
+    return text;
+  }
+}

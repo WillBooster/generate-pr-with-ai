@@ -2,13 +2,13 @@ import YAML from 'yaml';
 import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
-import { normalizeNewLines, stripHtmlComments, stripMetadataSections } from './text.js';
+import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
 import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
   const processedIssues = new Set<number>();
-  const issueInfo = await fetchIssueData(options.issueNumber, processedIssues);
+  const issueInfo = await fetchIssueData(options.issueNumber, processedIssues, options, false);
   if (!issueInfo) {
     throw new Error(`Failed to fetch issue data for issue #${options.issueNumber}`);
   }
@@ -18,6 +18,7 @@ export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> 
 async function fetchIssueData(
   issueNumber: number,
   processedIssues: Set<number>,
+  options: MainOptions,
   isReferenced = false
 ): Promise<IssueInfo | undefined> {
   if (processedIssues.has(issueNumber)) {
@@ -40,14 +41,15 @@ async function fetchIssueData(
   const referencedNumbers = extractIssueReferences(allText);
 
   const rawBody = stripHtmlComments(issue.body);
-  const description = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
+  const processedBody = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
+  const description = removeRegexPattern(processedBody, options.removePattern || '');
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
     description: normalizeNewLines(description),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
-      body: normalizeNewLines(c.body),
+      body: normalizeNewLines(removeRegexPattern(c.body, options.removePattern || '')),
     })),
   };
 
@@ -87,7 +89,10 @@ async function fetchIssueData(
                 ?.trim() || '';
           }
           const reviewCommentYaml = YAML.stringify(
-            { codeCommented: codeContext, comment: normalizeNewLines(rc.body) },
+            {
+              codeCommented: codeContext,
+              comment: normalizeNewLines(removeRegexPattern(rc.body, options.removePattern || '')),
+            },
             yamlStringifyOptions
           ).trim();
           const yamlFence = findDistinctFence(reviewCommentYaml, '~');
@@ -108,7 +113,9 @@ ${yamlFence}`,
   }
 
   if (referencedNumbers.length > 0) {
-    const referencedIssuesPromises = referencedNumbers.map((num) => fetchIssueData(num, processedIssues, true));
+    const referencedIssuesPromises = referencedNumbers.map((num) =>
+      fetchIssueData(num, processedIssues, options, true)
+    );
     const referencedIssues = (await Promise.all(referencedIssuesPromises)).filter(
       (issue): issue is IssueInfo => !!issue
     );

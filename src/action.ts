@@ -39,6 +39,8 @@ const maxTestAttemptsInput =
 const maxTestAttempts = maxTestAttemptsInput
   ? Number.parseInt(String(maxTestAttemptsInput), 10)
   : DEFAULT_MAX_TEST_ATTEMPTS;
+const removePattern =
+  core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
@@ -71,4 +73,5 @@ void main({
   reasoningEffort,
   repomixExtraArgs,
   testCommand,
+  removePattern,
 });

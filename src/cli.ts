@@ -97,6 +97,10 @@ const argv = await yargs(hideBin(process.argv))
     type: 'boolean',
     default: false,
   })
+  .option('remove-pattern', {
+    description: 'RegExp pattern to remove from issue and PR descriptions',
+    type: 'string',
+  })
   // Options only for this standalone tool --------------------
   .option('working-dir', {
     alias: 'w',
@@ -134,4 +138,5 @@ await main({
   reasoningEffort: argv['reasoning-effort'] as ReasoningEffort,
   repomixExtraArgs: argv['repomix-extra-args'],
   testCommand: argv['test-command'],
+  removePattern: argv['remove-pattern'],
 });

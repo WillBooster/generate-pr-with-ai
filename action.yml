@@ -51,6 +51,9 @@ inputs:
     description: 'Run without making actual changes (no branch creation, no PR)'
     required: false
     default: 'false'
+  remove-pattern:
+    description: 'RegExp pattern to remove from issue and PR descriptions'
+    required: false
 
 runs:
   using: 'composite'
@@ -75,6 +78,7 @@ runs:
         INPUT_TEST-COMMAND: ${{ inputs.test-command }}
         INPUT_MAX-TEST-ATTEMPTS: ${{ inputs.max-test-attempts }}
         INPUT_DRY-RUN: ${{ inputs.dry-run }}
+        INPUT_REMOVE-PATTERN: ${{ inputs.remove-pattern }}
 
 branding:
   icon: 'git-pull-request'

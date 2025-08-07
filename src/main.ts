@@ -51,6 +51,8 @@ export interface MainOptions {
   repomixExtraArgs?: string;
   /** Command to run after coding tool applies changes. If it fails, the assistant will try to fix it. */
   testCommand?: string;
+  /** RegExp pattern to remove from issue and PR descriptions */
+  removePattern?: string;
 }
 
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
