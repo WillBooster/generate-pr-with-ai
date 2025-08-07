@@ -44,7 +44,7 @@ async function fetchIssueData(
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
-    description,
+    description: description.replaceAll('\r\n', '\n').trim(),
     comments: issue.comments.map((c: GitHubComment) => ({
       author: c.author.login,
       body: c.body,
@@ -87,14 +87,13 @@ async function fetchIssueData(
                 ?.trim() || '';
           }
           const reviewCommentYaml = YAML.stringify(
-            { codeCommented: codeContext, comment: rc.body },
+            { codeCommented: codeContext, comment: rc.body.replaceAll('\r\n', '\n').trim() },
             yamlStringifyOptions
           ).trim();
           const yamlFence = findDistinctFence(reviewCommentYaml, '~');
           return {
             author: rc.user.login,
             body: `Review comment on \`${rc.path}:${rc.line}\`:
-
 ${yamlFence}yaml
 ${reviewCommentYaml}
 ${yamlFence}`,
