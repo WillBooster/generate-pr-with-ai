@@ -154,6 +154,7 @@ ${planText}`
         : options.codingTool === 'codex-cli'
           ? 'Codex CLI'
           : 'Gemini CLI';
+
   if (options.dryRun) {
     console.info(`\n=== DRY MODE: ${toolName} Prompt ===`);
     console.info(prompt);
