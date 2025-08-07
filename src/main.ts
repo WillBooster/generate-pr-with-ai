@@ -104,7 +104,8 @@ export async function main(options: MainOptions): Promise<void> {
         options.twoStagePlanning,
         options.reasoningEffort,
         options.repomixExtraArgs,
-        isPullRequest
+        isPullRequest,
+        options.dryRun
       ))) ||
     undefined;
   console.info('Resolution plan:', resolutionPlan);
@@ -149,6 +150,11 @@ ${planText}`
   if (options.codingTool === 'aider') {
     const aiderArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('aider', aiderArgs, prompt);
+    if (options.dryRun) {
+      console.info(`\n=== DRY MODE: Aider Prompt ===`);
+      console.info(prompt);
+      console.info('=== End Aider Prompt ===\n');
+    }
     toolResult = (
       await runCommand('aider', aiderArgs, {
         env: { ...process.env, NO_COLOR: '1' },
@@ -158,6 +164,9 @@ ${planText}`
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
     if (options.dryRun) {
+      console.info(`\n=== DRY MODE: Claude Code Prompt ===`);
+      console.info(prompt);
+      console.info('=== End Claude Code Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
       toolResult = 'Skipped in dry-run mode';
     } else {
@@ -172,6 +181,9 @@ ${planText}`
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', codexArgs, prompt);
     if (options.dryRun) {
+      console.info(`\n=== DRY MODE: Codex CLI Prompt ===`);
+      console.info(prompt);
+      console.info('=== End Codex CLI Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
       toolResult = 'Skipped in dry-run mode';
     } else {
@@ -185,6 +197,9 @@ ${planText}`
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
     if (options.dryRun) {
+      console.info(`\n=== DRY MODE: Gemini CLI Prompt ===`);
+      console.info(prompt);
+      console.info('=== End Gemini CLI Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
       toolResult = 'Skipped in dry-run mode';
     } else {

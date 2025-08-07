@@ -26,7 +26,8 @@ export async function planCodeChanges(
   twoStagePlanning: boolean,
   reasoningEffort?: ReasoningEffort,
   repomixExtraArgs?: string,
-  isPullRequest = false
+  isPullRequest = false,
+  dryRun = false
 ): Promise<ResolutionPlan> {
   const issueFence = findDistinctFence(issueContent, '~');
   const issueYamlText = `${issueFence}yaml
@@ -55,7 +56,8 @@ ${issueFence}`;
           content: repomixResult,
         },
       ],
-      reasoningEffort
+      reasoningEffort,
+      dryRun
     );
     console.info('Selecting complete!');
 
@@ -97,7 +99,8 @@ ${fence}`;
           content: fileContents,
         },
       ],
-      reasoningEffort
+      reasoningEffort,
+      dryRun
     );
     console.info('Planning complete!');
 
@@ -124,7 +127,8 @@ ${fence}`;
         content: repomixResult,
       },
     ],
-    reasoningEffort
+    reasoningEffort,
+    dryRun
   );
   console.info('Planning complete!');
 

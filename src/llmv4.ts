@@ -10,8 +10,22 @@ import type { ReasoningEffort } from './types.js';
 export async function callV4ProviderApi(
   model: string,
   messages: ModelMessage[],
-  reasoningEffort?: ReasoningEffort
+  reasoningEffort?: ReasoningEffort,
+  dryRun?: boolean
 ): Promise<string> {
+  // Print prompts in dry mode
+  if (dryRun) {
+    console.info(`\n=== DRY MODE: LLM Prompt for ${model} ===`);
+    console.info(`Reasoning effort: ${reasoningEffort || 'none'}`);
+    console.info('Messages:');
+    messages.forEach((message, index) => {
+      console.info(`\n--- Message ${index + 1} (${message.role}) ---`);
+      console.info(message.content);
+    });
+    console.info('=== End LLM Prompt ===\n');
+    return 'Dry run mode - LLM call skipped';
+  }
+
   try {
     const [provider, ...modelParts] = model.split('/');
     const modelName = modelParts.join('/'); // Handle cases where model name itself contains '/'
