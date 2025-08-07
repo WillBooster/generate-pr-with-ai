@@ -144,16 +144,25 @@ ${planText}`
   }
 
   // Execute coding tool
-  let toolResult: string;
+  let toolResult = '';
   let toolCommand: string;
+  const toolName =
+    options.codingTool === 'aider'
+      ? 'Aider'
+      : options.codingTool === 'claude-code'
+        ? 'Claude Code'
+        : options.codingTool === 'codex-cli'
+          ? 'Codex CLI'
+          : 'Gemini CLI';
+  if (options.dryRun) {
+    console.info(`\n=== DRY MODE: ${toolName} Prompt ===`);
+    console.info(prompt);
+    console.info(`=== End ${toolName} Prompt ===\n`);
+    toolResult = 'Skipped due to dry-run mode';
+  }
   if (options.codingTool === 'aider') {
     const aiderArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('aider', aiderArgs, prompt);
-    if (options.dryRun) {
-      console.info(`\n=== DRY MODE: Aider Prompt ===`);
-      console.info(prompt);
-      console.info('=== End Aider Prompt ===\n');
-    }
     toolResult = (
       await runCommand('aider', aiderArgs, {
         env: { ...process.env, NO_COLOR: '1' },
@@ -163,11 +172,7 @@ ${planText}`
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
     if (options.dryRun) {
-      console.info(`\n=== DRY MODE: Claude Code Prompt ===`);
-      console.info(prompt);
-      console.info('=== End Claude Code Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      toolResult = 'Skipped in dry-run mode';
     } else {
       toolResult = (
         await runCommand('npx', claudeCodeArgs, {
@@ -180,11 +185,7 @@ ${planText}`
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', codexArgs, prompt);
     if (options.dryRun) {
-      console.info(`\n=== DRY MODE: Codex CLI Prompt ===`);
-      console.info(prompt);
-      console.info('=== End Codex CLI Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      toolResult = 'Skipped in dry-run mode';
     } else {
       toolResult = (
         await runCommand('npx', codexArgs, {
@@ -196,11 +197,7 @@ ${planText}`
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
     if (options.dryRun) {
-      console.info(`\n=== DRY MODE: Gemini CLI Prompt ===`);
-      console.info(prompt);
-      console.info('=== End Gemini CLI Prompt ===\n');
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
-      toolResult = 'Skipped in dry-run mode';
     } else {
       toolResult = (
         await runCommand('npx', geminiArgs, {
@@ -251,14 +248,6 @@ ${HEADING_OF_GEN_PR_METADATA}
 - **Planning Model:** ${options.planningModel}`;
   }
 
-  const toolName =
-    options.codingTool === 'aider'
-      ? 'Aider'
-      : options.codingTool === 'claude-code'
-        ? 'Claude Code'
-        : options.codingTool === 'codex-cli'
-          ? 'Codex CLI'
-          : 'Gemini CLI';
   prBody += `
 - **Coding Tool:** ${toolName}
 - **Coding Command:** \`${toolCommand}\``;
