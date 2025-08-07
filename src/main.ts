@@ -51,7 +51,7 @@ export interface MainOptions {
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
 
 export async function main(options: MainOptions): Promise<void> {
-  console.info('Hi');
+  console.info('Hello!');
   configureEnvVars();
 
   if (options.dryRun) {
