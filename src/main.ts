@@ -39,6 +39,8 @@ export interface MainOptions {
   twoStagePlanning: boolean;
   /** Run without making actual changes (no branch creation, no PR) */
   dryRun: boolean;
+  /** Do not create a new branch, commit changes directly to the base branch */
+  noBranch: boolean;
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */
@@ -135,14 +137,26 @@ ${planText}`
 
   const now = new Date();
   const newBranchName = `gen-pr-${options.issueNumber}-${options.codingTool}-${now.getFullYear()}_${getTwoDigits(now.getMonth() + 1)}${getTwoDigits(now.getDate())}_${getTwoDigits(now.getHours())}${getTwoDigits(now.getMinutes())}${getTwoDigits(now.getSeconds())}`;
-  if (options.dryRun) {
-    console.info(ansis.yellow(`Would create branch: ${newBranchName}`));
-  } else {
-    if (isPullRequest) {
-      await runCommand('git', ['fetch', 'origin', baseBranch]);
+
+  if (options.noBranch) {
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would commit directly to base branch: ${baseBranch}`));
+    } else {
+      if (isPullRequest) {
+        await runCommand('git', ['fetch', 'origin', baseBranch]);
+      }
       await runCommand('git', ['switch', baseBranch]);
     }
-    await runCommand('git', ['switch', '--force-create', newBranchName]);
+  } else {
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would create branch: ${newBranchName}`));
+    } else {
+      if (isPullRequest) {
+        await runCommand('git', ['fetch', 'origin', baseBranch]);
+        await runCommand('git', ['switch', baseBranch]);
+      }
+      await runCommand('git', ['switch', '--force-create', newBranchName]);
+    }
   }
 
   // Execute coding tool
@@ -233,61 +247,77 @@ ${planText}`
       ignoreExitStatus: true,
     });
   }
-  if (options.dryRun) {
-    console.info(ansis.yellow(`Would push branch: ${newBranchName} to origin`));
+  if (options.noBranch) {
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would push changes directly to base branch: ${baseBranch}`));
+    } else {
+      await runCommand('git', ['push', 'origin', baseBranch, '--no-verify']);
+    }
   } else {
-    await runCommand('git', ['push', 'origin', newBranchName, '--no-verify']);
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would push branch: ${newBranchName} to origin`));
+    } else {
+      await runCommand('git', ['push', 'origin', newBranchName, '--no-verify']);
+    }
   }
 
-  // Create a PR using GitHub CLI
-  const prTitle = getHeaderOfFirstCommit(baseBranch) || commitMessage;
-  let prBody = `Close #${options.issueNumber}`;
+  // Create a PR using GitHub CLI (unless noBranch is enabled)
+  if (options.noBranch) {
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Skipping PR creation due to --no-branch option`));
+    } else {
+      console.info(`Changes committed directly to base branch: ${baseBranch}`);
+    }
+  } else {
+    const prTitle = getHeaderOfFirstCommit(baseBranch) || commitMessage;
+    let prBody = `Close #${options.issueNumber}`;
 
-  if (options.planningModel) {
-    prBody += `
+    if (options.planningModel) {
+      prBody += `
 
 ${HEADING_OF_GEN_PR_METADATA}
 
 - **Planning Model:** ${options.planningModel}`;
-  }
+    }
 
-  prBody += `
+    prBody += `
 - **Coding Tool:** ${toolName}
 - **Coding Command:** \`${toolCommand}\``;
-  if (planText) {
-    const responseFence = findDistinctFence(planText, '~');
-    prBody += `
+    if (planText) {
+      const responseFence = findDistinctFence(planText, '~');
+      prBody += `
 
 ### Plan
 
 ${responseFence}
 ${truncateText(planText, (toolResponse.length / (planText.length + toolResponse.length)) * MAX_PR_BODY_LENGTH)}
 ${responseFence}`;
-  }
-  if (toolResponse) {
-    const responseFence = findDistinctFence(toolResponse, '~');
-    prBody += `
+    }
+    if (toolResponse) {
+      const responseFence = findDistinctFence(toolResponse, '~');
+      prBody += `
 
 ### ${toolName} Log
 
 ${responseFence}
 ${truncateText(toolResponse, (toolResponse.length / (planText.length + toolResponse.length)) * MAX_PR_BODY_LENGTH)}
 ${responseFence}`;
-  }
-  prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();
+    }
+    prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();
 
-  if (options.dryRun) {
-    console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
-    console.info(
-      ansis.yellow(
-        `PR body would include the ${toolName.toLowerCase()} response and close ${itemType} #${options.issueNumber}`
-      )
-    );
-  } else {
-    const repoName = getGitRepoName();
-    const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
-    prArgs.push('--base', baseBranch);
-    await runCommand('gh', prArgs);
+    if (options.dryRun) {
+      console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
+      console.info(
+        ansis.yellow(
+          `PR body would include the ${toolName.toLowerCase()} response and close ${itemType} #${options.issueNumber}`
+        )
+      );
+    } else {
+      const repoName = getGitRepoName();
+      const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
+      prArgs.push('--base', baseBranch);
+      await runCommand('gh', prArgs);
+    }
   }
 
   console.info(`\n${isPullRequest ? 'Pull request' : 'Issue'} #${options.issueNumber} processed successfully.`);

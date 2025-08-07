@@ -101,6 +101,12 @@ const argv = await yargs(hideBin(process.argv))
     description: 'RegExp pattern to remove from issue and PR descriptions',
     type: 'string',
   })
+  .option('no-branch', {
+    alias: 'n',
+    description: 'Do not create a new branch, commit changes directly to the base branch',
+    type: 'boolean',
+    default: false,
+  })
   // Options only for this standalone tool --------------------
   .option('working-dir', {
     alias: 'w',
@@ -131,6 +137,7 @@ await main({
   geminiExtraArgs: argv['gemini-extra-args'],
   codingTool: argv['coding-tool'] as CodingTool,
   dryRun: argv['dry-run'],
+  noBranch: argv['no-branch'],
   twoStagePlanning: argv['two-staged-planning'],
   issueNumber: argv['issue-number'],
   maxTestAttempts: argv['max-test-attempts'],

@@ -12,6 +12,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 32,
         maxTestAttempts: 3,
         codingTool: 'aider',
@@ -43,6 +44,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 3,
         maxTestAttempts: 3,
         codingTool: 'aider',
@@ -82,6 +84,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 8,
         maxTestAttempts: 3,
         codingTool: 'aider',
@@ -118,6 +121,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 12,
         maxTestAttempts: 3,
         codingTool: 'aider',
@@ -171,6 +175,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 9,
         maxTestAttempts: 3,
         codingTool: 'aider',
@@ -229,6 +234,7 @@ describe('createIssueInfo', () => {
       const options: MainOptions = {
         twoStagePlanning: false,
         dryRun: false,
+        noBranch: false,
         issueNumber: 103,
         maxTestAttempts: 3,
         codingTool: 'aider',

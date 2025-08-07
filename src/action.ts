@@ -41,6 +41,8 @@ const maxTestAttempts = maxTestAttemptsInput
   : DEFAULT_MAX_TEST_ATTEMPTS;
 const removePattern =
   core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
+const noBranchInput = core.getInput('no-branch', { required: false }) || (configOptions['no-branch'] as string);
+const noBranch = noBranchInput === 'true';
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
@@ -67,6 +69,7 @@ void main({
   codingTool,
   twoStagePlanning,
   dryRun,
+  noBranch,
   issueNumber: Number(issueNumber),
   maxTestAttempts,
   planningModel,
