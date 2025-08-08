@@ -4,7 +4,7 @@ import { DEFAULT_REPOMIX_EXTRA_ARGS } from './defaultOptions.js';
 import { callLlmApi } from './llm.js';
 import { extractHeaderContents, findDistinctFence, trimCodeBlockFences } from './markdown.js';
 import { parseCommandLineArgs, runCommand } from './spawn.js';
-import type { ReasoningEffort } from './types.js';
+import type { NodeRuntime, ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 const REPOMIX_FILE_NAME = 'repomix.result';
@@ -26,6 +26,7 @@ export async function planCodeChanges(
   twoStagePlanning: boolean,
   reasoningEffort?: ReasoningEffort,
   repomixExtraArgs?: string,
+  runtime: NodeRuntime = 'npx',
   isPullRequest = false
 ): Promise<ResolutionPlan> {
   const issueFence = findDistinctFence(issueContent, '~');
@@ -37,7 +38,7 @@ ${issueFence}`;
   const repomixArgs = ['--yes', 'repomix@latest', '--output', REPOMIX_FILE_NAME];
   repomixArgs.push(...parseCommandLineArgs(repomixExtraArgs || DEFAULT_REPOMIX_EXTRA_ARGS));
 
-  await runCommand('npx', repomixArgs);
+  await runCommand(runtime, repomixArgs);
   const repomixResult = fs.readFileSync(REPOMIX_FILE_NAME, 'utf8');
   void fs.promises.rm(REPOMIX_FILE_NAME, { force: true });
 

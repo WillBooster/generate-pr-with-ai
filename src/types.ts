@@ -169,3 +169,11 @@ export type ReasoningEffort = 'low' | 'medium' | 'high';
  * - 'gemini-cli': Use Gemini CLI for code changes
  */
 export type CodingTool = 'aider' | 'claude-code' | 'codex-cli' | 'gemini-cli';
+
+/**
+ * Represents the Node.js runtime to use for executing npm packages
+ *
+ * - 'npx': Use npx (default)
+ * - 'bunx': Use bunx (Bun runtime)
+ */
+export type NodeRuntime = 'npx' | 'bunx';

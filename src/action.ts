@@ -3,9 +3,9 @@ import os from 'node:os';
 import path from 'node:path';
 import core from '@actions/core';
 import { loadConfigFile } from './config.js';
-import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS } from './defaultOptions.js';
+import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_RUNTIME } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 const configOptions = loadConfigFile();
 
@@ -43,6 +43,9 @@ const removePattern =
   core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
 const noBranchInput = core.getInput('no-branch', { required: false }) || (configOptions['no-branch'] as string);
 const noBranch = noBranchInput === 'true';
+const runtime = (core.getInput('runtime', { required: false }) ||
+  (configOptions.runtime as string) ||
+  DEFAULT_RUNTIME) as NodeRuntime;
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
@@ -55,6 +58,11 @@ if (!['aider', 'claude-code', 'codex-cli', 'gemini-cli'].includes(codingTool)) {
   console.error(
     `Invalid coding-tool value: ${codingTool}. Using default. Valid values are: aider, claude-code, codex-cli, gemini-cli`
   );
+  process.exit(1);
+}
+
+if (!['npx', 'bunx'].includes(runtime)) {
+  console.error(`Invalid runtime value: ${runtime}. Using default. Valid values are: npx, bunx`);
   process.exit(1);
 }
 
@@ -77,4 +85,5 @@ void main({
   repomixExtraArgs,
   testCommand,
   removePattern,
+  runtime,
 });

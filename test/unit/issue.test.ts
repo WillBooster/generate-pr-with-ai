@@ -16,6 +16,7 @@ describe('createIssueInfo', () => {
         issueNumber: 32,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);
@@ -48,6 +49,7 @@ describe('createIssueInfo', () => {
         issueNumber: 3,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);
@@ -88,6 +90,7 @@ describe('createIssueInfo', () => {
         issueNumber: 8,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);
@@ -125,6 +128,7 @@ describe('createIssueInfo', () => {
         issueNumber: 12,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);
@@ -179,6 +183,7 @@ describe('createIssueInfo', () => {
         issueNumber: 9,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);
@@ -238,6 +243,7 @@ describe('createIssueInfo', () => {
         issueNumber: 103,
         maxTestAttempts: 3,
         codingTool: 'aider',
+        runtime: 'npx',
       };
 
       const result = await createIssueInfo(options);

@@ -12,9 +12,10 @@ import {
   DEFAULT_GEMINI_EXTRA_ARGS,
   DEFAULT_MAX_TEST_ATTEMPTS,
   DEFAULT_REPOMIX_EXTRA_ARGS,
+  DEFAULT_RUNTIME,
 } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 // Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
@@ -51,6 +52,12 @@ const argv = await yargs(hideBin(process.argv))
     type: 'string',
     choices: ['aider', 'claude-code', 'codex-cli', 'gemini-cli'],
     default: DEFAULT_CODING_TOOL,
+  })
+  .option('runtime', {
+    description: 'Node.js runtime to use for executing npm packages',
+    type: 'string',
+    choices: ['npx', 'bunx'],
+    default: DEFAULT_RUNTIME,
   })
   .option('aider-extra-args', {
     alias: 'a',
@@ -146,4 +153,5 @@ await main({
   repomixExtraArgs: argv['repomix-extra-args'],
   testCommand: argv['test-command'],
   removePattern: argv['remove-pattern'],
+  runtime: argv.runtime as NodeRuntime,
 });

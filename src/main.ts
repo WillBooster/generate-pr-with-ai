@@ -18,7 +18,7 @@ import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 /**
@@ -55,6 +55,8 @@ export interface MainOptions {
   testCommand?: string;
   /** RegExp pattern to remove from issue and PR descriptions */
   removePattern?: string;
+  /** Node.js runtime to use for executing npm packages (npx or bunx) */
+  runtime: NodeRuntime;
 }
 
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
@@ -108,6 +110,7 @@ export async function main(options: MainOptions): Promise<void> {
         options.twoStagePlanning,
         options.reasoningEffort,
         options.repomixExtraArgs,
+        options.runtime,
         isPullRequest
       ))) ||
     undefined;
@@ -187,12 +190,12 @@ ${planText}`
     ).stdout;
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
+    toolCommand = buildToolCommandString(options.runtime, claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', claudeCodeArgs, {
+        await runCommand(options.runtime, claudeCodeArgs, {
           env: { ...process.env, NO_COLOR: '1' },
           stdio: 'inherit',
         })
@@ -200,24 +203,24 @@ ${planText}`
     }
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', codexArgs, prompt);
+    toolCommand = buildToolCommandString(options.runtime, codexArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', codexArgs, {
+        await runCommand(options.runtime, codexArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
     }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
+    toolCommand = buildToolCommandString(options.runtime, geminiArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', geminiArgs, {
+        await runCommand(options.runtime, geminiArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
