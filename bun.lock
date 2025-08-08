@@ -17,7 +17,7 @@
         "@types/bun": "1.2.19",
         "@types/micromatch": "4.0.9",
         "@types/yargs": "17.0.33",
-        "@willbooster/biome-config": "3.2.0",
+        "@willbooster/biome-config": "3.2.1",
         "@willbooster/prettier-config": "10.2.0",
         "@willbooster/wb": "9.0.7",
         "ai": "5.0.0-beta.14",
@@ -533,7 +533,7 @@
 
     "@wessberg/stringutil": ["@wessberg/stringutil@1.0.19", "", {}, "sha512-9AZHVXWlpN8Cn9k5BC/O0Dzb9E9xfEMXzYrNunwvkUTvuK7xgQPVRZpLo+jWCOZ5r8oBa8NIrHuPEu1hzbb6bg=="],
 
-    "@willbooster/biome-config": ["@willbooster/biome-config@3.2.0", "", { "peerDependencies": { "@biomejs/biome": ">=2" } }, "sha512-iuQgiqMLRIJnkm/0pAlgU7kvH1+04nIFOvZW1LRxuhTwgXeQ8VCPHEOpRFl2Dx4iNU1dhGZxUDbIZH5x1BjcAg=="],
+    "@willbooster/biome-config": ["@willbooster/biome-config@3.2.1", "", { "peerDependencies": { "@biomejs/biome": ">=2" } }, "sha512-2yS02SCGkkSo+7kIen+RNXRMAAUoq03PEOeYgR5TDd5xtap838Zupsb6F4QX2IiyTB6+kDccYcSjguC4KmsXtA=="],
 
     "@willbooster/prettier-config": ["@willbooster/prettier-config@10.2.0", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-ImWWldMbKujMwg4Kt4UzWank+9YIBgXrkGIo3o0EqgB984t7Dk1qiycbXWVdKARz7L4Y+9hyX6MrB6YLnjJARg=="],
 
