@@ -5,11 +5,11 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the npx codex command
+ * Builds the command line arguments for the codex command
  *
  * @param options The main options object
  * @param args Arguments to include
- * @returns An array of command line arguments for npx codex
+ * @returns An array of command line arguments for codex
  */
 export function buildCodexArgs(
   options: MainOptions,

@@ -11,6 +11,7 @@ import {
   DEFAULT_CODING_TOOL,
   DEFAULT_GEMINI_EXTRA_ARGS,
   DEFAULT_MAX_TEST_ATTEMPTS,
+  DEFAULT_NODE_RUNTIME,
   DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
 import { main } from './main.js';
@@ -107,6 +108,12 @@ const argv = await yargs(hideBin(process.argv))
     type: 'boolean',
     default: false,
   })
+  .option('node-runtime', {
+    description: 'Node.js runtime to use for running tools',
+    type: 'string',
+    choices: ['npx', 'bunx'],
+    default: DEFAULT_NODE_RUNTIME,
+  })
   // Options only for this standalone tool --------------------
   .option('working-dir', {
     alias: 'w',
@@ -138,6 +145,7 @@ await main({
   codingTool: argv['coding-tool'] as CodingTool,
   dryRun: argv['dry-run'],
   noBranch: argv['no-branch'],
+  nodeRuntime: argv['node-runtime'] as 'npx' | 'bunx',
   twoStagePlanning: argv['two-staged-planning'],
   issueNumber: argv['issue-number'],
   maxTestAttempts: argv['max-test-attempts'],

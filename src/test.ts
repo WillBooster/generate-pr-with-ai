@@ -6,6 +6,7 @@ import { parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
 import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
+import { buildGeminiArgs } from './tools/gemini.js';
 
 export async function testAndFix(options: MainOptions, resolutionPlan?: ResolutionPlan): Promise<string> {
   const maxAttempts = options.maxTestAttempts;
@@ -69,7 +70,13 @@ export async function runToolFix(
   resolutionPlan?: ResolutionPlan
 ): Promise<string> {
   const toolName =
-    options.codingTool === 'aider' ? 'Aider' : options.codingTool === 'claude-code' ? 'Claude Code' : 'Codex';
+    options.codingTool === 'aider'
+      ? 'Aider'
+      : options.codingTool === 'claude-code'
+        ? 'Claude Code'
+        : options.codingTool === 'codex-cli'
+          ? 'Codex CLI'
+          : 'Gemini CLI';
   let assistantResult: string;
 
   if (options.codingTool === 'aider') {
@@ -84,16 +91,24 @@ export async function runToolFix(
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Claude Code to fix "${options.testCommand}"...`));
     assistantResult = (
-      await runCommand('npx', claudeCodeArgs, {
+      await runCommand(options.nodeRuntime, claudeCodeArgs, {
         env: { ...process.env, NO_COLOR: '1' },
         stdio: 'inherit',
       })
     ).stdout;
-  } else {
+  } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Codex to fix "${options.testCommand}"...`));
     assistantResult = (
-      await runCommand('npx', codexArgs, {
+      await runCommand(options.nodeRuntime, codexArgs, {
+        env: { ...process.env, NO_COLOR: '1' },
+      })
+    ).stdout;
+  } else {
+    const geminiArgs = buildGeminiArgs(options, { prompt, resolutionPlan });
+    console.info(ansis.cyan(`Asking Gemini CLI to fix "${options.testCommand}"...`));
+    assistantResult = (
+      await runCommand(options.nodeRuntime, geminiArgs, {
         env: { ...process.env, NO_COLOR: '1' },
       })
     ).stdout;

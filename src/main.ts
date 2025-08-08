@@ -41,6 +41,8 @@ export interface MainOptions {
   dryRun: boolean;
   /** Do not create a new branch, commit changes directly to the base branch */
   noBranch: boolean;
+  /** Node.js runtime to use */
+  nodeRuntime: 'npx' | 'bunx';
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */
@@ -187,12 +189,12 @@ ${planText}`
     ).stdout;
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', claudeCodeArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', claudeCodeArgs, {
+        await runCommand(options.nodeRuntime, claudeCodeArgs, {
           env: { ...process.env, NO_COLOR: '1' },
           stdio: 'inherit',
         })
@@ -200,24 +202,24 @@ ${planText}`
     }
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', codexArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, codexArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', codexArgs, {
+        await runCommand(options.nodeRuntime, codexArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
     }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('npx', geminiArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, geminiArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand('npx', geminiArgs, {
+        await runCommand(options.nodeRuntime, geminiArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;

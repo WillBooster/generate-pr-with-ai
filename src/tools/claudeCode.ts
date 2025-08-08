@@ -6,11 +6,11 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the npx claude-code command
+ * Builds the command line arguments for the claude-code command
  *
  * @param options The main options object
  * @param args Arguments to include
- * @returns An array of command line arguments for npx @anthropic-ai/claude-code@latest
+ * @returns An array of command line arguments for @anthropic-ai/claude-code@latest
  */
 export function buildClaudeCodeArgs(
   options: MainOptions,

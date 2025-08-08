@@ -5,11 +5,11 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the npx gemini-cli command
+ * Builds the command line arguments for the gemini-cli command
  *
  * @param options The main options object
  * @param args Arguments to include
- * @returns An array of command line arguments for npx @google/gemini-cli@latest
+ * @returns An array of command line arguments for @google/gemini-cli@latest
  */
 export function buildGeminiArgs(
   options: MainOptions,
