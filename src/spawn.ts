@@ -33,7 +33,7 @@ export async function runCommand(
 
 export async function spawnAsync(
   command: string,
-  args: ReadonlyArray<string>,
+  args: readonly string[],
   options: SpawnOptions & { truncateStdout?: boolean }
 ): Promise<Omit<SpawnSyncReturns<string>, 'output' | 'error'>> {
   return new Promise((resolve, reject) => {
