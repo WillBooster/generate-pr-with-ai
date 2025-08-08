@@ -84,7 +84,7 @@ export async function runToolFix(
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Claude Code to fix "${options.testCommand}"...`));
     assistantResult = (
-      await runCommand('npx', claudeCodeArgs, {
+      await runCommand(options.nodeRuntime, claudeCodeArgs, {
         env: { ...process.env, NO_COLOR: '1' },
         stdio: 'inherit',
       })
@@ -93,7 +93,7 @@ export async function runToolFix(
     const codexArgs = buildCodexArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Codex to fix "${options.testCommand}"...`));
     assistantResult = (
-      await runCommand('npx', codexArgs, {
+      await runCommand(options.nodeRuntime, codexArgs, {
         env: { ...process.env, NO_COLOR: '1' },
       })
     ).stdout;

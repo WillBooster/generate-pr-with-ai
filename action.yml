@@ -20,6 +20,10 @@ inputs:
     description: 'Coding tool to use for making changes (aider, claude-code, codex-cli or gemini-cli)'
     required: false
     default: 'aider'
+  node-runtime:
+    description: 'Node.js package runner to use for CLI tools (npx or bunx)'
+    required: false
+    default: 'npx'
   repomix-extra-args:
     description: 'Extra arguments for repomix when generating context for planning'
     required: false
@@ -70,6 +74,7 @@ runs:
         INPUT_TWO-STAGED-PLANNING: ${{ inputs.two-staged-planning }}
         INPUT_REASONING-EFFORT: ${{ inputs.reasoning-effort }}
         INPUT_CODING-TOOL: ${{ inputs.coding-tool }}
+        INPUT_NODE-RUNTIME: ${{ inputs.node-runtime }}
         INPUT_REPOMIX-EXTRA-ARGS: ${{ inputs.repomix-extra-args }}
         INPUT_AIDER-EXTRA-ARGS: ${{ inputs.aider-extra-args }}
         INPUT_CLAUDE-CODE-EXTRA-ARGS: ${{ inputs.claude-code-extra-args }}

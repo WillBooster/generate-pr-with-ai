@@ -3,9 +3,9 @@ import os from 'node:os';
 import path from 'node:path';
 import core from '@actions/core';
 import { loadConfigFile } from './config.js';
-import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS } from './defaultOptions.js';
+import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_NODE_RUNTIME } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 const configOptions = loadConfigFile();
 
@@ -23,6 +23,9 @@ const dryRun = dryRunInput === 'true';
 const codingTool = (core.getInput('coding-tool', { required: false }) ||
   (configOptions['coding-tool'] as string) ||
   DEFAULT_CODING_TOOL) as CodingTool;
+const nodeRuntime = (core.getInput('node-runtime', { required: false }) ||
+  (configOptions['node-runtime'] as string) ||
+  DEFAULT_NODE_RUNTIME) as NodeRuntime;
 const aiderExtraArgs =
   core.getInput('aider-extra-args', { required: false }) || (configOptions['aider-extra-args'] as string);
 const claudeCodeExtraArgs =
@@ -67,6 +70,7 @@ void main({
   codexExtraArgs,
   geminiExtraArgs,
   codingTool,
+  nodeRuntime,
   twoStagePlanning,
   dryRun,
   noBranch,

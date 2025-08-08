@@ -12,9 +12,10 @@ import {
   DEFAULT_GEMINI_EXTRA_ARGS,
   DEFAULT_MAX_TEST_ATTEMPTS,
   DEFAULT_REPOMIX_EXTRA_ARGS,
+  DEFAULT_NODE_RUNTIME,
 } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 // Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
@@ -51,6 +52,12 @@ const argv = await yargs(hideBin(process.argv))
     type: 'string',
     choices: ['aider', 'claude-code', 'codex-cli', 'gemini-cli'],
     default: DEFAULT_CODING_TOOL,
+  })
+  .option('node-runtime', {
+    description: 'Node.js package runner to use for CLI tools',
+    type: 'string',
+    choices: ['npx', 'bunx'],
+    default: DEFAULT_NODE_RUNTIME,
   })
   .option('aider-extra-args', {
     alias: 'a',
@@ -136,6 +143,7 @@ await main({
   codexExtraArgs: argv['codex-extra-args'],
   geminiExtraArgs: argv['gemini-extra-args'],
   codingTool: argv['coding-tool'] as CodingTool,
+  nodeRuntime: (argv['node-runtime'] as NodeRuntime) ?? DEFAULT_NODE_RUNTIME,
   dryRun: argv['dry-run'],
   noBranch: argv['no-branch'],
   twoStagePlanning: argv['two-staged-planning'],
