@@ -42,7 +42,7 @@ export interface MainOptions {
   /** Do not create a new branch, commit changes directly to the base branch */
   noBranch: boolean;
   /** Node.js runtime to use */
-  nodeRuntime: 'npx' | 'bunx';
+  nodeRuntime: 'node' | 'bun' | 'npx' | 'bunx';
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */

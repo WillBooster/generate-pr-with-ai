@@ -45,7 +45,7 @@ const noBranchInput = core.getInput('no-branch', { required: false }) || (config
 const noBranch = noBranchInput === 'true';
 const nodeRuntime = (core.getInput('node-runtime', { required: false }) ||
   (configOptions['node-runtime'] as string) ||
-  DEFAULT_NODE_RUNTIME) as 'npx' | 'bunx';
+  DEFAULT_NODE_RUNTIME) as 'node' | 'bun' | 'npx' | 'bunx';
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(
@@ -61,8 +61,8 @@ if (!['aider', 'claude-code', 'codex-cli', 'gemini-cli'].includes(codingTool)) {
   process.exit(1);
 }
 
-if (nodeRuntime && !['npx', 'bunx'].includes(nodeRuntime)) {
-  console.error(`Invalid node-runtime value: ${nodeRuntime}. Using default. Valid values are: npx, bunx`);
+if (nodeRuntime && !['node', 'bun', 'npx', 'bunx'].includes(nodeRuntime)) {
+  console.error(`Invalid node-runtime value: ${nodeRuntime}. Using default. Valid values are: node, bun, npx, bunx`);
   process.exit(1);
 }
 

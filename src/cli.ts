@@ -111,7 +111,7 @@ const argv = await yargs(hideBin(process.argv))
   .option('node-runtime', {
     description: 'Node.js runtime to use for running tools',
     type: 'string',
-    choices: ['npx', 'bunx'],
+    choices: ['node', 'bun', 'npx', 'bunx'],
     default: DEFAULT_NODE_RUNTIME,
   })
   // Options only for this standalone tool --------------------
@@ -145,7 +145,7 @@ await main({
   codingTool: argv['coding-tool'] as CodingTool,
   dryRun: argv['dry-run'],
   noBranch: argv['no-branch'],
-  nodeRuntime: argv['node-runtime'] as 'npx' | 'bunx',
+  nodeRuntime: argv['node-runtime'] as 'node' | 'bun' | 'npx' | 'bunx',
   twoStagePlanning: argv['two-staged-planning'],
   issueNumber: argv['issue-number'],
   maxTestAttempts: argv['max-test-attempts'],
