@@ -6,7 +6,7 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the claude-code command
+ * Builds the command line arguments for the Claude Code command
  *
  * @param options The main options object
  * @param args Arguments to include

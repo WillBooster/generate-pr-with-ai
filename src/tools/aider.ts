@@ -5,7 +5,7 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the aider command
+ * Builds the command line arguments for the Aider command
  *
  * @param options The main options object
  * @param args Arguments to include

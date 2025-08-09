@@ -5,11 +5,11 @@ import type { ResolutionPlan } from '../plan.js';
 import { parseCommandLineArgs } from '../spawn.js';
 
 /**
- * Builds the command line arguments for the codex command
+ * Builds the command line arguments for the Codex CLI command
  *
  * @param options The main options object
  * @param args Arguments to include
- * @returns An array of command line arguments for codex
+ * @returns An array of command line arguments for @openai/codex@latest
  */
 export function buildCodexArgs(
   options: MainOptions,
