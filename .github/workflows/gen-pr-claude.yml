@@ -13,6 +13,7 @@ jobs:
     with:
       coding-tool: claude-code
       issue-number: ${{ github.event.issue.number || github.event.number }}
+      test-command: bun run check-all-for-ai
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
       GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
