@@ -5,7 +5,8 @@ import core from '@actions/core';
 import { loadConfigFile } from './config.js';
 import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_NODE_RUNTIME } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
+import { normalizeNodeRuntime } from './spawn.js';
+import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
 
 const configOptions = loadConfigFile();
 
@@ -43,7 +44,7 @@ const removePattern =
   core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
 const noBranchInput = core.getInput('no-branch', { required: false }) || (configOptions['no-branch'] as string);
 const noBranch = noBranchInput === 'true';
-const nodeRuntime = (core.getInput('node-runtime', { required: false }) ||
+const nodeRuntimeInput = (core.getInput('node-runtime', { required: false }) ||
   (configOptions['node-runtime'] as string) ||
   DEFAULT_NODE_RUNTIME) as NodeRuntime;
 
@@ -61,10 +62,15 @@ if (!['aider', 'claude-code', 'codex-cli', 'gemini-cli'].includes(codingTool)) {
   process.exit(1);
 }
 
-if (nodeRuntime && !['node', 'bun', 'npx', 'bunx'].includes(nodeRuntime)) {
-  console.error(`Invalid node-runtime value: ${nodeRuntime}. Using default. Valid values are: node, bun, npx, bunx`);
+if (nodeRuntimeInput && !['node', 'bun', 'npx', 'bunx'].includes(nodeRuntimeInput)) {
+  console.error(
+    `Invalid node-runtime value: ${nodeRuntimeInput}. Using default. Valid values are: node, bun, npx, bunx`
+  );
   process.exit(1);
 }
+
+// Normalize the runtime value (convert aliases to actual commands)
+const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(nodeRuntimeInput);
 
 // cf. https://github.com/cli/cli/issues/8441#issuecomment-1870271857
 fs.rmSync(path.join(os.homedir(), '.config', 'gh'), { force: true, recursive: true });

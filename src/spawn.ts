@@ -2,7 +2,7 @@ import type { SpawnOptions, SpawnSyncReturns } from 'node:child_process';
 import { spawn } from 'node:child_process';
 import ansis from 'ansis';
 import { truncateText } from './text.js';
-import type { NodeRuntime } from './types.js';
+import type { NodeRuntime, NodeRuntimeActual } from './types.js';
 
 const MAX_LOG_LENGTH = 3000;
 
@@ -13,7 +13,7 @@ const MAX_LOG_LENGTH = 3000;
  * @param runtime The runtime value to normalize
  * @returns The normalized runtime command
  */
-export function normalizeNodeRuntime(runtime: NodeRuntime): 'npx' | 'bunx' {
+export function normalizeNodeRuntime(runtime: NodeRuntime): NodeRuntimeActual {
   switch (runtime) {
     case 'node':
     case 'npx':

@@ -171,11 +171,19 @@ export type ReasoningEffort = 'low' | 'medium' | 'high';
 export type CodingTool = 'aider' | 'claude-code' | 'codex-cli' | 'gemini-cli';
 
 /**
- * Represents the Node.js runtime to use for running tools
+ * Represents the actual Node.js runtime commands (without aliases)
+ *
+ * - 'npx': Use npx (npm package runner)
+ * - 'bunx': Use bunx (bun package runner)
+ */
+export type NodeRuntimeActual = 'npx' | 'bunx';
+
+/**
+ * Represents the Node.js runtime to use for running tools (including aliases)
  *
  * - 'node': Alias for 'npx' - uses npm package runner
  * - 'bun': Alias for 'bunx' - uses bun package runner
  * - 'npx': Use npx (npm package runner)
  * - 'bunx': Use bunx (bun package runner)
  */
-export type NodeRuntime = 'node' | 'bun' | 'npx' | 'bunx';
+export type NodeRuntime = 'node' | 'bun' | NodeRuntimeActual;

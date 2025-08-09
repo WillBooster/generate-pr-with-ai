@@ -15,7 +15,8 @@ import {
   DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
+import { normalizeNodeRuntime } from './spawn.js';
+import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
 
 // Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
@@ -137,6 +138,9 @@ if (argv['working-dir']) {
   console.info(`Changed working directory to: ${process.cwd()}`);
 }
 
+// Normalize the runtime value (convert aliases to actual commands)
+const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(argv['node-runtime'] as NodeRuntime);
+
 await main({
   aiderExtraArgs: argv['aider-extra-args'],
   claudeCodeExtraArgs: argv['claude-code-extra-args'],
@@ -145,7 +149,7 @@ await main({
   codingTool: argv['coding-tool'] as CodingTool,
   dryRun: argv['dry-run'],
   noBranch: argv['no-branch'],
-  nodeRuntime: argv['node-runtime'] as NodeRuntime,
+  nodeRuntime,
   twoStagePlanning: argv['two-staged-planning'],
   issueNumber: argv['issue-number'],
   maxTestAttempts: argv['max-test-attempts'],

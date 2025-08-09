@@ -11,14 +11,14 @@ import {
 import { createIssueInfo } from './issue.js';
 import { findDistinctFence } from './markdown.js';
 import { planCodeChanges } from './plan.js';
-import { normalizeNodeRuntime, runCommand } from './spawn.js';
+import { runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
 import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
 import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
-import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntimeActual, ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 /**
@@ -41,8 +41,8 @@ export interface MainOptions {
   dryRun: boolean;
   /** Do not create a new branch, commit changes directly to the base branch */
   noBranch: boolean;
-  /** Node.js runtime to use */
-  nodeRuntime: NodeRuntime;
+  /** Node.js runtime to use (already normalized, without aliases) */
+  nodeRuntime: NodeRuntimeActual;
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */
@@ -189,13 +189,12 @@ ${planText}`
     ).stdout;
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
-    toolCommand = buildToolCommandString(normalizedRuntime, claudeCodeArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(normalizedRuntime, claudeCodeArgs, {
+        await runCommand(options.nodeRuntime, claudeCodeArgs, {
           env: { ...process.env, NO_COLOR: '1' },
           stdio: 'inherit',
         })
@@ -203,26 +202,24 @@ ${planText}`
     }
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
-    toolCommand = buildToolCommandString(normalizedRuntime, codexArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, codexArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(normalizedRuntime, codexArgs, {
+        await runCommand(options.nodeRuntime, codexArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
     }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
-    toolCommand = buildToolCommandString(normalizedRuntime, geminiArgs, prompt);
+    toolCommand = buildToolCommandString(options.nodeRuntime, geminiArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(normalizedRuntime, geminiArgs, {
+        await runCommand(options.nodeRuntime, geminiArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
