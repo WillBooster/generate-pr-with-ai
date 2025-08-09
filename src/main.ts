@@ -11,7 +11,7 @@ import {
 import { createIssueInfo } from './issue.js';
 import { findDistinctFence } from './markdown.js';
 import { planCodeChanges } from './plan.js';
-import { runCommand } from './spawn.js';
+import { normalizeNodeRuntime, runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
 import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
 import { buildAiderArgs } from './tools/aider.js';
@@ -189,12 +189,13 @@ ${planText}`
     ).stdout;
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, claudeCodeArgs, prompt);
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
+    toolCommand = buildToolCommandString(normalizedRuntime, claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(options.nodeRuntime, claudeCodeArgs, {
+        await runCommand(normalizedRuntime, claudeCodeArgs, {
           env: { ...process.env, NO_COLOR: '1' },
           stdio: 'inherit',
         })
@@ -202,24 +203,26 @@ ${planText}`
     }
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, codexArgs, prompt);
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
+    toolCommand = buildToolCommandString(normalizedRuntime, codexArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(options.nodeRuntime, codexArgs, {
+        await runCommand(normalizedRuntime, codexArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;
     }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, geminiArgs, prompt);
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
+    toolCommand = buildToolCommandString(normalizedRuntime, geminiArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
       toolResult = (
-        await runCommand(options.nodeRuntime, geminiArgs, {
+        await runCommand(normalizedRuntime, geminiArgs, {
           env: { ...process.env, NO_COLOR: '1' },
         })
       ).stdout;

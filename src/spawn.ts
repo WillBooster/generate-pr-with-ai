@@ -2,8 +2,27 @@ import type { SpawnOptions, SpawnSyncReturns } from 'node:child_process';
 import { spawn } from 'node:child_process';
 import ansis from 'ansis';
 import { truncateText } from './text.js';
+import type { NodeRuntime } from './types.js';
 
 const MAX_LOG_LENGTH = 3000;
+
+/**
+ * Normalizes node runtime values to their actual executable commands.
+ * 'node' is an alias for 'npx' and 'bun' is an alias for 'bunx'.
+ *
+ * @param runtime The runtime value to normalize
+ * @returns The normalized runtime command
+ */
+export function normalizeNodeRuntime(runtime: NodeRuntime): 'npx' | 'bunx' {
+  switch (runtime) {
+    case 'node':
+    case 'npx':
+      return 'npx';
+    case 'bun':
+    case 'bunx':
+      return 'bunx';
+  }
+}
 
 export async function runCommand(
   command: string,

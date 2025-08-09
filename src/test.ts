@@ -2,7 +2,7 @@ import ansis from 'ansis';
 import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import type { ResolutionPlan } from './plan.js';
-import { parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
+import { normalizeNodeRuntime, parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
 import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
@@ -90,8 +90,9 @@ export async function runToolFix(
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Claude Code to fix "${options.testCommand}"...`));
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
     assistantResult = (
-      await runCommand(options.nodeRuntime, claudeCodeArgs, {
+      await runCommand(normalizedRuntime, claudeCodeArgs, {
         env: { ...process.env, NO_COLOR: '1' },
         stdio: 'inherit',
       })
@@ -99,16 +100,18 @@ export async function runToolFix(
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Codex to fix "${options.testCommand}"...`));
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
     assistantResult = (
-      await runCommand(options.nodeRuntime, codexArgs, {
+      await runCommand(normalizedRuntime, codexArgs, {
         env: { ...process.env, NO_COLOR: '1' },
       })
     ).stdout;
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt, resolutionPlan });
     console.info(ansis.cyan(`Asking Gemini CLI to fix "${options.testCommand}"...`));
+    const normalizedRuntime = normalizeNodeRuntime(options.nodeRuntime);
     assistantResult = (
-      await runCommand(options.nodeRuntime, geminiArgs, {
+      await runCommand(normalizedRuntime, geminiArgs, {
         env: { ...process.env, NO_COLOR: '1' },
       })
     ).stdout;
