@@ -173,8 +173,8 @@ export type CodingTool = 'aider' | 'claude-code' | 'codex-cli' | 'gemini-cli';
 /**
  * Represents the Node.js runtime to use for running tools
  *
- * - 'node': Use node directly
- * - 'bun': Use bun directly
+ * - 'node': Alias for 'npx' - uses npm package runner
+ * - 'bun': Alias for 'bunx' - uses bun package runner
  * - 'npx': Use npx (npm package runner)
  * - 'bunx': Use bunx (bun package runner)
  */
