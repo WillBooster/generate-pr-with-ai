@@ -5,7 +5,7 @@ import core from '@actions/core';
 import { loadConfigFile } from './config.js';
 import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_NODE_RUNTIME } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 const configOptions = loadConfigFile();
 
@@ -45,7 +45,7 @@ const noBranchInput = core.getInput('no-branch', { required: false }) || (config
 const noBranch = noBranchInput === 'true';
 const nodeRuntime = (core.getInput('node-runtime', { required: false }) ||
   (configOptions['node-runtime'] as string) ||
-  DEFAULT_NODE_RUNTIME) as 'node' | 'bun' | 'npx' | 'bunx';
+  DEFAULT_NODE_RUNTIME) as NodeRuntime;
 
 if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
   console.error(

@@ -169,3 +169,13 @@ export type ReasoningEffort = 'low' | 'medium' | 'high';
  * - 'gemini-cli': Use Gemini CLI for code changes
  */
 export type CodingTool = 'aider' | 'claude-code' | 'codex-cli' | 'gemini-cli';
+
+/**
+ * Represents the Node.js runtime to use for running tools
+ *
+ * - 'node': Use node directly
+ * - 'bun': Use bun directly
+ * - 'npx': Use npx (npm package runner)
+ * - 'bunx': Use bunx (bun package runner)
+ */
+export type NodeRuntime = 'node' | 'bun' | 'npx' | 'bunx';

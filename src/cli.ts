@@ -15,7 +15,7 @@ import {
   DEFAULT_REPOMIX_EXTRA_ARGS,
 } from './defaultOptions.js';
 import { main } from './main.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 
 // Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
@@ -145,7 +145,7 @@ await main({
   codingTool: argv['coding-tool'] as CodingTool,
   dryRun: argv['dry-run'],
   noBranch: argv['no-branch'],
-  nodeRuntime: argv['node-runtime'] as 'node' | 'bun' | 'npx' | 'bunx',
+  nodeRuntime: argv['node-runtime'] as NodeRuntime,
   twoStagePlanning: argv['two-staged-planning'],
   issueNumber: argv['issue-number'],
   maxTestAttempts: argv['max-test-attempts'],

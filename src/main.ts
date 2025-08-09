@@ -18,7 +18,7 @@ import { buildAiderArgs } from './tools/aider.js';
 import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
-import type { CodingTool, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, ReasoningEffort } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 /**
@@ -42,7 +42,7 @@ export interface MainOptions {
   /** Do not create a new branch, commit changes directly to the base branch */
   noBranch: boolean;
   /** Node.js runtime to use */
-  nodeRuntime: 'node' | 'bun' | 'npx' | 'bunx';
+  nodeRuntime: NodeRuntime;
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */
