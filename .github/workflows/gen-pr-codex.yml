@@ -1,0 +1,19 @@
+name: Generate PR with Codex CLI
+on:
+  issues:
+    types:
+      - labeled
+  pull_request:
+    types:
+      - labeled
+jobs:
+  gen-pr:
+    if: contains(github.event.label.name, 'gen-pr-all') || contains(github.event.label.name, 'gen-pr-codex')
+    uses: WillBooster/reusable-workflows/.github/workflows/gen-pr.yml@main
+    with:
+      coding-tool: codex-cli
+      issue-number: ${{ github.event.issue.number || github.event.number }}
+      test-command: bun run check-all-for-ai
+    secrets:
+      GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

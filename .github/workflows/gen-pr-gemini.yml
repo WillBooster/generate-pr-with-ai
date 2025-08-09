@@ -1,4 +1,4 @@
-name: Generate PR with OpenAI Codex CLI
+name: Generate PR with Gemini CLI
 on:
   issues:
     types:
@@ -8,11 +8,12 @@ on:
       - labeled
 jobs:
   gen-pr:
-    if: contains(github.event.label.name, 'gen-pr-all')
+    if: contains(github.event.label.name, 'gen-pr-all') || contains(github.event.label.name, 'gen-pr-gemini')
     uses: WillBooster/reusable-workflows/.github/workflows/gen-pr.yml@main
     with:
-      coding-tool: codex-cli
+      coding-tool: gemini-cli
       issue-number: ${{ github.event.issue.number || github.event.number }}
+      test-command: bun run check-all-for-ai
     secrets:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
