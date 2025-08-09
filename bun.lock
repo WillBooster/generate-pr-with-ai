@@ -23,7 +23,7 @@
         "ai": "5.0.0-beta.14",
         "ai-v4": "npm:ai@4.3.17",
         "ansis": "4.1.0",
-        "build-ts": "15.0.18",
+        "build-ts": "15.0.19",
         "conventional-changelog-conventionalcommits": "9.1.0",
         "dotenv": "17.2.1",
         "lefthook": "1.12.2",
@@ -537,7 +537,7 @@
 
     "@willbooster/prettier-config": ["@willbooster/prettier-config@10.2.0", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-ImWWldMbKujMwg4Kt4UzWank+9YIBgXrkGIo3o0EqgB984t7Dk1qiycbXWVdKARz7L4Y+9hyX6MrB6YLnjJARg=="],
 
-    "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@7.0.3", "", { "dependencies": { "dotenv": "17.2.1", "tree-kill": "1.2.2" } }, "sha512-vFjvBcp05I3n1l6+fbcVUjcGhBypnSXo/c2TsiA3RYzFYtXm3dfAJ09bJg0J+udb+fVjJxHvARQMyZsz/IQeHw=="],
+    "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@7.0.4", "", { "dependencies": { "dotenv": "17.2.1", "tree-kill": "1.2.2" } }, "sha512-MkIytidNsoepze1caHYvE/uRlxv96kQMJteJU0uXPr5eZR3cyE80/QHiGvbbWcqVEWAgkd8Z8fxQXjP2giEMVA=="],
 
     "@willbooster/wb": ["@willbooster/wb@9.0.9", "", { "dependencies": { "chalk": "5.5.0", "dotenv": "17.2.1", "globby": "14.1.0", "kill-port": "2.0.1", "minimal-promise-pool": "5.0.0", "tree-kill": "1.2.2", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-B/bb1so2iZkbpIbC8iGhx9ajZPskGBS6CXCVLYlLJ9GXFBb7BEvzgoxhQa2hQI5xFpjEAp2IB2+7NhJJcf31FQ=="],
 
@@ -597,7 +597,7 @@
 
     "buffer-from": ["buffer-from@1.1.2", "", {}, "sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ=="],
 
-    "build-ts": ["build-ts@15.0.18", "", { "dependencies": { "@babel/core": "7.28.0", "@babel/plugin-proposal-decorators": "7.28.0", "@babel/plugin-proposal-explicit-resource-management": "7.27.4", "@babel/plugin-syntax-import-attributes": "7.27.1", "@babel/plugin-transform-runtime": "7.28.0", "@babel/preset-env": "7.28.0", "@babel/preset-react": "7.27.1", "@babel/preset-typescript": "7.27.1", "@rollup/plugin-babel": "6.0.4", "@rollup/plugin-commonjs": "28.0.6", "@rollup/plugin-json": "6.1.0", "@rollup/plugin-node-resolve": "16.0.1", "@rollup/plugin-replace": "6.0.2", "@rollup/plugin-terser": "0.4.4", "@rollup/pluginutils": "5.2.0", "@willbooster/shared-lib-node": "7.0.3", "babel-plugin-polyfill-corejs3": "0.13.0", "babel-plugin-transform-remove-console": "6.9.4", "chalk": "5.5.0", "core-js": "3.45.0", "core-js-pure": "3.45.0", "date-time": "4.0.0", "pretty-ms": "9.2.0", "rollup": "4.46.2", "rollup-plugin-analyzer": "4.0.0", "rollup-plugin-keep-import": "1.0.3", "rollup-plugin-node-externals": "8.0.1", "rollup-plugin-preserve-directives": "0.4.0", "rollup-plugin-string": "3.0.0", "rollup-plugin-ts": "3.4.5", "signal-exit": "4.1.0", "tsx": "4.20.3", "typescript": "5.9.2", "yargs": "18.0.0" }, "bin": { "build-ts": "bin/index.js" } }, "sha512-7UAyuGsK1frmzbsI5qWtQ6wHXSCBAxig7qbmYsqKdzSpKCWl3GjNTldkRR1zAtT2mVFCFXCrxdiWZDKkWafMqg=="],
+    "build-ts": ["build-ts@15.0.19", "", { "dependencies": { "@babel/core": "7.28.0", "@babel/plugin-proposal-decorators": "7.28.0", "@babel/plugin-proposal-explicit-resource-management": "7.27.4", "@babel/plugin-syntax-import-attributes": "7.27.1", "@babel/plugin-transform-runtime": "7.28.0", "@babel/preset-env": "7.28.0", "@babel/preset-react": "7.27.1", "@babel/preset-typescript": "7.27.1", "@rollup/plugin-babel": "6.0.4", "@rollup/plugin-commonjs": "28.0.6", "@rollup/plugin-json": "6.1.0", "@rollup/plugin-node-resolve": "16.0.1", "@rollup/plugin-replace": "6.0.2", "@rollup/plugin-terser": "0.4.4", "@rollup/pluginutils": "5.2.0", "@willbooster/shared-lib-node": "7.0.4", "babel-plugin-polyfill-corejs3": "0.13.0", "babel-plugin-transform-remove-console": "6.9.4", "chalk": "5.5.0", "core-js": "3.45.0", "core-js-pure": "3.45.0", "date-time": "4.0.0", "pretty-ms": "9.2.0", "rollup": "4.46.2", "rollup-plugin-analyzer": "4.0.0", "rollup-plugin-keep-import": "1.0.3", "rollup-plugin-node-externals": "8.0.1", "rollup-plugin-preserve-directives": "0.4.0", "rollup-plugin-string": "3.0.0", "rollup-plugin-ts": "3.4.5", "signal-exit": "4.1.0", "tsx": "4.20.3", "typescript": "5.9.2", "yargs": "18.0.0" }, "bin": { "build-ts": "bin/index.js" } }, "sha512-7TgiCHHxVzgbVQm8hINrqbQPosl/rg08pHp2pmTkxAYg1lit00ianm1Prph6ZvURK9+m+ZSrK70wiid75//xiQ=="],
 
     "bun-types": ["bun-types@1.2.19", "", { "dependencies": { "@types/node": "*" }, "peerDependencies": { "@types/react": "^19" } }, "sha512-uAOTaZSPuYsWIXRpj7o56Let0g/wjihKCkeRqUBhlLVM/Bt+Fj9xTo+LhC1OV1XDaGkz4hNC80et5xgy+9KTHQ=="],
 
