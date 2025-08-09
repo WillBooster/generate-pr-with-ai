@@ -64,7 +64,7 @@ if (!['aider', 'claude-code', 'codex-cli', 'gemini-cli'].includes(codingTool)) {
 
 if (nodeRuntimeInput && !['node', 'bun', 'npx', 'bunx'].includes(nodeRuntimeInput)) {
   console.error(
-    `Invalid node-runtime value: ${nodeRuntimeInput}. Using default. Valid values are: node, bun, npx, bunx`
+    `Invalid node-runtime value: ${nodeRuntimeInput}. Using default. Valid values are: node (npx) and bun (bunx)`
   );
   process.exit(1);
 }
