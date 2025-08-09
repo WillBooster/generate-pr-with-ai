@@ -43,7 +43,7 @@
     "@types/yargs": "17.0.33",
     "@willbooster/biome-config": "3.2.1",
     "@willbooster/prettier-config": "10.2.0",
-    "@willbooster/wb": "9.0.8",
+    "@willbooster/wb": "9.0.9",
     "ai": "5.0.0-beta.14",
     "ai-v4": "npm:ai@4.3.17",
     "ansis": "4.1.0",
