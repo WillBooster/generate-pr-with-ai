@@ -125,7 +125,8 @@ ${yamlFence}`,
           .filter((review) => review.body?.trim()) // Only include reviews with actual content
           .map((review) => ({
             author: review.user.login,
-            body: `Review result (${review.state}): ${normalizeNewLines(review.body)}`,
+            state: review.state,
+            body: normalizeNewLines(review.body),
           }));
         issueInfo.comments.push(...reviewResultComments);
       } catch (error) {

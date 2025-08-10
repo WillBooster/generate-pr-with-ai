@@ -106,6 +106,8 @@ export interface IssueComment {
   author: string;
   /** The comment's content */
   body: string;
+  /** The comment's state */
+  state: string;
 }
 
 /**
