@@ -279,7 +279,7 @@ describe('createIssueInfo', () => {
       const reviewResultComment = result.reviews?.[0];
       expect(reviewResultComment).toBeDefined();
       expect(reviewResultComment?.author).toBe('exKAZUu');
-      expect(reviewResultComment?.body).toContain('Great!');
+      expect(reviewResultComment?.body).toBe('Great!');
       expect(reviewResultComment?.state).toBe('COMMENTED');
 
       // Referenced issues - should reference #89
