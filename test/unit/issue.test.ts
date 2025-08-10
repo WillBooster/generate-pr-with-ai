@@ -265,8 +265,8 @@ describe('createIssueInfo', () => {
       expect(result.code_changes).toContain("console.log('Hi');");
 
       // Code review comments functionality - "Use Hello" feature
-      expect(result.comments.length).toBeGreaterThan(0);
-      const reviewComment = result.comments.find((c) => c.body.includes('Use Hello'));
+      expect(result.comments.length).toBe(1);
+      const reviewComment = result.comments[0];
       expect(reviewComment).toBeDefined();
       expect(reviewComment?.author).toBe('exKAZUu');
       expect(reviewComment?.body).toContain('Review comment on `src/main.ts:54`');
@@ -275,7 +275,8 @@ describe('createIssueInfo', () => {
       expect(reviewComment?.body).toContain('comment: Use Hello');
 
       // Review result comment functionality - "Great!" comment
-      const reviewResultComment = result.comments.find((c) => c.body.includes('Great!'));
+      expect(result.comments.length).toBe(1);
+      const reviewResultComment = result.reviews?.[0];
       expect(reviewResultComment).toBeDefined();
       expect(reviewResultComment?.author).toBe('exKAZUu');
       expect(reviewResultComment?.body).toContain('Great!');

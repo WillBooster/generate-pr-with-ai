@@ -121,14 +121,13 @@ ${yamlFence}`,
       try {
         const reviews: GitHubReview[] = JSON.parse(reviewsResult);
         // Add review result comments to the regular comments
-        const reviewResultComments = reviews
+        issueInfo.reviews = reviews
           .filter((review) => review.body?.trim()) // Only include reviews with actual content
           .map((review) => ({
             author: review.user.login,
             state: review.state,
             body: normalizeNewLines(review.body),
           }));
-        issueInfo.comments.push(...reviewResultComments);
       } catch (error) {
         // Ignore JSON parsing errors for reviews
         console.warn('Failed to parse PR reviews:', error);
