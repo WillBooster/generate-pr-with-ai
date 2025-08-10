@@ -3,7 +3,7 @@ import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
-import type { GitHubComment, GitHubIssue, GitHubReviewComment, IssueInfo } from './types.js';
+import type { GitHubComment, GitHubIssue, GitHubReview, GitHubReviewComment, IssueInfo } from './types.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
@@ -108,6 +108,29 @@ ${yamlFence}`,
       } catch (error) {
         // Ignore JSON parsing errors for review comments
         console.warn('Failed to parse PR review comments:', error);
+      }
+    }
+
+    // Fetch PR reviews (overall review comments like "Great!")
+    const { stdout: reviewsResult } = await runCommand(
+      'gh',
+      ['api', `repos/{owner}/{repo}/pulls/${issueNumber}/reviews`],
+      { ignoreExitStatus: true }
+    );
+    if (reviewsResult.trim()) {
+      try {
+        const reviews: GitHubReview[] = JSON.parse(reviewsResult);
+        // Add review result comments to the regular comments
+        const reviewResultComments = reviews
+          .filter((review) => review.body?.trim()) // Only include reviews with actual content
+          .map((review) => ({
+            author: review.user.login,
+            body: `Review result (${review.state}): ${normalizeNewLines(review.body)}`,
+          }));
+        issueInfo.comments.push(...reviewResultComments);
+      } catch (error) {
+        // Ignore JSON parsing errors for reviews
+        console.warn('Failed to parse PR reviews:', error);
       }
     }
   }

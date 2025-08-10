@@ -274,6 +274,12 @@ describe('createIssueInfo', () => {
       expect(reviewComment?.body).toContain("codeCommented: +  console.log('Hi');");
       expect(reviewComment?.body).toContain('comment: Use Hello');
 
+      // Review result comment functionality - "Great!" comment
+      const reviewResultComment = result.comments.find((c) => c.body.includes('Great!'));
+      expect(reviewResultComment).toBeDefined();
+      expect(reviewResultComment?.author).toBe('exKAZUu');
+      expect(reviewResultComment?.body).toContain('Review result (COMMENTED): Great!');
+
       // Referenced issues - should reference #89
       expect(result.referenced_issues).toBeDefined();
       expect(result.referenced_issues?.length).toBe(1);
