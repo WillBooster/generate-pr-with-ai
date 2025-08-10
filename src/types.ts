@@ -104,20 +104,11 @@ export interface GitHubIssue {
 export interface IssueComment {
   /** The comment author's GitHub username */
   author: string;
+  codeLocation?: string;
+  codeContent?: string;
+  reviewState?: string;
   /** The comment's content */
   body: string;
-}
-
-/**
- * Represents a simplified review comment for PR processing
- */
-export interface ReviewComment {
-  /** The comment author's GitHub username */
-  author: string;
-  /** The comment's content */
-  body: string;
-  /** The comment's state */
-  state: string;
 }
 
 /**
@@ -178,8 +169,6 @@ export interface IssueInfo {
   description: string;
   /** Simplified comments on the issue */
   comments: IssueComment[];
-  /** Simplified reviews on the issue */
-  reviews?: ReviewComment[];
   /** Code changes (only present for PRs with diff content) */
   code_changes?: string;
   /** Referenced issues and pull requests */

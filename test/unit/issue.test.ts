@@ -102,9 +102,16 @@ describe('createIssueInfo', () => {
       // Description content
       expect(result.description).toContain('Modify `src/main.ts` to print "Hello World"');
 
-      // Issue characteristics
-      expect(result.comments.length).toBeGreaterThan(0);
-      expect(result.comments.some((c) => c.body.includes('#89'))).toBe(true);
+      // Issue characteristics - should have 3 comments in chronological order
+      expect(result.comments.length).toBe(3);
+
+      // Check chronological order of comments (oldest first)
+      expect(result.comments[0]?.body).toContain('Hello, World!'); // First comment: 2025-04-27T09:54:46Z
+      expect(result.comments[1]?.body).toContain('Good idea!'); // Second comment: 2025-04-27T13:42:14Z
+      expect(result.comments[2]?.body).toContain('#89'); // Third comment: 2025-06-07T14:03:14Z
+
+      // Verify all comments are from the same author
+      expect(result.comments.every((c) => c.author === 'exKAZUu')).toBe(true);
       expect(result.code_changes).toBeUndefined(); // Not a PR
 
       // Referenced issues
@@ -264,23 +271,22 @@ describe('createIssueInfo', () => {
       expect(result.code_changes).toContain('configureEnvVars();');
       expect(result.code_changes).toContain("console.log('Hi');");
 
-      // Code review comments functionality - "Use Hello" feature
-      expect(result.comments.length).toBe(1);
-      const reviewComment = result.comments[0];
-      expect(reviewComment).toBeDefined();
-      expect(reviewComment?.author).toBe('exKAZUu');
-      expect(reviewComment?.body).toContain('Review comment on `src/main.ts:54`');
-      expect(reviewComment?.body).toContain('~~~yaml');
-      expect(reviewComment?.body).toContain("codeCommented: +  console.log('Hi');");
-      expect(reviewComment?.body).toContain('comment: Use Hello');
+      // Code review comments functionality - should have both review comment and review result comment in chronological order
+      expect(result.comments.length).toBe(2);
 
-      // Review result comment functionality - "Great!" comment
-      expect(result.comments.length).toBe(1);
-      const reviewResultComment = result.reviews?.[0];
-      expect(reviewResultComment).toBeDefined();
-      expect(reviewResultComment?.author).toBe('exKAZUu');
-      expect(reviewResultComment?.body).toBe('Great!');
-      expect(reviewResultComment?.state).toBe('COMMENTED');
+      // Check chronological order: review comment first (2025-07-09T03:58:20Z), then review result comment (2025-08-10T00:49:56Z)
+      const firstComment = result.comments[0];
+      const secondComment = result.comments[1];
+
+      // First comment should be the review comment (has codeLocation)
+      expect(firstComment?.codeLocation).toBe('src/main.ts:54');
+      expect(firstComment?.author).toBe('exKAZUu');
+      expect(firstComment?.body).toBe('Use Hello');
+
+      // Second comment should be the review result comment (has reviewState)
+      expect(secondComment?.reviewState).toBe('COMMENTED');
+      expect(secondComment?.author).toBe('exKAZUu');
+      expect(secondComment?.body).toBe('Great!');
 
       // Referenced issues - should reference #89
       expect(result.referenced_issues).toBeDefined();

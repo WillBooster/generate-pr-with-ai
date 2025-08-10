@@ -1,10 +1,19 @@
-import YAML from 'yaml';
 import type { MainOptions } from './main.js';
-import { findDistinctFence } from './markdown.js';
 import { runCommand } from './spawn.js';
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
-import type { GitHubComment, GitHubIssue, GitHubReview, GitHubReviewComment, IssueInfo } from './types.js';
-import { yamlStringifyOptions } from './yaml.js';
+import type {
+  GitHubComment,
+  GitHubIssue,
+  GitHubReview,
+  GitHubReviewComment,
+  IssueComment,
+  IssueInfo,
+} from './types.js';
+
+// Temporary interface for sorting comments with date information
+interface IssueCommentWithDate extends IssueComment {
+  createdAt: string;
+}
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
   const processedIssues = new Set<number>();
@@ -43,14 +52,18 @@ async function fetchIssueData(
   const rawBody = stripHtmlComments(issue.body);
   const processedBody = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
   const description = removeRegexPattern(processedBody, options.removePattern || '');
+  // Create comments with date information for sorting
+  const commentsWithDate: IssueCommentWithDate[] = issue.comments.map((c: GitHubComment) => ({
+    author: c.author.login,
+    body: normalizeNewLines(c.body),
+    createdAt: c.createdAt,
+  }));
+
   const issueInfo: IssueInfo = {
     author: issue.author.login,
     title: issue.title,
     description: normalizeNewLines(description),
-    comments: issue.comments.map((c: GitHubComment) => ({
-      author: c.author.login,
-      body: normalizeNewLines(c.body),
-    })),
+    comments: [], // Will be populated after sorting
   };
 
   if (issue.url?.includes('/pull/') && !isReferenced) {
@@ -72,15 +85,15 @@ async function fetchIssueData(
       try {
         const reviewComments: GitHubReviewComment[] = JSON.parse(reviewCommentsResult);
         // Add review comments to the regular comments
-        const reviewCommentsAsIssueComments = reviewComments.map((rc) => {
+        const reviewCommentsAsIssueComments: IssueCommentWithDate[] = reviewComments.map((rc) => {
           // Extract the code from the diff_hunk if available
-          let codeContext = '';
+          let codeContent = '';
           if (rc.diff_hunk) {
             // Find the line that was commented on (marked with + or -)
             const lines = rc.diff_hunk.split('\n');
             // Look for the line that contains the actual code change
             // The commented line is usually the one with + or - that contains actual code
-            codeContext =
+            codeContent =
               lines
                 .find(
                   (line) =>
@@ -88,23 +101,15 @@ async function fetchIssueData(
                 )
                 ?.trim() || '';
           }
-          const reviewCommentYaml = YAML.stringify(
-            {
-              codeCommented: codeContext,
-              comment: normalizeNewLines(rc.body),
-            },
-            yamlStringifyOptions
-          ).trim();
-          const yamlFence = findDistinctFence(reviewCommentYaml, '~');
           return {
             author: rc.user.login,
-            body: `Review comment on \`${rc.path}:${rc.line}\`:
-${yamlFence}yaml
-${reviewCommentYaml}
-${yamlFence}`,
+            codeLocation: `${rc.path}:${rc.line}`,
+            codeContent,
+            body: normalizeNewLines(rc.body),
+            createdAt: rc.created_at,
           };
         });
-        issueInfo.comments.push(...reviewCommentsAsIssueComments);
+        commentsWithDate.push(...reviewCommentsAsIssueComments);
       } catch (error) {
         // Ignore JSON parsing errors for review comments
         console.warn('Failed to parse PR review comments:', error);
@@ -121,13 +126,15 @@ ${yamlFence}`,
       try {
         const reviews: GitHubReview[] = JSON.parse(reviewsResult);
         // Add review result comments to the regular comments
-        issueInfo.reviews = reviews
+        const reviewResultComments: IssueCommentWithDate[] = reviews
           .filter((review) => review.body?.trim()) // Only include reviews with actual content
           .map((review) => ({
             author: review.user.login,
-            state: review.state,
+            reviewState: review.state,
             body: normalizeNewLines(review.body),
+            createdAt: review.submitted_at,
           }));
+        commentsWithDate.push(...reviewResultComments);
       } catch (error) {
         // Ignore JSON parsing errors for reviews
         console.warn('Failed to parse PR reviews:', error);
@@ -146,6 +153,12 @@ ${yamlFence}`,
       issueInfo.referenced_issues = referencedIssues;
     }
   }
+
+  // Sort comments by creation date (oldest first) and remove createdAt field
+  commentsWithDate.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+  // Remove createdAt field from sorted comments
+  issueInfo.comments = commentsWithDate.map(({ createdAt, ...comment }) => comment);
 
   return issueInfo;
 }
