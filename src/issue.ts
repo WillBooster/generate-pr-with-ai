@@ -111,7 +111,7 @@ ${yamlFence}`,
       }
     }
 
-    // Fetch PR reviews (overall review comments like "Great!")
+    // Fetch PR reviews (overall review comments)
     const { stdout: reviewsResult } = await runCommand(
       'gh',
       ['api', `repos/{owner}/{repo}/pulls/${issueNumber}/reviews`],
