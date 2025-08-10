@@ -12,7 +12,7 @@ import type {
 
 // Temporary interface for sorting comments with date information
 interface IssueCommentWithDate extends IssueComment {
-  createdAt: string;
+  createdAt: number;
 }
 
 export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> {
@@ -52,11 +52,10 @@ async function fetchIssueData(
   const rawBody = stripHtmlComments(issue.body);
   const processedBody = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
   const description = removeRegexPattern(processedBody, options.removePattern || '');
-  // Create comments with date information for sorting
   const commentsWithDate: IssueCommentWithDate[] = issue.comments.map((c: GitHubComment) => ({
     author: c.author.login,
     body: normalizeNewLines(c.body),
-    createdAt: c.createdAt,
+    createdAt: new Date(c.createdAt).getTime(),
   }));
 
   const issueInfo: IssueInfo = {
@@ -106,7 +105,7 @@ async function fetchIssueData(
             codeLocation: `${rc.path}:${rc.line}`,
             codeContent,
             body: normalizeNewLines(rc.body),
-            createdAt: rc.created_at,
+            createdAt: new Date(rc.created_at).getTime(),
           };
         });
         commentsWithDate.push(...reviewCommentsAsIssueComments);
@@ -126,14 +125,12 @@ async function fetchIssueData(
       try {
         const reviews: GitHubReview[] = JSON.parse(reviewsResult);
         // Add review result comments to the regular comments
-        const reviewResultComments: IssueCommentWithDate[] = reviews
-          .filter((review) => review.body?.trim()) // Only include reviews with actual content
-          .map((review) => ({
-            author: review.user.login,
-            reviewState: review.state,
-            body: normalizeNewLines(review.body),
-            createdAt: review.submitted_at,
-          }));
+        const reviewResultComments: IssueCommentWithDate[] = reviews.map((review) => ({
+          author: review.user.login,
+          reviewState: review.state,
+          body: normalizeNewLines(review.body),
+          createdAt: new Date(review.submitted_at).getTime(),
+        }));
         commentsWithDate.push(...reviewResultComments);
       } catch (error) {
         // Ignore JSON parsing errors for reviews
@@ -155,10 +152,10 @@ async function fetchIssueData(
   }
 
   // Sort comments by creation date (oldest first) and remove createdAt field
-  commentsWithDate.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-  // Remove createdAt field from sorted comments
-  issueInfo.comments = commentsWithDate.map(({ createdAt, ...comment }) => comment);
+  issueInfo.comments = commentsWithDate
+    .filter((c) => c.body)
+    .sort((a, b) => a.createdAt - b.createdAt)
+    .map(({ createdAt, ...comment }) => comment);
 
   return issueInfo;
 }
