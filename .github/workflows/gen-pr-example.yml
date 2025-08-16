@@ -21,7 +21,7 @@ jobs:
     # Only run if the label name includes 'gen-pr-all' and an issue number is available
     if: contains(github.event.label.name, 'gen-pr-all') && (github.event.issue.number || github.event.number) != null
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # Set up a development environment for AI coding tools
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies

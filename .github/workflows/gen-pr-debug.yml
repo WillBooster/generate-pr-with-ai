@@ -15,7 +15,7 @@ jobs:
     # Only run if the label name includes 'easy' and an issue number is available
     if: contains(github.event.label.name, 'easy') && (github.event.issue.number || github.event.number) != null
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # Set up an environment for AI coding tools
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
