@@ -2,6 +2,32 @@ import { graphql } from '@octokit/graphql';
 import { Octokit } from '@octokit/rest';
 import { runCommand } from './spawn.js';
 
+const MAX_MESSAGE_COUNT = 100;
+
+interface ReviewThreadNode {
+  isResolved: boolean;
+  comments: {
+    nodes: Array<{
+      author: { login: string };
+      body: string;
+      path: string;
+      line: number;
+      diffHunk: string;
+      createdAt: string;
+    }>;
+  };
+}
+
+interface PullRequestReviewThreadsResponse {
+  repository: {
+    pullRequest: {
+      reviewThreads: {
+        nodes: ReviewThreadNode[];
+      };
+    };
+  };
+}
+
 let octokitInstance: Octokit | null = null;
 let graphqlInstance: typeof graphql | null = null;
 let repoOwner: string | null = null;
@@ -57,7 +83,7 @@ async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
     const remoteUrl = stdout.trim();
 
     // Parse GitHub repo URL (supports both https and ssh formats)
-    const match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^.]+)/);
+    const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+)/);
     if (match) {
       repoOwner = match[1];
       repoName = match[2].replace(/\.git$/, '');
@@ -66,7 +92,10 @@ async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
     }
   }
 
-  return { owner: repoOwner!, repo: repoName! };
+  if (!repoOwner || !repoName) {
+    throw new Error('Repository information not available');
+  }
+  return { owner: repoOwner, repo: repoName };
 }
 
 export async function createPullRequest(params: {
@@ -115,6 +144,14 @@ export async function getIssue(issueNumber: number): Promise<{
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
+  let issueData: {
+    user?: { login: string } | null;
+    title: string;
+    body?: string | null;
+    labels: Array<{ name?: string } | string>;
+    html_url: string;
+  };
+
   try {
     // Try to get it as a pull request first
     const prResponse = await octokit.pulls.get({
@@ -122,27 +159,7 @@ export async function getIssue(issueNumber: number): Promise<{
       repo,
       pull_number: issueNumber,
     });
-
-    const commentsResponse = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: issueNumber,
-    });
-
-    return {
-      author: prResponse.data.user?.login || '',
-      title: prResponse.data.title,
-      body: prResponse.data.body || '',
-      labels: prResponse.data.labels.map((label) => ({
-        name: typeof label === 'string' ? label : label.name || '',
-      })),
-      comments: commentsResponse.data.map((comment) => ({
-        author: comment.user?.login || '',
-        body: comment.body || '',
-        createdAt: comment.created_at,
-      })),
-      url: prResponse.data.html_url,
-    };
+    issueData = prResponse.data;
   } catch {
     // If it's not a PR, get it as an issue
     const issueResponse = await octokit.issues.get({
@@ -150,28 +167,29 @@ export async function getIssue(issueNumber: number): Promise<{
       repo,
       issue_number: issueNumber,
     });
-
-    const commentsResponse = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: issueNumber,
-    });
-
-    return {
-      author: issueResponse.data.user?.login || '',
-      title: issueResponse.data.title,
-      body: issueResponse.data.body || '',
-      labels: issueResponse.data.labels.map((label) => ({
-        name: typeof label === 'string' ? label : label.name || '',
-      })),
-      comments: commentsResponse.data.map((comment) => ({
-        author: comment.user?.login || '',
-        body: comment.body || '',
-        createdAt: comment.created_at,
-      })),
-      url: issueResponse.data.html_url,
-    };
+    issueData = issueResponse.data;
   }
+
+  const commentsResponse = await octokit.issues.listComments({
+    owner,
+    repo,
+    issue_number: issueNumber,
+  });
+
+  return {
+    author: issueData.user?.login || '',
+    title: issueData.title,
+    body: issueData.body || '',
+    labels: issueData.labels.map((label) => ({
+      name: typeof label === 'string' ? label : label.name || '',
+    })),
+    comments: commentsResponse.data.map((comment) => ({
+      author: comment.user?.login || '',
+      body: comment.body || '',
+      createdAt: comment.created_at,
+    })),
+    url: issueData.html_url,
+  };
 }
 
 export async function getRepository(): Promise<{ owner: string; name: string }> {
@@ -179,11 +197,9 @@ export async function getRepository(): Promise<{ owner: string; name: string }> 
   return { owner, name: repo };
 }
 
-export async function getPullRequestReviewThreads(pullNumber: number): Promise<any> {
+export async function getPullRequestReviewThreads(pullNumber: number): Promise<PullRequestReviewThreadsResponse> {
   const graphqlClient = await getGraphqlClient();
   const { owner, repo } = await getRepoInfo();
-
-  const MAX_MESSAGE_COUNT = 100;
   const query = `
     query($owner: String!, $repo: String!, $pr: Int!) {
       repository(owner: $owner, name: $repo) {
@@ -210,11 +226,11 @@ export async function getPullRequestReviewThreads(pullNumber: number): Promise<a
     }
   `;
 
-  const result = await graphqlClient(query, {
+  const result = (await graphqlClient(query, {
     owner,
     repo,
     pr: pullNumber,
-  });
+  })) as PullRequestReviewThreadsResponse;
 
   return result;
 }
