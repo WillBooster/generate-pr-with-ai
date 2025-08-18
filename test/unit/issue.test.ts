@@ -271,22 +271,30 @@ describe('createIssueInfo', () => {
       expect(result.code_changes).toContain('configureEnvVars();');
       expect(result.code_changes).toContain("console.log('Hi');");
 
-      // Code review comments functionality - should have both review comment and review result comment in chronological order
-      expect(result.comments.length).toBe(2);
+      // Code review comments functionality - should only include unresolved review comments
+      // PR #103 has two review threads: one unresolved ("Use Hello") and one resolved ("Cool")
+      // Our GraphQL implementation should filter out resolved comments
+      expect(result.comments.length).toBe(2); // Still has 2: unresolved review comment + review result comment
 
       // Check chronological order: review comment first (2025-07-09T03:58:20Z), then review result comment (2025-08-10T00:49:56Z)
       const firstComment = result.comments[0];
       const secondComment = result.comments[1];
 
-      // First comment should be the review comment (has codeLocation)
+      // First comment should be the unresolved review comment (has codeLocation)
       expect(firstComment?.codeLocation).toBe('src/main.ts:54');
       expect(firstComment?.author).toBe('exKAZUu');
       expect(firstComment?.body).toBe('Use Hello');
+      expect(firstComment?.reviewState).toBeUndefined(); // Review thread comments don't have reviewState
 
       // Second comment should be the review result comment (has reviewState)
       expect(secondComment?.reviewState).toBe('COMMENTED');
       expect(secondComment?.author).toBe('exKAZUu');
       expect(secondComment?.body).toBe('Great!');
+      expect(secondComment?.codeLocation).toBeUndefined(); // Review result comments don't have codeLocation
+
+      // The resolved comment "Cool" should NOT be included
+      const resolvedCommentExists = result.comments.some((c) => c.body === 'Cool');
+      expect(resolvedCommentExists).toBe(false);
 
       // Referenced issues - should reference #89
       expect(result.referenced_issues).toBeDefined();
