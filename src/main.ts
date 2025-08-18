@@ -1,15 +1,10 @@
 import ansis from 'ansis';
 import YAML from 'yaml';
 import { configureEnvVars } from './env.js';
-import {
-  configureGitUserDetailsIfNeeded,
-  getBaseBranch,
-  getCurrentBranch,
-  getGitRepoName,
-  getHeaderOfFirstCommit,
-} from './git.js';
+import { configureGitUserDetailsIfNeeded, getBaseBranch, getCurrentBranch, getHeaderOfFirstCommit } from './git.js';
 import { createIssueInfo } from './issue.js';
 import { findDistinctFence } from './markdown.js';
+import { createPullRequest } from './octokit.js';
 import { planCodeChanges } from './plan.js';
 import { runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
@@ -315,10 +310,12 @@ ${responseFence}`;
         )
       );
     } else {
-      const repoName = getGitRepoName();
-      const prArgs = ['pr', 'create', '--title', prTitle, '--body', prBody, '--repo', repoName];
-      prArgs.push('--base', baseBranch);
-      await runCommand('gh', prArgs);
+      await createPullRequest({
+        title: prTitle,
+        body: prBody,
+        head: newBranchName,
+        base: baseBranch,
+      });
     }
   }
 

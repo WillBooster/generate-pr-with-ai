@@ -1,7 +1,7 @@
 import type { MainOptions } from './main.js';
-import { runCommand } from './spawn.js';
+import { getIssue, getPullRequestDiff, getPullRequestReviews, getPullRequestReviewThreads } from './octokit.js';
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
-import type { GitHubComment, GitHubIssue, GitHubReview, IssueComment, IssueInfo } from './types.js';
+import type { IssueComment, IssueInfo } from './types.js';
 
 // Temporary interface for sorting comments with date information
 interface IssueCommentWithDate extends IssueComment {
@@ -18,14 +18,13 @@ export async function createIssueInfo(options: MainOptions): Promise<IssueInfo> 
 }
 
 async function fetchPRDiff(issueNumber: number, issueInfo: IssueInfo): Promise<void> {
-  const { stdout: prDiff } = await runCommand('gh', ['pr', 'diff', issueNumber.toString()], {
-    ignoreExitStatus: true,
-    truncateStdout: true,
-  });
-
-  if (!prDiff.trim()) return;
-
-  issueInfo.code_changes = processDiffContent(prDiff.trim());
+  try {
+    const prDiff = await getPullRequestDiff(issueNumber);
+    if (!prDiff.trim()) return;
+    issueInfo.code_changes = processDiffContent(prDiff.trim());
+  } catch (error) {
+    console.warn('Failed to fetch PR diff:', error);
+  }
 }
 
 async function fetchIssueData(
@@ -39,15 +38,13 @@ async function fetchIssueData(
   }
   processedIssues.add(issueNumber);
 
-  const { stdout: issueResult } = await runCommand(
-    'gh',
-    ['issue', 'view', issueNumber.toString(), '--json', 'author,title,body,labels,comments,url'],
-    { ignoreExitStatus: true }
-  );
-  if (!issueResult) {
+  let issue: Awaited<ReturnType<typeof getIssue>>;
+  try {
+    issue = await getIssue(issueNumber);
+  } catch (error) {
+    console.warn(`Failed to fetch issue #${issueNumber}:`, error);
     return;
   }
-  const issue: GitHubIssue = JSON.parse(issueResult);
 
   // Extract issue/PR references from the issue body and comments
   const allText = [issue.body, ...issue.comments.map((c) => c.body)].join('\n');
@@ -56,14 +53,14 @@ async function fetchIssueData(
   const rawBody = stripHtmlComments(issue.body);
   const processedBody = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
   const description = removeRegexPattern(processedBody, options.removePattern || '');
-  const commentsWithDate: IssueCommentWithDate[] = issue.comments.map((c: GitHubComment) => ({
-    author: c.author.login,
+  const commentsWithDate: IssueCommentWithDate[] = issue.comments.map((c) => ({
+    author: c.author,
     body: normalizeNewLines(c.body),
     createdAt: new Date(c.createdAt).getTime(),
   }));
 
   const issueInfo: IssueInfo = {
-    author: issue.author.login,
+    author: issue.author,
     title: issue.title,
     description: normalizeNewLines(description),
     comments: [], // Will be populated after sorting
@@ -88,67 +85,10 @@ async function fetchIssueData(
   return issueInfo;
 }
 
-const MAX_MESSAGE_COUNT = 100;
-
 async function fetchPRReviewThreads(issueNumber: number, commentsWithDate: IssueCommentWithDate[]): Promise<void> {
-  const graphqlQuery = `
-    query($owner: String!, $repo: String!, $pr: Int!) {
-      repository(owner: $owner, name: $repo) {
-        pullRequest(number: $pr) {
-          reviewThreads(first: ${MAX_MESSAGE_COUNT}) {
-            nodes {
-              isResolved
-              comments(first: ${MAX_MESSAGE_COUNT}) {
-                nodes {
-                  author {
-                    login
-                  }
-                  body
-                  path
-                  line
-                  diffHunk
-                  createdAt
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const { stdout: repoInfo } = await runCommand('gh', ['repo', 'view', '--json', 'owner,name'], {
-    ignoreExitStatus: true,
-  });
-
-  if (!repoInfo.trim()) return;
-
   try {
-    const repo = JSON.parse(repoInfo);
-    const owner = repo.owner.login;
-    const repoName = repo.name;
-
-    const { stdout: graphqlResult } = await runCommand(
-      'gh',
-      [
-        'api',
-        'graphql',
-        '-f',
-        `query=${graphqlQuery}`,
-        '-F',
-        `owner=${owner}`,
-        '-F',
-        `repo=${repoName}`,
-        '-F',
-        `pr=${issueNumber}`,
-      ],
-      { ignoreExitStatus: true }
-    );
-
-    if (!graphqlResult.trim()) return;
-
-    const graphqlData = JSON.parse(graphqlResult);
-    const reviewThreads = graphqlData.data?.repository?.pullRequest?.reviewThreads?.nodes || [];
+    const graphqlData = await getPullRequestReviewThreads(issueNumber);
+    const reviewThreads = graphqlData?.repository?.pullRequest?.reviewThreads?.nodes || [];
 
     for (const thread of reviewThreads) {
       if (!thread.isResolved && thread.comments?.nodes) {
@@ -205,16 +145,8 @@ function extractCodeFromDiffHunk(diffHunk: string | undefined): string {
 }
 
 async function fetchPRReviews(issueNumber: number, commentsWithDate: IssueCommentWithDate[]): Promise<void> {
-  const { stdout: reviewsResult } = await runCommand(
-    'gh',
-    ['api', `repos/{owner}/{repo}/pulls/${issueNumber}/reviews`],
-    { ignoreExitStatus: true }
-  );
-
-  if (!reviewsResult.trim()) return;
-
   try {
-    const reviews: GitHubReview[] = JSON.parse(reviewsResult);
+    const reviews = await getPullRequestReviews(issueNumber);
     const reviewResultComments: IssueCommentWithDate[] = reviews.map((review) => ({
       author: review.user.login,
       reviewState: review.state,
@@ -223,7 +155,7 @@ async function fetchPRReviews(issueNumber: number, commentsWithDate: IssueCommen
     }));
     commentsWithDate.push(...reviewResultComments);
   } catch (error) {
-    console.warn('Failed to parse PR reviews:', error);
+    console.warn('Failed to fetch PR reviews:', error);
   }
 }
 
