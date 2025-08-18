@@ -55,7 +55,7 @@ describe('createIssueInfo', () => {
       const result = await createIssueInfo(options);
 
       // Basic properties
-      expect(result.author).toBe('app/renovate');
+      expect(result.author).toBe('renovate[bot]');
       expect(result.title).toBe('chore(deps): pin dependency python to 3.13.3');
 
       // Description content
@@ -141,7 +141,7 @@ describe('createIssueInfo', () => {
       const result = await createIssueInfo(options);
 
       // Basic properties
-      expect(result.author).toBe('app/github-actions');
+      expect(result.author).toBe('github-actions[bot]');
       expect(result.title).toBe('feat: Add Hello World step to action workflow');
 
       // Description content

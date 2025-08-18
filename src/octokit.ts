@@ -66,7 +66,10 @@ async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
     }
   }
 
-  return { owner: repoOwner!, repo: repoName! };
+  if (!repoOwner || !repoName) {
+    throw new Error('Repository information not properly initialized');
+  }
+  return { owner: repoOwner, repo: repoName };
 }
 
 export async function createPullRequest(params: {
@@ -179,7 +182,27 @@ export async function getRepository(): Promise<{ owner: string; name: string }> 
   return { owner, name: repo };
 }
 
-export async function getPullRequestReviewThreads(pullNumber: number): Promise<any> {
+export async function getPullRequestReviewThreads(pullNumber: number): Promise<{
+  repository: {
+    pullRequest: {
+      reviewThreads: {
+        nodes: Array<{
+          isResolved: boolean;
+          comments: {
+            nodes: Array<{
+              author: { login: string };
+              body: string;
+              path: string;
+              line: number;
+              diffHunk: string;
+              createdAt: string;
+            }>;
+          };
+        }>;
+      };
+    };
+  };
+}> {
   const graphqlClient = await getGraphqlClient();
   const { owner, repo } = await getRepoInfo();
 
@@ -216,7 +239,27 @@ export async function getPullRequestReviewThreads(pullNumber: number): Promise<a
     pr: pullNumber,
   });
 
-  return result;
+  return result as {
+    repository: {
+      pullRequest: {
+        reviewThreads: {
+          nodes: Array<{
+            isResolved: boolean;
+            comments: {
+              nodes: Array<{
+                author: { login: string };
+                body: string;
+                path: string;
+                line: number;
+                diffHunk: string;
+                createdAt: string;
+              }>;
+            };
+          }>;
+        };
+      };
+    };
+  };
 }
 
 export async function getPullRequestReviews(pullNumber: number): Promise<
