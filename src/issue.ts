@@ -3,6 +3,16 @@ import { getIssue, getPullRequestDiff, getPullRequestReviews, getPullRequestRevi
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
 import type { IssueComment, IssueInfo } from './types.js';
 
+function normalizeGitHubAuthor(author: string): string {
+  // Convert GitHub bot format from "renovate[bot]" to "app/renovate"
+  // and "github-actions[bot]" to "app/github-actions"
+  const botMatch = author.match(/^(.+)\[bot\]$/);
+  if (botMatch) {
+    return `app/${botMatch[1]}`;
+  }
+  return author;
+}
+
 // Temporary interface for sorting comments with date information
 interface IssueCommentWithDate extends IssueComment {
   createdAt: number;
@@ -54,13 +64,13 @@ async function fetchIssueData(
   const processedBody = issue.url?.includes('/pull/') ? stripMetadataSections(rawBody) : rawBody;
   const description = removeRegexPattern(processedBody, options.removePattern || '');
   const commentsWithDate: IssueCommentWithDate[] = issue.comments.map((c) => ({
-    author: c.author,
+    author: normalizeGitHubAuthor(c.author),
     body: normalizeNewLines(c.body),
     createdAt: new Date(c.createdAt).getTime(),
   }));
 
   const issueInfo: IssueInfo = {
-    author: issue.author,
+    author: normalizeGitHubAuthor(issue.author),
     title: issue.title,
     description: normalizeNewLines(description),
     comments: [], // Will be populated after sorting
@@ -116,7 +126,7 @@ function processReviewThreadComments(
 
     const codeContent = extractCodeFromDiffHunk(comment.diffHunk);
     const reviewComment: IssueCommentWithDate = {
-      author: comment.author.login,
+      author: normalizeGitHubAuthor(comment.author.login),
       codeLocation: comment.path && comment.line ? `${comment.path}:${comment.line}` : undefined,
       codeContent: codeContent || undefined,
       body: normalizeNewLines(comment.body),
@@ -148,7 +158,7 @@ async function fetchPRReviews(issueNumber: number, commentsWithDate: IssueCommen
   try {
     const reviews = await getPullRequestReviews(issueNumber);
     const reviewResultComments: IssueCommentWithDate[] = reviews.map((review) => ({
-      author: review.user.login,
+      author: normalizeGitHubAuthor(review.user.login),
       reviewState: review.state,
       body: normalizeNewLines(review.body),
       createdAt: new Date(review.submitted_at).getTime(),
