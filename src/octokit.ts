@@ -11,10 +11,10 @@ import type {
   SimpleComment,
 } from './types.js';
 
-let octokitInstance: Octokit | null = null;
-let graphqlInstance: typeof graphql | null = null;
-let repoOwner: string | null = null;
-let repoName: string | null = null;
+let octokitInstance: Octokit | undefined;
+let graphqlInstance: typeof graphql | undefined;
+let repoOwner: string | undefined;
+let repoName: string | undefined;
 
 async function getGitHubToken(): Promise<string> {
   const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
