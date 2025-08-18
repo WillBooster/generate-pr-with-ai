@@ -88,15 +88,17 @@ async function fetchIssueData(
   return issueInfo;
 }
 
+const MAX_MESSAGE_COUNT = 100;
+
 async function fetchPRReviewThreads(issueNumber: number, commentsWithDate: IssueCommentWithDate[]): Promise<void> {
   const graphqlQuery = `
     query($owner: String!, $repo: String!, $pr: Int!) {
       repository(owner: $owner, name: $repo) {
         pullRequest(number: $pr) {
-          reviewThreads(first: 100) {
+          reviewThreads(first: ${MAX_MESSAGE_COUNT}) {
             nodes {
               isResolved
-              comments(first: 100) {
+              comments(first: ${MAX_MESSAGE_COUNT}) {
                 nodes {
                   author {
                     login
