@@ -112,7 +112,7 @@ export interface IssueComment {
 }
 
 /**
- * Represents a GitHub PR review comment
+ * Represents a GitHub PR review comment from REST API
  */
 export interface GitHubReviewComment {
   /** The comment's unique ID */
@@ -134,6 +134,39 @@ export interface GitHubReviewComment {
   created_at: string;
   /** When the comment was updated */
   updated_at: string;
+}
+
+/**
+ * Represents a GitHub PR review comment from GraphQL API
+ */
+export interface GitHubGraphQLReviewComment {
+  /** The comment's author */
+  author: {
+    /** The author's GitHub username */
+    login: string;
+  };
+  /** The comment's content */
+  body: string;
+  /** The file path this comment is on */
+  path?: string;
+  /** The line number this comment is on */
+  line?: number;
+  /** The diff hunk showing the code context */
+  diffHunk?: string;
+  /** When the comment was created */
+  createdAt: string;
+}
+
+/**
+ * Represents a GitHub PR review thread from GraphQL API
+ */
+export interface GitHubGraphQLReviewThread {
+  /** Whether the conversation is resolved */
+  isResolved: boolean;
+  /** Comments in this thread */
+  comments: {
+    nodes: GitHubGraphQLReviewComment[];
+  };
 }
 
 /**
