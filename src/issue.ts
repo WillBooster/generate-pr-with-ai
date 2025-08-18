@@ -1,7 +1,7 @@
 import type { MainOptions } from './main.js';
 import { getIssue, getPullRequestDiff, getPullRequestReviews, getPullRequestReviewThreads } from './octokit.js';
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
-import type { IssueComment, IssueInfo } from './types.js';
+import type { IssueComment, IssueInfo, UserLogin } from './types.js';
 
 // Temporary interface for sorting comments with date information
 interface IssueCommentWithDate extends IssueComment {
@@ -102,7 +102,7 @@ async function fetchPRReviewThreads(issueNumber: number, commentsWithDate: Issue
 
 function processReviewThreadComments(
   comments: Array<{
-    author?: { login: string };
+    author?: UserLogin;
     body?: string;
     path?: string;
     line?: number;

@@ -1,24 +1,28 @@
 /**
+ * Represents basic user information with login
+ */
+export interface UserLogin {
+  /** The author's GitHub username */
+  login: string;
+}
+
+/**
  * Represents a GitHub user
  */
-export interface GitHubUser {
+export interface GitHubUser extends UserLogin {
   /** The user's GitHub ID */
   id: string;
   /** Whether the user is a bot */
   is_bot: boolean;
-  /** The user's GitHub username */
-  login: string;
   /** The user's full name */
   name?: string;
 }
 
 /**
  * Represents a comment author with minimal information
+ * @deprecated Use UserLogin instead
  */
-export interface CommentAuthor {
-  /** The author's GitHub username */
-  login: string;
-}
+export interface CommentAuthor extends UserLogin {}
 
 /**
  * Represents users who reacted with a specific reaction
@@ -116,10 +120,7 @@ export interface IssueComment {
  */
 export interface GitHubGraphQLReviewComment {
   /** The comment's author */
-  author: {
-    /** The author's GitHub username */
-    login: string;
-  };
+  author: UserLogin;
   /** The comment's content */
   body: string;
   /** The file path this comment is on */
@@ -151,10 +152,7 @@ export interface GitHubReview {
   /** The review's unique ID */
   id: number;
   /** The review's author */
-  user: {
-    /** The author's GitHub username */
-    login: string;
-  };
+  user: UserLogin;
   /** The review's content/body */
   body: string;
   /** The review state (APPROVED, COMMENTED, CHANGES_REQUESTED, etc.) */
@@ -163,6 +161,117 @@ export interface GitHubReview {
   submitted_at: string;
   /** The commit SHA this review was submitted for */
   commit_id: string;
+}
+
+/**
+ * Represents repository information
+ */
+export interface RepositoryInfo {
+  /** The repository owner's username */
+  owner: string;
+  /** The repository name */
+  repo: string;
+}
+
+/**
+ * Alternative repository info interface for compatibility
+ */
+export interface RepositoryData {
+  /** The repository owner's username */
+  owner: string;
+  /** The repository name */
+  name: string;
+}
+
+/**
+ * Represents basic label information
+ */
+export interface LabelInfo {
+  /** The label's name */
+  name: string;
+}
+
+/**
+ * Represents a simple comment structure for Octokit responses
+ */
+export interface SimpleComment {
+  /** The comment author's GitHub username */
+  author: string;
+  /** The comment's content */
+  body: string;
+  /** When the comment was created */
+  createdAt: string;
+}
+
+/**
+ * Represents pull request creation parameters
+ */
+export interface PullRequestParams {
+  /** Pull request title */
+  title: string;
+  /** Pull request body/description */
+  body: string;
+  /** Source branch */
+  head: string;
+  /** Target branch */
+  base: string;
+}
+
+/**
+ * Represents a pull request review
+ */
+export interface PullRequestReview {
+  /** The review author */
+  user: UserLogin;
+  /** The review state */
+  state: string;
+  /** The review body/content */
+  body: string;
+  /** When the review was submitted */
+  submitted_at: string;
+}
+
+/**
+ * Represents review thread comment from GraphQL
+ */
+export interface ReviewThreadComment {
+  /** The comment author */
+  author: UserLogin;
+  /** The comment content */
+  body: string;
+  /** File path */
+  path: string;
+  /** Line number */
+  line: number;
+  /** Diff context */
+  diffHunk: string;
+  /** Creation timestamp */
+  createdAt: string;
+}
+
+/**
+ * Represents a review thread
+ */
+export interface ReviewThread {
+  /** Whether the thread is resolved */
+  isResolved: boolean;
+  /** Comments in the thread */
+  comments: {
+    nodes: ReviewThreadComment[];
+  };
+}
+
+/**
+ * Represents GraphQL response for pull request review threads
+ */
+export interface PullRequestReviewThreadsResponse {
+  repository: {
+    pullRequest: {
+      reviewThreads: {
+        nodes: ReviewThread[];
+      };
+    };
+  };
 }
 
 /**

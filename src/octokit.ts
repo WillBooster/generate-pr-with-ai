@@ -1,6 +1,15 @@
 import { graphql } from '@octokit/graphql';
 import { Octokit } from '@octokit/rest';
 import { runCommand } from './spawn.js';
+import type {
+  LabelInfo,
+  PullRequestParams,
+  PullRequestReview,
+  PullRequestReviewThreadsResponse,
+  RepositoryData,
+  RepositoryInfo,
+  SimpleComment,
+} from './types.js';
 
 let octokitInstance: Octokit | null = null;
 let graphqlInstance: typeof graphql | null = null;
@@ -50,7 +59,7 @@ async function getGraphqlClient(): Promise<typeof graphql> {
   return graphqlInstance;
 }
 
-async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
+async function getRepoInfo(): Promise<RepositoryInfo> {
   if (!repoOwner || !repoName) {
     // Get repo info from git remote
     const { stdout } = await runCommand('git', ['remote', 'get-url', 'origin'], { ignoreExitStatus: true });
@@ -72,12 +81,7 @@ async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
   return { owner: repoOwner, repo: repoName };
 }
 
-export async function createPullRequest(params: {
-  title: string;
-  body: string;
-  head: string;
-  base: string;
-}): Promise<void> {
+export async function createPullRequest(params: PullRequestParams): Promise<void> {
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
@@ -111,8 +115,8 @@ export async function getIssue(issueNumber: number): Promise<{
   author: string;
   title: string;
   body: string;
-  labels: Array<{ name: string }>;
-  comments: Array<{ author: string; body: string; createdAt: string }>;
+  labels: LabelInfo[];
+  comments: SimpleComment[];
   url: string;
 }> {
   const octokit = await getOctokit();
@@ -177,32 +181,12 @@ export async function getIssue(issueNumber: number): Promise<{
   }
 }
 
-export async function getRepository(): Promise<{ owner: string; name: string }> {
+export async function getRepository(): Promise<RepositoryData> {
   const { owner, repo } = await getRepoInfo();
   return { owner, name: repo };
 }
 
-export async function getPullRequestReviewThreads(pullNumber: number): Promise<{
-  repository: {
-    pullRequest: {
-      reviewThreads: {
-        nodes: Array<{
-          isResolved: boolean;
-          comments: {
-            nodes: Array<{
-              author: { login: string };
-              body: string;
-              path: string;
-              line: number;
-              diffHunk: string;
-              createdAt: string;
-            }>;
-          };
-        }>;
-      };
-    };
-  };
-}> {
+export async function getPullRequestReviewThreads(pullNumber: number): Promise<PullRequestReviewThreadsResponse> {
   const graphqlClient = await getGraphqlClient();
   const { owner, repo } = await getRepoInfo();
 
@@ -239,37 +223,10 @@ export async function getPullRequestReviewThreads(pullNumber: number): Promise<{
     pr: pullNumber,
   });
 
-  return result as {
-    repository: {
-      pullRequest: {
-        reviewThreads: {
-          nodes: Array<{
-            isResolved: boolean;
-            comments: {
-              nodes: Array<{
-                author: { login: string };
-                body: string;
-                path: string;
-                line: number;
-                diffHunk: string;
-                createdAt: string;
-              }>;
-            };
-          }>;
-        };
-      };
-    };
-  };
+  return result as PullRequestReviewThreadsResponse;
 }
 
-export async function getPullRequestReviews(pullNumber: number): Promise<
-  Array<{
-    user: { login: string };
-    state: string;
-    body: string;
-    submitted_at: string;
-  }>
-> {
+export async function getPullRequestReviews(pullNumber: number): Promise<PullRequestReview[]> {
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
