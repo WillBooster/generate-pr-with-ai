@@ -1,14 +1,7 @@
 import type { MainOptions } from './main.js';
 import { runCommand } from './spawn.js';
 import { normalizeNewLines, removeRegexPattern, stripHtmlComments, stripMetadataSections } from './text.js';
-import type {
-  GitHubComment,
-  GitHubIssue,
-  GitHubReview,
-  GitHubReviewComment,
-  IssueComment,
-  IssueInfo,
-} from './types.js';
+import type { GitHubComment, GitHubIssue, GitHubReview, IssueComment, IssueInfo } from './types.js';
 
 // Temporary interface for sorting comments with date information
 interface IssueCommentWithDate extends IssueComment {
@@ -106,129 +99,81 @@ async function fetchIssueData(
       ignoreExitStatus: true,
     });
 
-    let useGraphQL = false;
-    let owner = '';
-    let repoName = '';
-
     if (repoInfo.trim()) {
       try {
         const repo = JSON.parse(repoInfo);
-        owner = repo.owner.login;
-        repoName = repo.name;
-        useGraphQL = true;
-      } catch (error) {
-        console.warn('Failed to parse repo info, falling back to REST API:', error);
-      }
-    }
+        const owner = repo.owner.login;
+        const repoName = repo.name;
 
-    if (useGraphQL) {
-      // Try GraphQL API first to get resolved status
-      const { stdout: graphqlResult } = await runCommand(
-        'gh',
-        [
-          'api',
-          'graphql',
-          '-f',
-          `query=${graphqlQuery}`,
-          '-F',
-          `owner=${owner}`,
-          '-F',
-          `repo=${repoName}`,
-          '-F',
-          `pr=${issueNumber}`,
-        ],
-        { ignoreExitStatus: true }
-      );
+        // Use GraphQL API to get only unresolved review comments
+        const { stdout: graphqlResult } = await runCommand(
+          'gh',
+          [
+            'api',
+            'graphql',
+            '-f',
+            `query=${graphqlQuery}`,
+            '-F',
+            `owner=${owner}`,
+            '-F',
+            `repo=${repoName}`,
+            '-F',
+            `pr=${issueNumber}`,
+          ],
+          { ignoreExitStatus: true }
+        );
 
-      if (graphqlResult.trim()) {
-        try {
-          const graphqlData = JSON.parse(graphqlResult);
-          const reviewThreads = graphqlData.data?.repository?.pullRequest?.reviewThreads?.nodes || [];
+        if (graphqlResult.trim()) {
+          try {
+            const graphqlData = JSON.parse(graphqlResult);
+            const reviewThreads = graphqlData.data?.repository?.pullRequest?.reviewThreads?.nodes || [];
 
-          // Process only unresolved review threads
-          for (const thread of reviewThreads) {
-            if (!thread.isResolved && thread.comments?.nodes) {
-              for (const comment of thread.comments.nodes) {
-                if (!comment.author || !comment.body) continue;
+            // Process only unresolved review threads
+            for (const thread of reviewThreads) {
+              if (!thread.isResolved && thread.comments?.nodes) {
+                for (const comment of thread.comments.nodes) {
+                  if (!comment.author || !comment.body) continue;
 
-                // Extract code content from diff hunk
-                let codeContent = '';
-                if (comment.diffHunk) {
-                  const lines = comment.diffHunk.split('\n');
-                  codeContent =
-                    lines
-                      .find(
-                        (line: string) =>
-                          (line.startsWith('+') || line.startsWith('-')) &&
-                          !line.startsWith('@@') &&
-                          line.trim().length > 1
-                      )
-                      ?.trim() || '';
-                }
-
-                const reviewComment: IssueCommentWithDate = {
-                  author: comment.author.login,
-                  codeLocation: comment.path && comment.line ? `${comment.path}:${comment.line}` : undefined,
-                  codeContent: codeContent || undefined,
-                  body: normalizeNewLines(comment.body),
-                  createdAt: new Date(comment.createdAt).getTime(),
-                };
-
-                // Remove undefined properties
-                Object.keys(reviewComment).forEach((key) => {
-                  if (reviewComment[key as keyof IssueCommentWithDate] === undefined) {
-                    delete reviewComment[key as keyof IssueCommentWithDate];
+                  // Extract code content from diff hunk
+                  let codeContent = '';
+                  if (comment.diffHunk) {
+                    const lines = comment.diffHunk.split('\n');
+                    codeContent =
+                      lines
+                        .find(
+                          (line: string) =>
+                            (line.startsWith('+') || line.startsWith('-')) &&
+                            !line.startsWith('@@') &&
+                            line.trim().length > 1
+                        )
+                        ?.trim() || '';
                   }
-                });
 
-                commentsWithDate.push(reviewComment);
+                  const reviewComment: IssueCommentWithDate = {
+                    author: comment.author.login,
+                    codeLocation: comment.path && comment.line ? `${comment.path}:${comment.line}` : undefined,
+                    codeContent: codeContent || undefined,
+                    body: normalizeNewLines(comment.body),
+                    createdAt: new Date(comment.createdAt).getTime(),
+                  };
+
+                  // Remove undefined properties
+                  Object.keys(reviewComment).forEach((key) => {
+                    if (reviewComment[key as keyof IssueCommentWithDate] === undefined) {
+                      delete reviewComment[key as keyof IssueCommentWithDate];
+                    }
+                  });
+
+                  commentsWithDate.push(reviewComment);
+                }
               }
             }
+          } catch (error) {
+            console.warn('Failed to parse GraphQL result:', error);
           }
-        } catch (error) {
-          console.warn('Failed to parse GraphQL result, falling back to REST API:', error);
-          useGraphQL = false;
         }
-      } else {
-        useGraphQL = false;
-      }
-    }
-
-    // Fallback to REST API if GraphQL fails or is not available
-    if (!useGraphQL) {
-      const { stdout: reviewCommentsResult } = await runCommand(
-        'gh',
-        ['api', `repos/{owner}/{repo}/pulls/${issueNumber}/comments`],
-        { ignoreExitStatus: true }
-      );
-      if (reviewCommentsResult.trim()) {
-        try {
-          const reviewComments: GitHubReviewComment[] = JSON.parse(reviewCommentsResult);
-          // Add all review comments (can't filter resolved ones with REST API)
-          const reviewCommentsAsIssueComments: IssueCommentWithDate[] = reviewComments.map((rc) => {
-            let codeContent = '';
-            if (rc.diff_hunk) {
-              const lines = rc.diff_hunk.split('\n');
-              codeContent =
-                lines
-                  .find(
-                    (line: string) =>
-                      (line.startsWith('+') || line.startsWith('-')) && !line.startsWith('@@') && line.trim().length > 1
-                  )
-                  ?.trim() || '';
-            }
-            return {
-              author: rc.user.login,
-              codeLocation: `${rc.path}:${rc.line}`,
-              codeContent,
-              body: normalizeNewLines(rc.body),
-              createdAt: new Date(rc.created_at).getTime(),
-            };
-          });
-          commentsWithDate.push(...reviewCommentsAsIssueComments);
-        } catch (error) {
-          console.warn('Failed to parse PR review comments:', error);
-        }
+      } catch (error) {
+        console.warn('Failed to parse repo info:', error);
       }
     }
 
