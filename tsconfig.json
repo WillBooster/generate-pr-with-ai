@@ -8,6 +8,7 @@
     "importHelpers": false,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "noUncheckedIndexedAccess": true,
     "outDir": "dist",
     "resolveJsonModule": true,
     "skipLibCheck": true,

@@ -19,15 +19,16 @@ repomix-output.xml
 !.keep
 .aider*
 .env.production
+*/mount/*.hash
+.devcontainer/
 .idea/AugmentWebviewStateStore.xml
 .idea/copilot/chatSessions/
-.devcontainer/
-*/mount/*.hash
+.serena/
+.tmp/
 __generated__/
 dist/
 temp/
 tmp/
-.tmp/
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows

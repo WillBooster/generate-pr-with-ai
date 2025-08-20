@@ -26,6 +26,7 @@
     "typecheck": "bun --bun wb typecheck"
   },
   "prettier": "@willbooster/prettier-config",
+  "dependencies": {},
   "devDependencies": {
     "@actions/core": "1.11.1",
     "@ai-sdk/amazon-bedrock": "3.0.0-beta.5",
@@ -44,7 +45,7 @@
     "@types/yargs": "17.0.33",
     "@willbooster/biome-config": "3.2.1",
     "@willbooster/prettier-config": "10.2.0",
-    "@willbooster/wb": "10.0.1",
+    "@willbooster/wb": "10.0.2",
     "ai": "5.0.0-beta.14",
     "ai-v4": "npm:ai@4.3.17",
     "ansis": "4.1.0",
