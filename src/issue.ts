@@ -166,7 +166,10 @@ function extractIssueReferences(text: string): number[] {
     const match = regex.exec(text);
     if (!match) break;
 
-    numbers.push(Number.parseInt(match[1], 10));
+    const number = Number.parseInt(match[1] ?? '', 10);
+    if (!Number.isInteger(number)) {
+      numbers.push(number);
+    }
   }
   return [...new Set(numbers)]; // Remove duplicates
 }

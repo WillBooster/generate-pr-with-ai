@@ -9,13 +9,16 @@ export function extractHeaderContents(text: string, headers: string[]): string[]
   const indices = headers.map((header) => modifiedResponse.indexOf(`\n${header}`));
 
   // Return undefined if any headers are missing or not in order
-  if (indices.some((index) => index === -1) || !indices.every((index, i) => i === 0 || index > indices[i - 1])) {
+  if (
+    indices.some((index) => index === -1) ||
+    !indices.every((index, i) => i === 0 || index > (indices[i - 1] as number))
+  ) {
     return undefined;
   }
 
   return headers.map((header, i) => {
-    const start = indices[i] + 1 + header.length;
-    const end = i + 1 < headers.length ? indices[i + 1] + 1 : modifiedResponse.length;
+    const start = (indices[i] as number) + 1 + header.length;
+    const end = i + 1 < headers.length ? (indices[i + 1] as number) + 1 : modifiedResponse.length;
     return modifiedResponse.slice(start, end).trim();
   });
 }

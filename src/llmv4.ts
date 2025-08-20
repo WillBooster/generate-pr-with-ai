@@ -12,8 +12,8 @@ export async function callV4ProviderApi(
   messages: ModelMessage[],
   reasoningEffort?: ReasoningEffort
 ): Promise<string> {
+  const [provider, ...modelParts] = model.split('/') as [string, ...string[]];
   try {
-    const [provider, ...modelParts] = model.split('/');
     const modelName = modelParts.join('/'); // Handle cases where model name itself contains '/'
     if (!modelName) {
       console.error(`Invalid ${provider} model format: ${model}. Expected format: ${provider}/model-name`);
@@ -35,7 +35,6 @@ export async function callV4ProviderApi(
     logResult(model, result);
     return result.text;
   } catch (error) {
-    const [provider] = model.split('/');
     console.error(`${provider.charAt(0).toUpperCase() + provider.slice(1)} API error for model ${model}:`, error);
     process.exit(1);
   }

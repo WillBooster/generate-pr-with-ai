@@ -47,7 +47,7 @@ export function getGitRepoName(): string {
   });
   const repoUrl = repoUrlResult.stdout.trim();
   const repoMatch = repoUrl.match(/github\.com[/:]([\w-]+\/[\w-]+)(\.git)?$/);
-  return repoMatch ? repoMatch[1] : '';
+  return repoMatch?.[1] ?? '';
 }
 
 export function getHeaderOfFirstCommit(baseBranch: string): string {
@@ -55,5 +55,10 @@ export function getHeaderOfFirstCommit(baseBranch: string): string {
     encoding: 'utf8',
     stdio: 'pipe',
   });
-  return firstCommitResult.stdout.trim().split('\n')[0];
+  return (
+    firstCommitResult.stdout
+      .trim()
+      .split('\n')
+      .find((line) => line.trim()) ?? ''
+  );
 }

@@ -68,7 +68,7 @@ async function getRepoInfo(): Promise<RepositoryInfo> {
 
     // Parse GitHub repo URL (supports both https and ssh formats)
     const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+)/);
-    if (match) {
+    if (match?.[1] && match[2]) {
       repoOwner = match[1];
       repoName = match[2].replace(/\.git$/, '');
     } else {

@@ -62,15 +62,15 @@ ${issueFence}`;
     const extractedFilePathLists = extractHeaderContents(trimCodeBlockFences(filesResponse), [
       HEADING_OF_FILE_PATHS_TO_BE_MODIFIED,
       HEADING_OF_FILE_PATHS_TO_BE_REFERRED,
-    ]);
+    ]) as [string, string] | undefined;
     if (!extractedFilePathLists) {
       return { filePaths: [] };
     }
     const [filePathsToBeModified, filePathsToBeReferred] = extractedFilePathLists.map((filesContent: string) => {
       const filePathRegex = /\B-\s*`?([^`\n]+)`?/g;
       const matches = [...filesContent.matchAll(filePathRegex)];
-      return matches.map((match) => match[1].trim());
-    });
+      return matches.map((match) => match[1]?.trim() ?? '').filter(Boolean);
+    }) as [string[], string[]];
 
     const fileContents = [...filePathsToBeModified, ...filePathsToBeReferred]
       .map((filePath) => {
@@ -141,7 +141,7 @@ ${fence}`;
 
   const filePathRegex = /\B-\s*`?([^`\n]+)`?/g;
   const matches = [...(filePathsText ?? '').matchAll(filePathRegex)];
-  const filePathsToBeModified = matches.map((match) => match[1].trim());
+  const filePathsToBeModified = matches.map((match) => match[1]?.trim() ?? '').filter(Boolean);
   return { plan, commitMessage: commitMessage?.trim(), filePaths: filePathsToBeModified };
 }
 
