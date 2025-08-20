@@ -66,7 +66,7 @@ async function getRepoInfo(): Promise<RepositoryInfo> {
     const remoteUrl = stdout.trim();
 
     // Parse GitHub repo URL (supports both https and ssh formats)
-    const match = remoteUrl.match(/github\.com[:/]([^/]+)\/([^.]+)/);
+    const match = remoteUrl.match(/github\.com[:/]([^/]+)\/(.+)/);
     if (match) {
       repoOwner = match[1];
       repoName = match[2].replace(/\.git$/, '');
@@ -122,63 +122,46 @@ export async function getIssue(issueNumber: number): Promise<{
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let issueData: any;
   try {
     // Try to get it as a pull request first
-    const prResponse = await octokit.pulls.get({
+    const { data } = await octokit.pulls.get({
       owner,
       repo,
       pull_number: issueNumber,
     });
-
-    const commentsResponse = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: issueNumber,
-    });
-
-    return {
-      author: prResponse.data.user?.login || '',
-      title: prResponse.data.title,
-      body: prResponse.data.body || '',
-      labels: prResponse.data.labels.map((label) => ({
-        name: typeof label === 'string' ? label : label.name || '',
-      })),
-      comments: commentsResponse.data.map((comment) => ({
-        author: comment.user?.login || '',
-        body: comment.body || '',
-        createdAt: comment.created_at,
-      })),
-      url: prResponse.data.html_url,
-    };
+    issueData = data;
   } catch {
     // If it's not a PR, get it as an issue
-    const issueResponse = await octokit.issues.get({
+    const { data } = await octokit.issues.get({
       owner,
       repo,
       issue_number: issueNumber,
     });
-
-    const commentsResponse = await octokit.issues.listComments({
-      owner,
-      repo,
-      issue_number: issueNumber,
-    });
-
-    return {
-      author: issueResponse.data.user?.login || '',
-      title: issueResponse.data.title,
-      body: issueResponse.data.body || '',
-      labels: issueResponse.data.labels.map((label) => ({
-        name: typeof label === 'string' ? label : label.name || '',
-      })),
-      comments: commentsResponse.data.map((comment) => ({
-        author: comment.user?.login || '',
-        body: comment.body || '',
-        createdAt: comment.created_at,
-      })),
-      url: issueResponse.data.html_url,
-    };
+    issueData = data;
   }
+
+  const commentsResponse = await octokit.issues.listComments({
+    owner,
+    repo,
+    issue_number: issueNumber,
+  });
+
+  return {
+    author: issueData.user?.login || '',
+    title: issueData.title,
+    body: issueData.body || '',
+    labels: issueData.labels.map((label: string | { name?: string }) => ({
+      name: typeof label === 'string' ? label : label.name || '',
+    })),
+    comments: commentsResponse.data.map((comment) => ({
+      author: comment.user?.login || '',
+      body: comment.body || '',
+      createdAt: comment.created_at,
+    })),
+    url: issueData.html_url,
+  };
 }
 
 export async function getRepository(): Promise<RepositoryData> {
