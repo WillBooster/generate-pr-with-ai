@@ -221,12 +221,10 @@ ${planText}`
   }
 
   let toolResponse = toolResult.trim();
-  if (options.testCommand) {
-    if (options.dryRun) {
-      console.info(ansis.yellow(`Would run test command`));
-    } else {
-      toolResponse += await testAndFix(options, resolutionPlan);
-    }
+  if (options.dryRun) {
+    console.info(ansis.yellow(`Would run test command`));
+  } else {
+    toolResponse += await testAndFix(options, resolutionPlan);
   }
 
   // Try commiting changes because coding tool may fail to commit changes due to pre-commit hooks

@@ -9,6 +9,9 @@ import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
 
 export async function testAndFix(options: MainOptions, resolutionPlan?: ResolutionPlan): Promise<string> {
+  const [commandProgram, ...commandArgs] = parseCommandLineArgs(options.testCommand || '');
+  if (!commandProgram) return '';
+
   const maxAttempts = options.maxTestAttempts;
   let attempts = 0;
   let fixResult = '';
@@ -16,7 +19,6 @@ export async function testAndFix(options: MainOptions, resolutionPlan?: Resoluti
   while (attempts < maxAttempts) {
     attempts++;
     console.info(ansis.cyan(`Executing test command (attempt ${attempts}/${maxAttempts}): ${options.testCommand}`));
-    const [commandProgram, ...commandArgs] = parseCommandLineArgs(options.testCommand || '');
 
     const testResult = await spawnAsync(commandProgram, commandArgs, {
       cwd: process.cwd(),
