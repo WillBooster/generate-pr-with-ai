@@ -123,11 +123,9 @@ export async function getIssue(issueNumber: number): Promise<{
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
-  type PullRequestData = RestEndpointMethodTypes['pulls']['get']['response']['data'];
-  type IssueData = RestEndpointMethodTypes['issues']['get']['response']['data'];
-  type CombinedData = PullRequestData | IssueData;
-
-  let issueData: CombinedData;
+  let issueData:
+    | RestEndpointMethodTypes['pulls']['get']['response']['data']
+    | RestEndpointMethodTypes['issues']['get']['response']['data'];
   try {
     // Try to get it as a pull request first
     const { data } = await octokit.pulls.get({
