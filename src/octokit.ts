@@ -7,7 +7,6 @@ import type {
   PullRequestParams,
   PullRequestReview,
   PullRequestReviewThreadsResponse,
-  RepositoryData,
   RepositoryInfo,
   SimpleComment,
 } from './types.js';
@@ -164,11 +163,6 @@ export async function getIssue(issueNumber: number): Promise<{
     })),
     url: issueData.html_url,
   };
-}
-
-export async function getRepository(): Promise<RepositoryData> {
-  const { owner, repo } = await getRepoInfo();
-  return { owner, name: repo };
 }
 
 export async function getPullRequestReviewThreads(pullNumber: number): Promise<PullRequestReviewThreadsResponse> {
