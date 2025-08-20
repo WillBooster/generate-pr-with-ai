@@ -1,4 +1,5 @@
 import { graphql } from '@octokit/graphql';
+import type { RestEndpointMethodTypes } from '@octokit/rest';
 import { Octokit } from '@octokit/rest';
 import { runCommand } from './spawn.js';
 import type {
@@ -122,8 +123,11 @@ export async function getIssue(issueNumber: number): Promise<{
   const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let issueData: any;
+  type PullRequestData = RestEndpointMethodTypes['pulls']['get']['response']['data'];
+  type IssueData = RestEndpointMethodTypes['issues']['get']['response']['data'];
+  type CombinedData = PullRequestData | IssueData;
+
+  let issueData: CombinedData;
   try {
     // Try to get it as a pull request first
     const { data } = await octokit.pulls.get({
