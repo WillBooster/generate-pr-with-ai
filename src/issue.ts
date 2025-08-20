@@ -167,7 +167,7 @@ function extractIssueReferences(text: string): number[] {
     if (!match) break;
 
     const number = Number.parseInt(match[1] ?? '', 10);
-    if (!Number.isInteger(number)) {
+    if (Number.isInteger(number)) {
       numbers.push(number);
     }
   }
