@@ -7,102 +7,6 @@ export interface UserLogin {
 }
 
 /**
- * Represents a GitHub user
- */
-export interface GitHubUser extends UserLogin {
-  /** The user's GitHub ID */
-  id: string;
-  /** Whether the user is a bot */
-  is_bot: boolean;
-  /** The user's full name */
-  name?: string;
-}
-
-/**
- * Represents a comment author with minimal information
- * @deprecated Use UserLogin instead
- */
-export interface CommentAuthor extends UserLogin {}
-
-/**
- * Represents users who reacted with a specific reaction
- */
-export interface ReactionUsers {
-  /** The total count of users who reacted */
-  totalCount: number;
-}
-
-/**
- * Represents a reaction group on a comment or issue
- */
-export interface ReactionGroup {
-  /** The type of reaction (e.g., THUMBS_UP, LAUGH) */
-  content: string;
-  /** Users who reacted */
-  users: ReactionUsers;
-}
-
-/**
- * Represents a GitHub issue comment
- */
-export interface GitHubComment {
-  /** The comment's unique ID */
-  id: string;
-  /** The comment's author */
-  author: UserLogin;
-  /** The author's association with the repository */
-  authorAssociation: string;
-  /** The comment's content */
-  body: string;
-  /** When the comment was created */
-  createdAt: string;
-  /** Whether the comment includes an edit made at creation time */
-  includesCreatedEdit: boolean;
-  /** Whether the comment is minimized */
-  isMinimized: boolean;
-  /** The reason the comment was minimized, if applicable */
-  minimizedReason: string;
-  /** Reaction groups on the comment */
-  reactionGroups: ReactionGroup[];
-  /** URL to the comment */
-  url: string;
-  /** Whether the current viewer authored the comment */
-  viewerDidAuthor: boolean;
-}
-
-/**
- * Represents a GitHub label
- */
-export interface GitHubLabel {
-  /** The label's unique ID */
-  id: string;
-  /** The label's name */
-  name: string;
-  /** The label's description (optional) */
-  description?: string;
-  /** The label's color (hex code without #) */
-  color: string;
-}
-
-/**
- * Represents a GitHub issue
- */
-export interface GitHubIssue {
-  /** The issue's author */
-  author: GitHubUser;
-  /** The issue's description */
-  body: string;
-  /** Comments on the issue */
-  comments: GitHubComment[];
-  /** Labels attached to the issue */
-  labels: GitHubLabel[];
-  /** The issue's title */
-  title: string;
-  /** The URL of the issue or pull request */
-  url: string;
-}
-
-/**
  * Represents a simplified comment for issue processing
  */
 export interface IssueComment {
@@ -116,54 +20,6 @@ export interface IssueComment {
 }
 
 /**
- * Represents a GitHub PR review comment from GraphQL API
- */
-export interface GitHubGraphQLReviewComment {
-  /** The comment's author */
-  author: UserLogin;
-  /** The comment's content */
-  body: string;
-  /** The file path this comment is on */
-  path?: string;
-  /** The line number this comment is on */
-  line?: number;
-  /** The diff hunk showing the code context */
-  diffHunk?: string;
-  /** When the comment was created */
-  createdAt: string;
-}
-
-/**
- * Represents a GitHub PR review thread from GraphQL API
- */
-export interface GitHubGraphQLReviewThread {
-  /** Whether the conversation is resolved */
-  isResolved: boolean;
-  /** Comments in this thread */
-  comments: {
-    nodes: GitHubGraphQLReviewComment[];
-  };
-}
-
-/**
- * Represents a GitHub PR review (overall review with state)
- */
-export interface GitHubReview {
-  /** The review's unique ID */
-  id: number;
-  /** The review's author */
-  user: UserLogin;
-  /** The review's content/body */
-  body: string;
-  /** The review state (APPROVED, COMMENTED, CHANGES_REQUESTED, etc.) */
-  state: string;
-  /** When the review was submitted */
-  submitted_at: string;
-  /** The commit SHA this review was submitted for */
-  commit_id: string;
-}
-
-/**
  * Represents repository information
  */
 export interface RepositoryInfo {
@@ -171,16 +27,6 @@ export interface RepositoryInfo {
   owner: string;
   /** The repository name */
   repo: string;
-}
-
-/**
- * Alternative repository info interface for compatibility
- */
-export interface RepositoryData {
-  /** The repository owner's username */
-  owner: string;
-  /** The repository name */
-  name: string;
 }
 
 /**
