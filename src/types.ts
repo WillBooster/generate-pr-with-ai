@@ -49,7 +49,7 @@ export interface GitHubComment {
   /** The comment's unique ID */
   id: string;
   /** The comment's author */
-  author: CommentAuthor;
+  author: UserLogin;
   /** The author's association with the repository */
   authorAssociation: string;
   /** The comment's content */
