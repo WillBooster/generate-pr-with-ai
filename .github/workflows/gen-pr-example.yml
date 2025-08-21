@@ -1,5 +1,4 @@
 name: Generate PR with Aider and Gemini 2.5 Pro (example)
-
 on:
   issues:
     types:
@@ -8,25 +7,19 @@ on:
     types:
       - labeled
   workflow_dispatch:
-
-# If you want to use `secrets.GITHUB_TOKEN` instead of your GitHub PAT, you need give the following permissions.
 permissions:
-  contents: write # for pushing commits and branches
-  issues: write # for creating PRs
-  pull-requests: write # for creating PRs
-
+  contents: write
+  issues: write
+  pull-requests: write
 jobs:
   gen-pr:
     runs-on: ubuntu-latest
-    # Only run if the label name includes 'gen-pr-all' and an issue number is available
     if: contains(github.event.label.name, 'gen-pr-all') && (github.event.issue.number || github.event.number) != null
     steps:
       - uses: actions/checkout@v5
-      # Set up a development environment for AI coding tools
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun install
-      # Set up user settings on Git (optional)
       - name: Set up user settings on Git
         run: |
           git config user.name "WillBooster (Agent)"
@@ -34,70 +27,14 @@ jobs:
       - name: Generate PR with AI
         uses: WillBooster/gen-pr@v2
         with:
-          # required options
           issue-number: ${{ github.event.issue.number || github.event.number }}
-          # optional options
           coding-tool: aider
           planning-model: gemini/gemini-2.5-pro
           reasoning-effort: high
           repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"
           aider-extra-args: '--model gemini/gemini-2.5-pro --edit-format diff-fenced'
-          test-command: 'yarn check-for-ai'
+          test-command: yarn check-for-ai
           max-test-attempts: 5
         env:
-          ########## for planning models and Aider ##########
-          ## OpenAI
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-          ## Anthropic
-          # ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-
-          ## Amazon (Bedrock)
-          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # AWS_REGION: us-west-2
-
-          ## Google (AI Studio)
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-
-          ## Google (Vertex AI)
-          # GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-
-          ## Azure OpenAI
-          # AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          # AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          # AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
-
-          ## OpenRouter
-          # OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-
-          ## Ollama (optional)
-          # OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
-          # OLLAMA_API_KEY: ${{ secrets.OLLAMA_API_KEY }}
-
-          ## xAI
-          # XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-
-          ########## for coding tools ##########
-          ## Codex
-          # OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-
-          ## Claude Code
-          # ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          # or
-          # CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          # or
-          # AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          # AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          # AWS_REGION: us-west-2
-          # ANTHROPIC_MODEL: 'us.anthropic.claude-opus-4-1-20250805-v1:0'
-          # ANTHROPIC_SMALL_FAST_MODEL: 'us.anthropic.claude-3-5-haiku-20241022-v1:0'
-          # CLAUDE_CODE_USE_BEDROCK: 1
-
-          ## Gemini CLI
-          # GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-
-          ########## for gh (required for creating PRs) ##########
-          # Instead of `secrets.GITHUB_TOKEN`, you need to set your own GitHub Personal Access Token (PAT) here
-          # in order to get user info (name and e-mail) on gen-pr and configure `user.name` and `user.email` automatically.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

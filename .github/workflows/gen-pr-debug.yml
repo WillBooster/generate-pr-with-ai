@@ -1,5 +1,4 @@
 name: Generate PR with Aider and Gemini 2.5 Pro (debug)
-
 on:
   issues:
     types:
@@ -8,15 +7,12 @@ on:
     types:
       - labeled
   workflow_dispatch:
-
 jobs:
   gen-pr:
     runs-on: ubuntu-latest
-    # Only run if the label name includes 'easy' and an issue number is available
     if: contains(github.event.label.name, 'easy') && (github.event.issue.number || github.event.number) != null
     steps:
       - uses: actions/checkout@v5
-      # Set up an environment for AI coding tools
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun install
@@ -29,7 +25,7 @@ jobs:
           reasoning-effort: high
           repomix-extra-args: "--compress --remove-empty-lines --include 'src/**/*.ts'"
           aider-extra-args: '--model gemini/gemini-2.5-pro --edit-format diff-fenced'
-          test-command: 'yarn check-for-ai'
+          test-command: yarn check-for-ai
           max-test-attempts: 5
         env:
           GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
