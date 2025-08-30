@@ -1,3 +1,4 @@
+import child_process from 'node:child_process';
 import { graphql } from '@octokit/graphql';
 import type { RestEndpointMethodTypes } from '@octokit/rest';
 import { Octokit } from '@octokit/rest';
@@ -11,54 +12,21 @@ import type {
   SimpleComment,
 } from './types.js';
 
-let octokitInstance: Octokit | undefined;
-let graphqlInstance: typeof graphql | undefined;
+const token =
+  process.env.GH_TOKEN ||
+  process.env.GITHUB_TOKEN ||
+  child_process.spawnSync('gh', ['auth', 'token'], { encoding: 'utf-8' }).stdout.trim();
+const octokit = new Octokit({
+  auth: token,
+});
+const graphqlClient = graphql.defaults({
+  headers: {
+    authorization: `token ${token}`,
+  },
+});
+
 let repoOwner: string | undefined;
 let repoName: string | undefined;
-
-async function getGitHubToken(): Promise<string> {
-  const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
-  if (token) {
-    return token;
-  }
-
-  // Fallback to gh auth token if environment variables are not set
-  try {
-    const { stdout } = await runCommand('gh', ['auth', 'token'], { ignoreExitStatus: true });
-    if (stdout.trim()) {
-      return stdout.trim();
-    }
-  } catch {
-    // Ignore error
-  }
-
-  throw new Error(
-    'GitHub token not found. Please set GH_TOKEN or GITHUB_TOKEN environment variable, or authenticate with gh CLI'
-  );
-}
-
-async function getOctokit(): Promise<Octokit> {
-  if (!octokitInstance) {
-    const token = await getGitHubToken();
-    octokitInstance = new Octokit({
-      auth: token,
-    });
-  }
-  return octokitInstance;
-}
-
-async function getGraphqlClient(): Promise<typeof graphql> {
-  if (!graphqlInstance) {
-    const token = await getGitHubToken();
-    graphqlInstance = graphql.defaults({
-      headers: {
-        authorization: `token ${token}`,
-      },
-    });
-  }
-  return graphqlInstance;
-}
-
 async function getRepoInfo(): Promise<RepositoryInfo> {
   if (!repoOwner || !repoName) {
     // Get repo info from git remote
@@ -82,7 +50,6 @@ async function getRepoInfo(): Promise<RepositoryInfo> {
 }
 
 export async function createPullRequest(params: PullRequestParams): Promise<void> {
-  const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
   await octokit.pulls.create({
@@ -96,7 +63,6 @@ export async function createPullRequest(params: PullRequestParams): Promise<void
 }
 
 export async function getPullRequestDiff(pullNumber: number): Promise<string> {
-  const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
   const response = await octokit.pulls.get({
@@ -119,7 +85,6 @@ export async function getIssue(issueNumber: number): Promise<{
   comments: SimpleComment[];
   url: string;
 }> {
-  const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
   let issueData:
@@ -166,7 +131,6 @@ export async function getIssue(issueNumber: number): Promise<{
 }
 
 export async function getPullRequestReviewThreads(pullNumber: number): Promise<PullRequestReviewThreadsResponse> {
-  const graphqlClient = await getGraphqlClient();
   const { owner, repo } = await getRepoInfo();
 
   const MAX_MESSAGE_COUNT = 100;
@@ -206,7 +170,6 @@ export async function getPullRequestReviewThreads(pullNumber: number): Promise<P
 }
 
 export async function getPullRequestReviews(pullNumber: number): Promise<PullRequestReview[]> {
-  const octokit = await getOctokit();
   const { owner, repo } = await getRepoInfo();
 
   const response = await octokit.pulls.listReviews({
