@@ -92,25 +92,23 @@ export async function getIssue(issueNumber: number): Promise<{
 }> {
   const { owner, repo } = await getRepoInfo();
 
-  let issueData:
+  // Get issue data first - this works for both issues and PRs
+  const { data: issueData } = await octokit.issues.get({
+    owner,
+    repo,
+    issue_number: issueNumber,
+  });
+  // If it has pull_request field, get the full PR data
+  let issueOrPullRequest:
     | RestEndpointMethodTypes['pulls']['get']['response']['data']
-    | RestEndpointMethodTypes['issues']['get']['response']['data'];
-  try {
-    // Try to get it as a pull request first
-    const { data } = await octokit.pulls.get({
+    | RestEndpointMethodTypes['issues']['get']['response']['data'] = issueData;
+  if (issueData.pull_request) {
+    const { data: prData } = await octokit.pulls.get({
       owner,
       repo,
       pull_number: issueNumber,
     });
-    issueData = data;
-  } catch {
-    // If it's not a PR, get it as an issue
-    const { data } = await octokit.issues.get({
-      owner,
-      repo,
-      issue_number: issueNumber,
-    });
-    issueData = data;
+    issueOrPullRequest = prData;
   }
 
   const commentsResponse = await octokit.issues.listComments({
@@ -120,10 +118,10 @@ export async function getIssue(issueNumber: number): Promise<{
   });
 
   return {
-    author: issueData.user?.login || '',
-    title: issueData.title,
-    body: issueData.body || '',
-    labels: issueData.labels.map((label: string | { name?: string }) => ({
+    author: issueOrPullRequest.user?.login || '',
+    title: issueOrPullRequest.title,
+    body: issueOrPullRequest.body || '',
+    labels: issueOrPullRequest.labels.map((label: string | { name?: string }) => ({
       name: typeof label === 'string' ? label : label.name || '',
     })),
     comments: commentsResponse.data.map((comment) => ({
@@ -131,7 +129,7 @@ export async function getIssue(issueNumber: number): Promise<{
       body: comment.body || '',
       createdAt: comment.created_at,
     })),
-    url: issueData.html_url,
+    url: issueOrPullRequest.html_url,
   };
 }
 
