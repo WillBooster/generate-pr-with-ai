@@ -10,4 +10,4 @@ jobs:
       labeled: 'ready :rocket:'
     secrets:
       GH_PROJECT_URL: https://github.com/orgs/WillBoosterLab/projects/5
-      GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -3,8 +3,11 @@ on:
   workflow_dispatch:
   schedule:
     - cron: 46 18,19 * * *
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   wbfy-merge:
     uses: WillBooster/reusable-workflows/.github/workflows/wbfy-merge.yml@main
     secrets:
-      GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

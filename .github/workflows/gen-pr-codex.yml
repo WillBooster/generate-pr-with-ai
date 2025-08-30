@@ -15,5 +15,5 @@ jobs:
       issue-number: ${{ github.event.issue.number || github.event.number }}
       test-command: bun run check-all-for-ai
     secrets:
-      GH_TOKEN: ${{ secrets.PUBLIC_GH_BOT_PAT }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
