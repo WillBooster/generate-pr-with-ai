@@ -204,7 +204,7 @@ ${planText}`
     toolResult = 'Skipped due to dry-run mode';
   } else {
     const toolRunResult = await runCommand(command, toolArgs, runOpts);
-    toolResult = toolRunResult.stdout;
+    toolResult = toolRunResult.stdout || '';
     if (toolRunResult.status !== 0) {
       toolSuccess = false;
       toolError = `${toolName} failed with exit code ${toolRunResult.status}\n${toolRunResult.stderr}`;
@@ -212,7 +212,7 @@ ${planText}`
     }
   }
 
-  let toolResponse = toolResult.trim();
+  let toolResponse = (toolResult || '').trim();
   let testSuccess = true;
   let testError = '';
   if (options.dryRun) {
