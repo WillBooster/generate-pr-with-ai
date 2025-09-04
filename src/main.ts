@@ -1,3 +1,4 @@
+import type { SpawnOptions } from 'node:child_process';
 import ansis from 'ansis';
 import YAML from 'yaml';
 import { configureEnvVars } from './env.js';
@@ -175,70 +176,41 @@ ${planText}`
     console.info(`=== End ${toolName} Prompt ===\n`);
     toolResult = 'Skipped due to dry-run mode';
   }
+  // Build tool configuration
+  let toolArgs: string[];
+  let command: string;
+  let runOpts: SpawnOptions & { ignoreExitStatus?: boolean } = {
+    env: { ...process.env, NO_COLOR: '1' },
+    ignoreExitStatus: true,
+  };
+
   if (options.codingTool === 'aider') {
-    const aiderArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString('aider', aiderArgs, prompt);
-    const aiderResult = await runCommand('aider', aiderArgs, {
-      env: { ...process.env, NO_COLOR: '1' },
-      ignoreExitStatus: true,
-    });
-    toolResult = aiderResult.stdout;
-    if (aiderResult.status !== 0) {
-      toolSuccess = false;
-      toolError = `Aider failed with exit code ${aiderResult.status}\n${aiderResult.stderr}`;
-      console.error(ansis.red(`Aider execution failed: ${toolError}`));
-    }
+    toolArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
+    command = 'aider';
   } else if (options.codingTool === 'claude-code') {
-    const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, claudeCodeArgs, prompt);
-    if (options.dryRun) {
-      console.info(ansis.yellow(`Would run: ${toolCommand}`));
-    } else {
-      const claudeResult = await runCommand(options.nodeRuntime, claudeCodeArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        stdio: 'inherit',
-        ignoreExitStatus: true,
-      });
-      toolResult = claudeResult.stdout;
-      if (claudeResult.status !== 0) {
-        toolSuccess = false;
-        toolError = `Claude Code failed with exit code ${claudeResult.status}\n${claudeResult.stderr}`;
-        console.error(ansis.red(`Claude Code execution failed: ${toolError}`));
-      }
-    }
+    toolArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
+    command = options.nodeRuntime;
+    runOpts = { ...runOpts, stdio: 'inherit' };
   } else if (options.codingTool === 'codex-cli') {
-    const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, codexArgs, prompt);
-    if (options.dryRun) {
-      console.info(ansis.yellow(`Would run: ${toolCommand}`));
-    } else {
-      const codexResult = await runCommand(options.nodeRuntime, codexArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        ignoreExitStatus: true,
-      });
-      toolResult = codexResult.stdout;
-      if (codexResult.status !== 0) {
-        toolSuccess = false;
-        toolError = `Codex CLI failed with exit code ${codexResult.status}\n${codexResult.stderr}`;
-        console.error(ansis.red(`Codex CLI execution failed: ${toolError}`));
-      }
-    }
+    toolArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
+    command = options.nodeRuntime;
   } else {
-    const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    toolCommand = buildToolCommandString(options.nodeRuntime, geminiArgs, prompt);
-    if (options.dryRun) {
-      console.info(ansis.yellow(`Would run: ${toolCommand}`));
-    } else {
-      const geminiResult = await runCommand(options.nodeRuntime, geminiArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        ignoreExitStatus: true,
-      });
-      toolResult = geminiResult.stdout;
-      if (geminiResult.status !== 0) {
-        toolSuccess = false;
-        toolError = `Gemini CLI failed with exit code ${geminiResult.status}\n${geminiResult.stderr}`;
-        console.error(ansis.red(`Gemini CLI execution failed: ${toolError}`));
-      }
+    toolArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
+    command = options.nodeRuntime;
+  }
+
+  toolCommand = buildToolCommandString(command, toolArgs, prompt);
+
+  // Execute tool command
+  if (options.dryRun && options.codingTool !== 'aider') {
+    console.info(ansis.yellow(`Would run: ${toolCommand}`));
+  } else {
+    const toolRunResult = await runCommand(command, toolArgs, runOpts);
+    toolResult = toolRunResult.stdout;
+    if (toolRunResult.status !== 0) {
+      toolSuccess = false;
+      toolError = `${toolName} failed with exit code ${toolRunResult.status}\n${toolRunResult.stderr}`;
+      console.error(ansis.red(`${toolName} execution failed: ${toolError}`));
     }
   }
 
