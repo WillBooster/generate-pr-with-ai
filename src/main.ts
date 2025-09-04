@@ -170,12 +170,6 @@ ${planText}`
           ? 'Codex CLI'
           : 'Gemini CLI';
 
-  if (options.dryRun) {
-    console.info(`\n=== DRY MODE: ${toolName} Prompt ===`);
-    console.info(prompt);
-    console.info(`=== End ${toolName} Prompt ===\n`);
-    toolResult = 'Skipped due to dry-run mode';
-  }
   // Build tool configuration
   let toolArgs: string[];
   let command: string;
@@ -202,8 +196,12 @@ ${planText}`
   toolCommand = buildToolCommandString(command, toolArgs, prompt);
 
   // Execute tool command
-  if (options.dryRun && options.codingTool !== 'aider') {
+  if (options.dryRun) {
+    console.info(`\n=== DRY MODE: ${toolName} Prompt ===`);
+    console.info(prompt);
+    console.info(`=== End ${toolName} Prompt ===\n`);
     console.info(ansis.yellow(`Would run: ${toolCommand}`));
+    toolResult = 'Skipped due to dry-run mode';
   } else {
     const toolRunResult = await runCommand(command, toolArgs, runOpts);
     toolResult = toolRunResult.stdout;
