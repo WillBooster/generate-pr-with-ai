@@ -8,13 +8,21 @@ import { buildClaudeCodeArgs } from './tools/claudeCode.js';
 import { buildCodexArgs } from './tools/codex.js';
 import { buildGeminiArgs } from './tools/gemini.js';
 
-export async function testAndFix(options: MainOptions, resolutionPlan?: ResolutionPlan): Promise<string> {
+export interface TestResult {
+  fixResult: string;
+  success: boolean;
+  error?: string;
+}
+
+export async function testAndFix(options: MainOptions, resolutionPlan?: ResolutionPlan): Promise<TestResult> {
   const [commandProgram, ...commandArgs] = parseCommandLineArgs(options.testCommand || '');
-  if (!commandProgram) return '';
+  if (!commandProgram) return { fixResult: '', success: true };
 
   const maxAttempts = options.maxTestAttempts;
   let attempts = 0;
   let fixResult = '';
+  let success = false;
+  let lastError = '';
 
   while (attempts < maxAttempts) {
     attempts++;
@@ -26,10 +34,14 @@ export async function testAndFix(options: MainOptions, resolutionPlan?: Resoluti
 
     if (testResult.status === 0) {
       console.info(ansis.green('Test command passed successfully.'));
+      success = true;
       break;
     }
 
     console.warn(ansis.yellow(`Test command failed with exit code ${testResult.status}.`));
+
+    // Capture the error details
+    lastError = `Test command failed with exit code ${testResult.status}\n\nStdout:\n${testResult.stdout}\n\nStderr:\n${testResult.stderr}`;
 
     // Only try to fix if we haven't reached the maximum attempts
     if (attempts >= maxAttempts) {
@@ -60,7 +72,7 @@ Please analyze the output and fix the errors.
     fixResult += await runToolFix(options, prompt, resolutionPlan);
   }
 
-  return fixResult;
+  return { fixResult, success, error: success ? undefined : lastError };
 }
 
 /**
@@ -87,6 +99,7 @@ export async function runToolFix(
     assistantResult = (
       await runCommand('aider', aiderArgs, {
         env: { ...process.env, NO_COLOR: '1' },
+        ignoreExitStatus: true,
       })
     ).stdout;
   } else if (options.codingTool === 'claude-code') {
@@ -96,6 +109,7 @@ export async function runToolFix(
       await runCommand(options.nodeRuntime, claudeCodeArgs, {
         env: { ...process.env, NO_COLOR: '1' },
         stdio: 'inherit',
+        ignoreExitStatus: true,
       })
     ).stdout;
   } else if (options.codingTool === 'codex-cli') {
@@ -104,6 +118,7 @@ export async function runToolFix(
     assistantResult = (
       await runCommand(options.nodeRuntime, codexArgs, {
         env: { ...process.env, NO_COLOR: '1' },
+        ignoreExitStatus: true,
       })
     ).stdout;
   } else {
@@ -112,6 +127,7 @@ export async function runToolFix(
     assistantResult = (
       await runCommand(options.nodeRuntime, geminiArgs, {
         env: { ...process.env, NO_COLOR: '1' },
+        ignoreExitStatus: true,
       })
     ).stdout;
   }

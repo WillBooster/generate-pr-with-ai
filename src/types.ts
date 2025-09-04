@@ -61,6 +61,8 @@ export interface PullRequestParams {
   head: string;
   /** Target branch */
   base: string;
+  /** Whether to create as a draft PR */
+  draft?: boolean;
 }
 
 /**

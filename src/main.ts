@@ -158,6 +158,8 @@ ${planText}`
   // Execute coding tool
   let toolResult = '';
   let toolCommand: string;
+  let toolError = '';
+  let toolSuccess = true;
   const toolName =
     options.codingTool === 'aider'
       ? 'Aider'
@@ -176,23 +178,33 @@ ${planText}`
   if (options.codingTool === 'aider') {
     const aiderArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString('aider', aiderArgs, prompt);
-    toolResult = (
-      await runCommand('aider', aiderArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-      })
-    ).stdout;
+    const aiderResult = await runCommand('aider', aiderArgs, {
+      env: { ...process.env, NO_COLOR: '1' },
+      ignoreExitStatus: true,
+    });
+    toolResult = aiderResult.stdout;
+    if (aiderResult.status !== 0) {
+      toolSuccess = false;
+      toolError = `Aider failed with exit code ${aiderResult.status}\n${aiderResult.stderr}`;
+      console.error(ansis.red(`Aider execution failed: ${toolError}`));
+    }
   } else if (options.codingTool === 'claude-code') {
     const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
     toolCommand = buildToolCommandString(options.nodeRuntime, claudeCodeArgs, prompt);
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
-      toolResult = (
-        await runCommand(options.nodeRuntime, claudeCodeArgs, {
-          env: { ...process.env, NO_COLOR: '1' },
-          stdio: 'inherit',
-        })
-      ).stdout;
+      const claudeResult = await runCommand(options.nodeRuntime, claudeCodeArgs, {
+        env: { ...process.env, NO_COLOR: '1' },
+        stdio: 'inherit',
+        ignoreExitStatus: true,
+      });
+      toolResult = claudeResult.stdout;
+      if (claudeResult.status !== 0) {
+        toolSuccess = false;
+        toolError = `Claude Code failed with exit code ${claudeResult.status}\n${claudeResult.stderr}`;
+        console.error(ansis.red(`Claude Code execution failed: ${toolError}`));
+      }
     }
   } else if (options.codingTool === 'codex-cli') {
     const codexArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
@@ -200,11 +212,16 @@ ${planText}`
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
-      toolResult = (
-        await runCommand(options.nodeRuntime, codexArgs, {
-          env: { ...process.env, NO_COLOR: '1' },
-        })
-      ).stdout;
+      const codexResult = await runCommand(options.nodeRuntime, codexArgs, {
+        env: { ...process.env, NO_COLOR: '1' },
+        ignoreExitStatus: true,
+      });
+      toolResult = codexResult.stdout;
+      if (codexResult.status !== 0) {
+        toolSuccess = false;
+        toolError = `Codex CLI failed with exit code ${codexResult.status}\n${codexResult.stderr}`;
+        console.error(ansis.red(`Codex CLI execution failed: ${toolError}`));
+      }
     }
   } else {
     const geminiArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
@@ -212,19 +229,48 @@ ${planText}`
     if (options.dryRun) {
       console.info(ansis.yellow(`Would run: ${toolCommand}`));
     } else {
-      toolResult = (
-        await runCommand(options.nodeRuntime, geminiArgs, {
-          env: { ...process.env, NO_COLOR: '1' },
-        })
-      ).stdout;
+      const geminiResult = await runCommand(options.nodeRuntime, geminiArgs, {
+        env: { ...process.env, NO_COLOR: '1' },
+        ignoreExitStatus: true,
+      });
+      toolResult = geminiResult.stdout;
+      if (geminiResult.status !== 0) {
+        toolSuccess = false;
+        toolError = `Gemini CLI failed with exit code ${geminiResult.status}\n${geminiResult.stderr}`;
+        console.error(ansis.red(`Gemini CLI execution failed: ${toolError}`));
+      }
     }
   }
 
   let toolResponse = toolResult.trim();
+  let testSuccess = true;
+  let testError = '';
   if (options.dryRun) {
     console.info(ansis.yellow(`Would run test command`));
   } else {
-    toolResponse += await testAndFix(options, resolutionPlan);
+    const testResult = await testAndFix(options, resolutionPlan);
+    toolResponse += testResult.fixResult;
+    testSuccess = testResult.success;
+    testError = testResult.error || '';
+    if (!testSuccess) {
+      console.warn(ansis.yellow('Tests failed after all fix attempts. Will create a draft PR.'));
+    }
+  }
+
+  if (!toolSuccess) {
+    console.warn(ansis.yellow(`${toolName} execution failed. Will create a draft PR.`));
+  }
+
+  // Determine if PR should be a draft
+  const shouldBeDraft = !toolSuccess || !testSuccess;
+  let errorLogs = '';
+  if (shouldBeDraft) {
+    if (toolError) {
+      errorLogs += `\n\n### ❌ ${toolName} Execution Error\n\n\`\`\`\n${toolError}\n\`\`\``;
+    }
+    if (testError) {
+      errorLogs += `\n\n### ❌ Test Execution Error\n\n\`\`\`\n${testError}\n\`\`\``;
+    }
   }
 
   // Try commiting changes because coding tool may fail to commit changes due to pre-commit hooks
@@ -299,14 +345,20 @@ ${responseFence}`;
     }
     prBody = prBody.replaceAll(/(?:\s*\n){2,}/g, '\n\n').trim();
 
+    // Add error logs to PR body if it's a draft due to failures
+    if (shouldBeDraft) {
+      prBody += errorLogs;
+    }
+
     if (options.dryRun) {
-      console.info(ansis.yellow(`Would create PR with title: ${prTitle}`));
+      console.info(ansis.yellow(`Would create PR with title: ${prTitle}${shouldBeDraft ? ' (as draft)' : ''}`));
     } else {
       await createPullRequest({
         title: prTitle,
         body: prBody,
         head: newBranchName,
         base: baseBranch,
+        draft: shouldBeDraft,
       });
     }
   }

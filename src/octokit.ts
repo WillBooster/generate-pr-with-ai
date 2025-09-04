@@ -64,6 +64,7 @@ export async function createPullRequest(params: PullRequestParams): Promise<void
     body: params.body,
     head: params.head,
     base: params.base,
+    draft: params.draft,
   });
 }
 
