@@ -2,7 +2,7 @@ import ansis from 'ansis';
 import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import type { ResolutionPlan } from './plan.js';
-import { parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
+import { normalizeNodeRuntime, parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
 import { createStandardRunOptions, getToolCommandAndArgs, getToolName } from './utils/toolRegistry.js';
 
 export interface TestResult {
@@ -82,12 +82,15 @@ export async function runToolFix(
 ): Promise<string> {
   const toolName = getToolName(options.codingTool);
 
+  // Normalize the runtime value (convert aliases to actual commands)
+  const nodeRuntime = normalizeNodeRuntime(options.nodeRuntime);
+
   // Build tool configuration using registry
   const {
     command,
     args: toolArgs,
     runOptions,
-  } = getToolCommandAndArgs(options.codingTool, options, {
+  } = getToolCommandAndArgs(options.codingTool, options, nodeRuntime, {
     prompt,
     resolutionPlan,
   });

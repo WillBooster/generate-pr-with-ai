@@ -5,7 +5,7 @@ import { buildAiderArgs } from '../tools/aider.js';
 import { buildClaudeCodeArgs } from '../tools/claudeCode.js';
 import { buildCodexArgs } from '../tools/codex.js';
 import { buildGeminiArgs } from '../tools/gemini.js';
-import type { CodingTool } from '../types.js';
+import type { CodingTool, NodeRuntimeActual } from '../types.js';
 
 export interface ToolArgs {
   prompt: string;
@@ -15,8 +15,8 @@ export interface ToolArgs {
 export interface ToolConfig {
   name: string;
   buildArgs: (options: MainOptions, args: ToolArgs) => string[];
-  getCommand: (options: MainOptions) => string;
-  getRunOptions?: (options: MainOptions) => SpawnOptions;
+  getCommand: (nodeRuntime: NodeRuntimeActual) => string;
+  getRunOptions?: () => SpawnOptions;
 }
 
 export const TOOL_REGISTRY: Record<CodingTool, ToolConfig> = {
@@ -28,18 +28,18 @@ export const TOOL_REGISTRY: Record<CodingTool, ToolConfig> = {
   'claude-code': {
     name: 'Claude Code',
     buildArgs: buildClaudeCodeArgs,
-    getCommand: (options) => options.nodeRuntime,
+    getCommand: (nodeRuntime) => nodeRuntime,
     getRunOptions: () => ({ stdio: 'inherit' }),
   },
   'codex-cli': {
     name: 'Codex CLI',
     buildArgs: buildCodexArgs,
-    getCommand: (options) => options.nodeRuntime,
+    getCommand: (nodeRuntime) => nodeRuntime,
   },
   'gemini-cli': {
     name: 'Gemini CLI',
     buildArgs: buildGeminiArgs,
-    getCommand: (options) => options.nodeRuntime,
+    getCommand: (nodeRuntime) => nodeRuntime,
   },
 };
 
@@ -56,13 +56,14 @@ export function getToolName(tool: CodingTool): string {
 export function getToolCommandAndArgs(
   tool: CodingTool,
   options: MainOptions,
+  nodeRuntime: NodeRuntimeActual,
   args: ToolArgs
 ): { command: string; args: string[]; runOptions?: SpawnOptions } {
   const config = TOOL_REGISTRY[tool];
   return {
-    command: config.getCommand(options),
+    command: config.getCommand(nodeRuntime),
     args: config.buildArgs(options, args),
-    runOptions: config.getRunOptions?.(options),
+    runOptions: config.getRunOptions?.(),
   };
 }
 

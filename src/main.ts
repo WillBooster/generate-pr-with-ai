@@ -7,10 +7,10 @@ import { createIssueInfo } from './issue.js';
 import { findDistinctFence } from './markdown.js';
 import { createPullRequest } from './octokit.js';
 import { planCodeChanges } from './plan.js';
-import { runCommand } from './spawn.js';
+import { normalizeNodeRuntime, runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
 import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
-import type { CodingTool, NodeRuntimeActual, ReasoningEffort } from './types.js';
+import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
 import { logVerboseOptions } from './utils/logging.js';
 import { createStandardRunOptions, getToolCommandAndArgs, getToolName } from './utils/toolRegistry.js';
 import { yamlStringifyOptions } from './yaml.js';
@@ -35,8 +35,8 @@ export interface MainOptions {
   dryRun: boolean;
   /** Do not create a new branch, commit changes directly to the base branch */
   noBranch: boolean;
-  /** Node.js runtime to use (already normalized, without aliases) */
-  nodeRuntime: NodeRuntimeActual;
+  /** Node.js runtime to use */
+  nodeRuntime: NodeRuntime;
   /** GitHub issue number to process */
   issueNumber: number;
   /** Maximum number of attempts to fix test failures */
@@ -62,6 +62,9 @@ export async function main(options: MainOptions): Promise<void> {
 
   // Print parsed options if verbose flag is set
   logVerboseOptions(options, options.verbose);
+
+  // Normalize the runtime value (convert aliases to actual commands)
+  const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(options.nodeRuntime);
 
   if (options.dryRun) {
     console.info(ansis.yellow('Running in dry-run mode. No branches or PRs will be created.'));
@@ -171,7 +174,7 @@ ${planText}`
     command,
     args: toolArgs,
     runOptions,
-  } = getToolCommandAndArgs(options.codingTool, options, {
+  } = getToolCommandAndArgs(options.codingTool, options, nodeRuntime, {
     prompt,
     resolutionPlan,
   });
