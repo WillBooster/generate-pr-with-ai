@@ -11,6 +11,7 @@ import { runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
 import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
 import type { CodingTool, NodeRuntimeActual, ReasoningEffort } from './types.js';
+import { logVerboseOptions } from './utils/logging.js';
 import { createStandardRunOptions, getToolCommandAndArgs, getToolName } from './utils/toolRegistry.js';
 import { yamlStringifyOptions } from './yaml.js';
 
@@ -58,6 +59,9 @@ const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
 
 export async function main(options: MainOptions): Promise<void> {
   configureEnvVars();
+
+  // Print parsed options if verbose flag is set
+  logVerboseOptions(options, options.verbose);
 
   if (options.dryRun) {
     console.info(ansis.yellow('Running in dry-run mode. No branches or PRs will be created.'));

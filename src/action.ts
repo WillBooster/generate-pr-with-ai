@@ -7,7 +7,6 @@ import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_NODE_RUNTIME } 
 import { main } from './main.js';
 import { normalizeNodeRuntime } from './spawn.js';
 import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
-import { logVerboseOptions } from './utils/logging.js';
 import { validateMainOptions } from './utils/validation.js';
 
 const configOptions = loadConfigFile();
@@ -65,7 +64,7 @@ const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(nodeRuntimeInput);
 // cf. https://github.com/cli/cli/issues/8441#issuecomment-1870271857
 fs.rmSync(path.join(os.homedir(), '.config', 'gh'), { force: true, recursive: true });
 
-const mainOptions = {
+void main({
   aiderExtraArgs,
   claudeCodeExtraArgs,
   codexExtraArgs,
@@ -83,9 +82,4 @@ const mainOptions = {
   testCommand,
   removePattern,
   verbose,
-};
-
-// Print parsed options if verbose flag is set
-logVerboseOptions(mainOptions, verbose);
-
-void main(mainOptions);
+});
