@@ -176,15 +176,10 @@ ${planText}`
     resolutionPlan,
   });
 
-  let runOpts: SpawnOptions & { ignoreExitStatus?: boolean } = {
+  const runOpts: SpawnOptions & { ignoreExitStatus?: boolean } = {
     ...createStandardRunOptions(),
     ...runOptions,
   };
-
-  // Special handling for claude-code stdio
-  if (options.codingTool === 'claude-code') {
-    runOpts = { ...runOpts, stdio: 'inherit' };
-  }
 
   toolCommand = buildToolCommandString(command, toolArgs, prompt);
 

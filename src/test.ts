@@ -92,15 +92,10 @@ export async function runToolFix(
     resolutionPlan,
   });
 
-  let runOpts = {
+  const runOpts = {
     ...createStandardRunOptions(),
     ...runOptions,
   };
-
-  // Special handling for claude-code stdio
-  if (options.codingTool === 'claude-code') {
-    runOpts = { ...runOpts, stdio: 'inherit' };
-  }
 
   console.info(ansis.cyan(`Asking ${toolName} to fix "${options.testCommand}"...`));
   const assistantResult = (await runCommand(command, toolArgs, runOpts)).stdout;

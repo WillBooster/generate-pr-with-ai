@@ -29,6 +29,7 @@ export const TOOL_REGISTRY: Record<CodingTool, ToolConfig> = {
     name: 'Claude Code',
     buildArgs: buildClaudeCodeArgs,
     getCommand: (options) => options.nodeRuntime,
+    getRunOptions: () => ({ stdio: 'inherit' }),
   },
   'codex-cli': {
     name: 'Codex CLI',
