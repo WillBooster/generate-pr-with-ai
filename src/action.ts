@@ -15,11 +15,11 @@ const issueNumber = core.getInput('issue-number', { required: true });
 const planningModel =
   core.getInput('planning-model', { required: false }) || (configOptions['planning-model'] as string);
 const twoStagePlanningInput =
-  core.getInput('two-staged-planning', { required: false }) || (configOptions['two-staged-planning'] as string);
+  core.getInput('two-staged-planning', { required: false }) || String(configOptions['two-staged-planning'] ?? '');
 const twoStagePlanning = twoStagePlanningInput !== 'false';
 const reasoningEffort = (core.getInput('reasoning-effort', { required: false }) ||
   (configOptions['reasoning-effort'] as string)) as ReasoningEffort | undefined;
-const dryRunInput = core.getInput('dry-run', { required: false }) || (configOptions['dry-run'] as string);
+const dryRunInput = core.getInput('dry-run', { required: false }) || String(configOptions['dry-run'] ?? '');
 const dryRun = dryRunInput === 'true';
 const codingTool = (core.getInput('coding-tool', { required: false }) ||
   (configOptions['coding-tool'] as string) ||
@@ -42,9 +42,9 @@ const maxTestAttempts = maxTestAttemptsInput
   : DEFAULT_MAX_TEST_ATTEMPTS;
 const removePattern =
   core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
-const noBranchInput = core.getInput('no-branch', { required: false }) || (configOptions['no-branch'] as string);
+const noBranchInput = core.getInput('no-branch', { required: false }) || String(configOptions['no-branch'] ?? '');
 const noBranch = noBranchInput === 'true';
-const verboseInput = core.getInput('verbose', { required: false }) || (configOptions.verbose as string);
+const verboseInput = core.getInput('verbose', { required: false }) || String(configOptions.verbose ?? '');
 const verbose = verboseInput === 'true';
 const nodeRuntime = (core.getInput('node-runtime', { required: false }) ||
   (configOptions['node-runtime'] as string) ||
