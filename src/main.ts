@@ -10,11 +10,8 @@ import { planCodeChanges } from './plan.js';
 import { runCommand } from './spawn.js';
 import { testAndFix } from './test.js';
 import { HEADING_OF_GEN_PR_METADATA, truncateText } from './text.js';
-import { buildAiderArgs } from './tools/aider.js';
-import { buildClaudeCodeArgs } from './tools/claudeCode.js';
-import { buildCodexArgs } from './tools/codex.js';
-import { buildGeminiArgs } from './tools/gemini.js';
 import type { CodingTool, NodeRuntimeActual, ReasoningEffort } from './types.js';
+import { createStandardRunOptions, getToolCommandAndArgs, getToolName } from './utils/toolRegistry.js';
 import { yamlStringifyOptions } from './yaml.js';
 
 /**
@@ -53,6 +50,8 @@ export interface MainOptions {
   testCommand?: string;
   /** RegExp pattern to remove from issue and PR descriptions */
   removePattern?: string;
+  /** Print parsed options at start */
+  verbose?: boolean;
 }
 
 const MAX_PR_BODY_LENGTH = 30000; // GitHub's limit is 65536, leave some buffer
@@ -161,36 +160,26 @@ ${planText}`
   let toolCommand: string;
   let toolError = '';
   let toolSuccess = true;
-  const toolName =
-    options.codingTool === 'aider'
-      ? 'Aider'
-      : options.codingTool === 'claude-code'
-        ? 'Claude Code'
-        : options.codingTool === 'codex-cli'
-          ? 'Codex CLI'
-          : 'Gemini CLI';
+  const toolName = getToolName(options.codingTool);
 
-  // Build tool configuration
-  let toolArgs: string[];
-  let command: string;
+  // Build tool configuration using registry
+  const {
+    command,
+    args: toolArgs,
+    runOptions,
+  } = getToolCommandAndArgs(options.codingTool, options, {
+    prompt,
+    resolutionPlan,
+  });
+
   let runOpts: SpawnOptions & { ignoreExitStatus?: boolean } = {
-    env: { ...process.env, NO_COLOR: '1' },
-    ignoreExitStatus: true,
+    ...createStandardRunOptions(),
+    ...runOptions,
   };
 
-  if (options.codingTool === 'aider') {
-    toolArgs = buildAiderArgs(options, { prompt: prompt, resolutionPlan });
-    command = 'aider';
-  } else if (options.codingTool === 'claude-code') {
-    toolArgs = buildClaudeCodeArgs(options, { prompt: prompt, resolutionPlan });
-    command = options.nodeRuntime;
+  // Special handling for claude-code stdio
+  if (options.codingTool === 'claude-code') {
     runOpts = { ...runOpts, stdio: 'inherit' };
-  } else if (options.codingTool === 'codex-cli') {
-    toolArgs = buildCodexArgs(options, { prompt: prompt, resolutionPlan });
-    command = options.nodeRuntime;
-  } else {
-    toolArgs = buildGeminiArgs(options, { prompt: prompt, resolutionPlan });
-    command = options.nodeRuntime;
   }
 
   toolCommand = buildToolCommandString(command, toolArgs, prompt);

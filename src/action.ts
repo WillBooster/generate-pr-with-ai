@@ -7,6 +7,8 @@ import { DEFAULT_CODING_TOOL, DEFAULT_MAX_TEST_ATTEMPTS, DEFAULT_NODE_RUNTIME } 
 import { main } from './main.js';
 import { normalizeNodeRuntime } from './spawn.js';
 import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
+import { logVerboseOptions } from './utils/logging.js';
+import { validateMainOptions } from './utils/validation.js';
 
 const configOptions = loadConfigFile();
 
@@ -44,30 +46,18 @@ const removePattern =
   core.getInput('remove-pattern', { required: false }) || (configOptions['remove-pattern'] as string);
 const noBranchInput = core.getInput('no-branch', { required: false }) || (configOptions['no-branch'] as string);
 const noBranch = noBranchInput === 'true';
+const verboseInput = core.getInput('verbose', { required: false }) || (configOptions.verbose as string);
+const verbose = verboseInput === 'true';
 const nodeRuntimeInput = (core.getInput('node-runtime', { required: false }) ||
   (configOptions['node-runtime'] as string) ||
   DEFAULT_NODE_RUNTIME) as NodeRuntime;
 
-if (reasoningEffort && !['low', 'medium', 'high'].includes(reasoningEffort)) {
-  console.error(
-    `Invalid reasoning-effort value: ${reasoningEffort}. Using default. Valid values are: low, medium, high`
-  );
-  process.exit(1);
-}
-
-if (!['aider', 'claude-code', 'codex-cli', 'gemini-cli'].includes(codingTool)) {
-  console.error(
-    `Invalid coding-tool value: ${codingTool}. Using default. Valid values are: aider, claude-code, codex-cli, gemini-cli`
-  );
-  process.exit(1);
-}
-
-if (nodeRuntimeInput && !['node', 'bun', 'npx', 'bunx'].includes(nodeRuntimeInput)) {
-  console.error(
-    `Invalid node-runtime value: ${nodeRuntimeInput}. Using default. Valid values are: node (npx) and bun (bunx)`
-  );
-  process.exit(1);
-}
+// Validate all options using shared utility
+validateMainOptions({
+  reasoningEffort,
+  codingTool,
+  nodeRuntime: nodeRuntimeInput,
+});
 
 // Normalize the runtime value (convert aliases to actual commands)
 const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(nodeRuntimeInput);
@@ -75,7 +65,7 @@ const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(nodeRuntimeInput);
 // cf. https://github.com/cli/cli/issues/8441#issuecomment-1870271857
 fs.rmSync(path.join(os.homedir(), '.config', 'gh'), { force: true, recursive: true });
 
-void main({
+const mainOptions = {
   aiderExtraArgs,
   claudeCodeExtraArgs,
   codexExtraArgs,
@@ -92,4 +82,10 @@ void main({
   repomixExtraArgs,
   testCommand,
   removePattern,
-});
+  verbose,
+};
+
+// Print parsed options if verbose flag is set
+logVerboseOptions(mainOptions, verbose);
+
+void main(mainOptions);

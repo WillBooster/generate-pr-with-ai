@@ -54,6 +54,10 @@ inputs:
   remove-pattern:
     description: 'RegExp pattern to remove from issue and PR descriptions'
     required: false
+  verbose:
+    description: 'Print parsed options at start'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -79,6 +83,7 @@ runs:
         INPUT_MAX-TEST-ATTEMPTS: ${{ inputs.max-test-attempts }}
         INPUT_DRY-RUN: ${{ inputs.dry-run }}
         INPUT_REMOVE-PATTERN: ${{ inputs.remove-pattern }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}
 
 branding:
   icon: 'git-pull-request'

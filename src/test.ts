@@ -3,10 +3,7 @@ import type { MainOptions } from './main.js';
 import { findDistinctFence } from './markdown.js';
 import type { ResolutionPlan } from './plan.js';
 import { parseCommandLineArgs, runCommand, spawnAsync } from './spawn.js';
-import { buildAiderArgs } from './tools/aider.js';
-import { buildClaudeCodeArgs } from './tools/claudeCode.js';
-import { buildCodexArgs } from './tools/codex.js';
-import { buildGeminiArgs } from './tools/gemini.js';
+import { createStandardRunOptions, getToolCommandAndArgs, getToolName } from './utils/toolRegistry.js';
 
 export interface TestResult {
   fixResult: string;
@@ -83,54 +80,30 @@ export async function runToolFix(
   prompt: string,
   resolutionPlan?: ResolutionPlan
 ): Promise<string> {
-  const toolName =
-    options.codingTool === 'aider'
-      ? 'Aider'
-      : options.codingTool === 'claude-code'
-        ? 'Claude Code'
-        : options.codingTool === 'codex-cli'
-          ? 'Codex CLI'
-          : 'Gemini CLI';
-  let assistantResult: string;
+  const toolName = getToolName(options.codingTool);
 
-  if (options.codingTool === 'aider') {
-    const aiderArgs = buildAiderArgs(options, { prompt, resolutionPlan });
-    console.info(ansis.cyan(`Asking Aider to fix "${options.testCommand}"...`));
-    assistantResult = (
-      await runCommand('aider', aiderArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        ignoreExitStatus: true,
-      })
-    ).stdout;
-  } else if (options.codingTool === 'claude-code') {
-    const claudeCodeArgs = buildClaudeCodeArgs(options, { prompt, resolutionPlan });
-    console.info(ansis.cyan(`Asking Claude Code to fix "${options.testCommand}"...`));
-    assistantResult = (
-      await runCommand(options.nodeRuntime, claudeCodeArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        stdio: 'inherit',
-        ignoreExitStatus: true,
-      })
-    ).stdout;
-  } else if (options.codingTool === 'codex-cli') {
-    const codexArgs = buildCodexArgs(options, { prompt, resolutionPlan });
-    console.info(ansis.cyan(`Asking Codex to fix "${options.testCommand}"...`));
-    assistantResult = (
-      await runCommand(options.nodeRuntime, codexArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        ignoreExitStatus: true,
-      })
-    ).stdout;
-  } else {
-    const geminiArgs = buildGeminiArgs(options, { prompt, resolutionPlan });
-    console.info(ansis.cyan(`Asking Gemini CLI to fix "${options.testCommand}"...`));
-    assistantResult = (
-      await runCommand(options.nodeRuntime, geminiArgs, {
-        env: { ...process.env, NO_COLOR: '1' },
-        ignoreExitStatus: true,
-      })
-    ).stdout;
+  // Build tool configuration using registry
+  const {
+    command,
+    args: toolArgs,
+    runOptions,
+  } = getToolCommandAndArgs(options.codingTool, options, {
+    prompt,
+    resolutionPlan,
+  });
+
+  let runOpts = {
+    ...createStandardRunOptions(),
+    ...runOptions,
+  };
+
+  // Special handling for claude-code stdio
+  if (options.codingTool === 'claude-code') {
+    runOpts = { ...runOpts, stdio: 'inherit' };
   }
+
+  console.info(ansis.cyan(`Asking ${toolName} to fix "${options.testCommand}"...`));
+  const assistantResult = (await runCommand(command, toolArgs, runOpts)).stdout;
 
   return `\n\n## ${toolName} fix attempt for "${options.testCommand}"\n\n${assistantResult.trim()}`;
 }

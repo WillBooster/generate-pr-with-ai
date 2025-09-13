@@ -17,6 +17,7 @@ import {
 import { main } from './main.js';
 import { normalizeNodeRuntime } from './spawn.js';
 import type { CodingTool, NodeRuntime, NodeRuntimeActual, ReasoningEffort } from './types.js';
+import { logVerboseOptions } from './utils/logging.js';
 
 // Parse command line arguments using yargs (CLI options override config)
 const argv = await yargs(hideBin(process.argv))
@@ -121,6 +122,12 @@ const argv = await yargs(hideBin(process.argv))
     description: 'Working directory path for commands',
     type: 'string',
   })
+  .option('verbose', {
+    alias: 'v',
+    description: 'Print parsed options at start',
+    type: 'boolean',
+    default: false,
+  })
   // ----------------------------------------------------------
   .version(getVersion())
   .help().argv;
@@ -137,6 +144,9 @@ if (argv['working-dir']) {
   process.chdir(argv['working-dir']);
   console.info(`Changed working directory to: ${process.cwd()}`);
 }
+
+// Print parsed options if verbose flag is set
+logVerboseOptions(argv, argv.verbose);
 
 // Normalize the runtime value (convert aliases to actual commands)
 const nodeRuntime: NodeRuntimeActual = normalizeNodeRuntime(argv['node-runtime'] as NodeRuntime);
@@ -158,4 +168,5 @@ await main({
   repomixExtraArgs: argv['repomix-extra-args'],
   testCommand: argv['test-command'],
   removePattern: argv['remove-pattern'],
+  verbose: argv.verbose,
 });
