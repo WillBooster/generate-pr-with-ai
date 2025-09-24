@@ -54,6 +54,10 @@ inputs:
   remove-pattern:
     description: 'RegExp pattern to remove from issue and PR descriptions'
     required: false
+  package-manager-cache:
+    description: 'Enable package manager caching (default: true)'
+    required: false
+    default: 'true'
 
 runs:
   using: 'composite'
@@ -61,6 +65,7 @@ runs:
     - uses: actions/setup-node@v5
       with:
         node-version: 22.19.0 # for @openai/codex@latest
+        package-manager-cache: ${{ inputs.package-manager-cache }}
     - name: Run action
       run: node ${{ github.action_path }}/dist/action.js
       shell: bash
