@@ -64,8 +64,10 @@ runs:
   steps:
     - uses: actions/setup-node@v5
       with:
-        node-version: 22.19.0 # for @openai/codex@latest
+        node-version: 24
         package-manager-cache: ${{ inputs.package-manager-cache }}
+    - name: Install dependencies
+      run: npm install --omit=dev
     - name: Run action
       run: node ${{ github.action_path }}/dist/action.js
       shell: bash
