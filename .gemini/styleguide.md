@@ -1,1 +1,1 @@
-日本語でレビューしてください。
+Review in English.

@@ -73,8 +73,13 @@ describe('MainOptions for testing functionality', () => {
     const codingTools = ['aider', 'claude-code', 'codex-cli', 'gemini-cli'] as const;
 
     codingTools.forEach((tool) => {
-      const options: Partial<MainOptions> = {
+      const options: MainOptions = {
         codingTool: tool,
+        twoStagePlanning: false,
+        dryRun: false,
+        noBranch: false,
+        nodeRuntime: 'npx',
+        issueNumber: 123,
         maxTestAttempts: 3,
         testCommand: 'npm test',
       };
