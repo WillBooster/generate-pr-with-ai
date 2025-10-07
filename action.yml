@@ -54,10 +54,6 @@ inputs:
   remove-pattern:
     description: 'RegExp pattern to remove from issue and PR descriptions'
     required: false
-  package-manager-cache:
-    description: 'Enable package manager caching (default: true)'
-    required: false
-    default: 'true'
 
 runs:
   using: 'composite'
@@ -65,11 +61,15 @@ runs:
     - uses: actions/setup-node@v5
       with:
         node-version: 24
-        package-manager-cache: ${{ inputs.package-manager-cache }}
+        package-manager-cache: false
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
     - name: Install dependencies
-      run: npm install --omit=dev
+      run: bun install --production
+      shell: bash
     - name: Run action
-      run: node ${{ github.action_path }}/dist/action.js
+      run: bun ${{ github.action_path }}/dist/action.js
       shell: bash
       env:
         INPUT_ISSUE-NUMBER: ${{ inputs.issue-number }}
