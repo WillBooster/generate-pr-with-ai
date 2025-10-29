@@ -56,7 +56,7 @@
     "@willbooster/wb": "10.6.4",
     "build-ts": "16.0.12",
     "conventional-changelog-conventionalcommits": "9.1.0",
-    "lefthook": "1.13.6",
+    "lefthook": "2.0.2",
     "prettier": "3.6.2",
     "prettier-plugin-java": "2.7.7",
     "semantic-release": "24.2.9",
