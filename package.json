@@ -54,7 +54,7 @@
     "@willbooster/biome-config": "3.2.3",
     "@willbooster/prettier-config": "10.2.1",
     "@willbooster/wb": "10.6.13",
-    "build-ts": "16.0.13",
+    "build-ts": "16.0.14",
     "conventional-changelog-conventionalcommits": "9.1.0",
     "lefthook": "2.0.2",
     "prettier": "3.6.2",
