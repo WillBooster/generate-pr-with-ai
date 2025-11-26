@@ -11,10 +11,12 @@ repomix-output.xml
 */mount/*.hash
 .devcontainer/
 .idea/AugmentWebviewStateStore.xml
+.idea/copilot.*
 .idea/copilot/chatSessions/
 .serena/
 .tmp/
 __generated__/
+@willbooster/
 dist/
 temp/
 tmp/
