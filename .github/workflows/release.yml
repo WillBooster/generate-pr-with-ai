@@ -7,6 +7,7 @@ concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: false
 permissions:
+  id-token: write
   contents: write
 jobs:
   release:
@@ -15,4 +16,3 @@ jobs:
       github_hosted_runner: true
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
