@@ -1,0 +1,26 @@
+name: autofix.ci
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+concurrency:
+  group: autofix-${{ github.head_ref }}
+  cancel-in-progress: true
+jobs:
+  autofix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          check-latest: true
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun run cleanup
+      - run: bun run build
+      - uses: autofix-ci/action@v1
