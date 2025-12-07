@@ -14,8 +14,9 @@ minimumReleaseAgeExcludes = [
     "@willbooster/eslint-config-ts",
     "@willbooster/eslint-config-ts-react",
     "@willbooster/prettier-config",
-    "@willbooster/wb"
+    "@willbooster/wb",
+    "next",
+    "@next/*",
+    "react",
+    "react-dom"
 ]
-
-[run]
-bun = true
