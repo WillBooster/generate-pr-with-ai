@@ -59,7 +59,7 @@
     "lefthook": "2.0.4",
     "prettier": "3.7.3",
     "prettier-plugin-java": "2.7.7",
-    "semantic-release": "25.0.2",
+    "semantic-release": "24.2.9",
     "sort-package-json": "3.5.0",
     "typescript": "5.9.3"
   },
