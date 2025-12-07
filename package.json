@@ -19,7 +19,7 @@
     "lint": "bun --bun wb lint",
     "lint-fix": "bun --bun wb lint --fix",
     "prepare": "lefthook install || true",
-    "release": "bun semantic-release && git tag -f v2 main && git push origin v2 --force",
+    "release": "node node_modules/semantic-release/bin/semantic-release.js && git tag -f v4 main && git push origin v4 --force",
     "start": "bun --env-file=.env src/cli.ts",
     "test": "bun wb test",
     "test-local": "bun --env-file=.env test test/unit-local",
