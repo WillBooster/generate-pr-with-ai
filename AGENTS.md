@@ -7,6 +7,7 @@
 ## General Instructions
 
 - Do not write tests unless explicitly requested.
+- When fixing tests, gather debug information through logging and screenshots before modifying the code.
 - After making code changes, run `bun check-all-for-ai` to execute all tests (note: this may take up to 30 minutes), or run `bun check-for-ai` for type checking and linting only.
   - If you are confident your changes will not break any tests, you may use `check-for-ai`.
 - Once you have verified your changes, commit them to the non-main branch using the `--no-verify` option and push to the current branch.
