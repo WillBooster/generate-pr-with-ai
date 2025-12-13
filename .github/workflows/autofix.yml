@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           check-latest: true
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
       - run: bun install
