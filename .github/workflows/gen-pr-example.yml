@@ -25,7 +25,7 @@ jobs:
           git config user.name "WillBooster (Agent)"
           git config user.email "agent@willbooster.com"
       - name: Generate PR with AI
-        uses: WillBooster/gen-pr@v2
+        uses: WillBooster/gen-pr@v4
         with:
           issue-number: ${{ github.event.issue.number || github.event.number }}
           coding-tool: aider
