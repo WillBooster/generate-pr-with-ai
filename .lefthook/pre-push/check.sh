@@ -1,1 +1,1 @@
-bun --bun node_modules/.bin/wb typecheck
+bun --bun wb typecheck
