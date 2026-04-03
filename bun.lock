@@ -31,7 +31,7 @@
         "@types/yargs": "17.0.35",
         "@willbooster/biome-config": "3.2.5",
         "@willbooster/prettier-config": "10.2.4",
-        "@willbooster/wb": "13.4.2",
+        "@willbooster/wb": "13.5.0",
         "build-ts": "17.0.24",
         "conventional-changelog-conventionalcommits": "9.3.1",
         "lefthook": "2.1.4",
@@ -562,7 +562,7 @@
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.2.2", "", { "dependencies": { "dotenv": "17.3.1", "dotenv-expand": "12.0.3" } }, "sha512-iKweRVWn8FhzO++RDuoOsCHo77Olh5pucM2/UG3uQP7dwSg4o/KqrdWRyyfWUghgKzGS+jWkp1VRuUB0uuWYew=="],
 
-    "@willbooster/wb": ["@willbooster/wb@13.4.2", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.3.1", "dotenv-expand": "12.0.3", "globby": "16.1.1", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-++m5hnGgvmjCHgQevaFomYTmkRBOnPqaBxIPbiNr82HILBFuzE0m2ZIg8BO8dT+tidFfJv2uWCNcLd3nZh1IHA=="],
+    "@willbooster/wb": ["@willbooster/wb@13.5.0", "", { "dependencies": { "chalk": "5.6.2", "dotenv": "17.3.1", "dotenv-expand": "12.0.3", "globby": "16.1.1", "kill-port": "2.0.1", "minimal-promise-pool": "6.0.1", "yargs": "18.0.0" }, "bin": { "wb": "bin/index.js" } }, "sha512-m4QH69jjQ6bBimuRJryiPR2GfvMKw4KJDpUdXqG9SZj8FxXji/XHZQeXECg27YtXy5iGCzAYyRijWhSP+gcWxg=="],
 
     "acorn": ["acorn@8.16.0", "", { "bin": { "acorn": "bin/acorn" } }, "sha512-UVJyE9MttOsBQIDKw1skb9nAwQuR5wuGD3+82K6JgJlm/Y+KI92oNsMNGZCYdDsVtRHSak0pcV5Dno5+4jh9sw=="],
 
