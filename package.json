@@ -53,7 +53,7 @@
     "@types/yargs": "17.0.35",
     "@willbooster/biome-config": "3.2.5",
     "@willbooster/prettier-config": "10.2.4",
-    "@willbooster/wb": "13.4.2",
+    "@willbooster/wb": "13.5.0",
     "build-ts": "17.0.24",
     "conventional-changelog-conventionalcommits": "9.3.1",
     "lefthook": "2.1.4",
