@@ -29,8 +29,8 @@
         "@types/bun": "1.3.11",
         "@types/micromatch": "4.0.10",
         "@types/yargs": "17.0.35",
-        "@willbooster/biome-config": "3.2.5",
-        "@willbooster/prettier-config": "10.2.4",
+        "@willbooster/biome-config": "3.3.0",
+        "@willbooster/prettier-config": "10.3.0",
         "@willbooster/wb": "13.5.0",
         "build-ts": "17.0.24",
         "conventional-changelog-conventionalcommits": "9.3.1",
@@ -556,9 +556,9 @@
 
     "@wessberg/stringutil": ["@wessberg/stringutil@1.0.19", "", {}, "sha512-9AZHVXWlpN8Cn9k5BC/O0Dzb9E9xfEMXzYrNunwvkUTvuK7xgQPVRZpLo+jWCOZ5r8oBa8NIrHuPEu1hzbb6bg=="],
 
-    "@willbooster/biome-config": ["@willbooster/biome-config@3.2.5", "", { "peerDependencies": { "@biomejs/biome": ">=2" } }, "sha512-jz0eisZelTI5Fa8sn3mW2qDawcAdpAd+1TopDQqpkXSZXO4j7MCArF7WJrSTWw5KzlErikemxf27fNMBogrATA=="],
+    "@willbooster/biome-config": ["@willbooster/biome-config@3.3.0", "", { "peerDependencies": { "@biomejs/biome": ">=2" } }, "sha512-VTE7CMUE9cCPw2QefrxMXcOK0MQzP5eMnY3Gq5C3WZtQ+ZYxcfYVbPn1ABtOgqPqwrBZqoP0zsarS7CmVvd9Jw=="],
 
-    "@willbooster/prettier-config": ["@willbooster/prettier-config@10.2.4", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-Mb4jerW82g84R/gwMQ43c9tFsTJJlr5DZ3H3eOFBI2t3O/0OE5YpLQB67vQpixOwAeCtfWcKW3eVcl275/Q2KA=="],
+    "@willbooster/prettier-config": ["@willbooster/prettier-config@10.3.0", "", { "peerDependencies": { "prettier": ">=3", "prettier-plugin-java": ">=2.6" } }, "sha512-n6tEMqHAZDOabg12h/hv1iOLugOdimey8ewxs9kUz4ynkhkGIPrTO4/oflhSaYgkvA2UBoheaJpsx4sMVW5x4w=="],
 
     "@willbooster/shared-lib-node": ["@willbooster/shared-lib-node@8.2.2", "", { "dependencies": { "dotenv": "17.3.1", "dotenv-expand": "12.0.3" } }, "sha512-iKweRVWn8FhzO++RDuoOsCHo77Olh5pucM2/UG3uQP7dwSg4o/KqrdWRyyfWUghgKzGS+jWkp1VRuUB0uuWYew=="],
 
