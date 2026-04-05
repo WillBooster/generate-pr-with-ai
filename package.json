@@ -27,7 +27,7 @@
   },
   "prettier": "@willbooster/prettier-config",
   "dependencies": {
-    "@actions/core": "1.11.1",
+    "@actions/core": "3.0.0",
     "@ai-sdk/amazon-bedrock": "3.0.0-beta.5",
     "@ai-sdk/anthropic": "2.0.0-beta.5",
     "@ai-sdk/azure": "2.0.0-beta.6",
