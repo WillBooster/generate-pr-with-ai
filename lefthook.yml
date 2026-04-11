@@ -9,7 +9,7 @@ pre-push:
 pre-commit:
   commands:
     cleanup:
-      glob: '*.{astro,cjs,css,cts,gql,htm,html,java,js,json,json5,jsonc,jsx,md,mjs,mts,scss,svelte,ts,tsx,vue,yaml,yml}'
+      glob: '**/*.{astro,cjs,css,cts,gql,htm,html,java,js,json,json5,jsonc,jsx,md,mjs,mts,scss,svelte,ts,tsx,vue,yaml,yml}'
       run: bun --bun wb lint --fix --format -- {staged_files} && git add -- {staged_files}
     check-migrations:
       glob: '**/migration.sql'

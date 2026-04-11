@@ -1,7 +1,10 @@
 {
   "name": "gen-pr",
   "version": "0.0.0-semantically-released",
-  "repository": "github:WillBooster/gen-pr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WillBooster/gen-pr.git"
+  },
   "license": "Apache-2.0",
   "author": "WillBooster Inc.",
   "type": "module",
@@ -12,7 +15,7 @@
   ],
   "scripts": {
     "build": "build-ts app --input src/action.ts --input src/cli.ts",
-    "check-all-for-ai": "bun run check-for-ai && bun run test --silent",
+    "check-all-for-ai": "bun run check-for-ai && bun run test",
     "check-for-ai": "bun install > /dev/null && bun run cleanup && bun run typecheck",
     "cleanup": "bun --bun wb lint --fix --format",
     "format": "bun --bun wb lint --format",
@@ -47,16 +50,17 @@
     "yargs": "18.0.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.9",
+    "@biomejs/biome": "2.4.10",
+    "@tsconfig/bun": "1.0.10",
     "@types/bun": "1.3.11",
     "@types/micromatch": "4.0.10",
     "@types/yargs": "17.0.35",
-    "@willbooster/biome-config": "3.3.0",
-    "@willbooster/prettier-config": "10.3.0",
-    "@willbooster/wb": "13.5.0",
+    "@willbooster/biome-config": "3.4.1",
+    "@willbooster/prettier-config": "10.4.0",
+    "@willbooster/wb": "13.7.0",
     "build-ts": "17.0.24",
     "conventional-changelog-conventionalcommits": "9.3.1",
-    "lefthook": "2.1.4",
+    "lefthook": "2.1.5",
     "prettier": "3.8.1",
     "prettier-plugin-java": "2.8.1",
     "semantic-release": "25.0.3",

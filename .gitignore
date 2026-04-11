@@ -13,6 +13,7 @@ repomix-output.xml
 .idea/AugmentWebviewStateStore.xml
 .idea/copilot.*
 .idea/copilot/chatSessions/
+.playwright-cli/
 .serena/
 .tmp/
 __generated__/
