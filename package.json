@@ -37,7 +37,7 @@
     "@ai-sdk/xai": "2.0.0-beta.4",
     "@octokit/graphql": "9.0.3",
     "@octokit/rest": "22.0.1",
-    "@openrouter/ai-sdk-provider": "1.5.4",
+    "@openrouter/ai-sdk-provider": "2.5.0",
     "ai": "5.0.0-beta.14",
     "ai-v4": "npm:ai@4.3.17",
     "ansis": "4.2.0",
