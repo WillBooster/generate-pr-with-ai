@@ -41,7 +41,7 @@
     "ai": "5.0.0-beta.14",
     "ai-v4": "npm:ai@4.3.17",
     "ansis": "4.2.0",
-    "dotenv": "17.3.1",
+    "dotenv": "17.4.1",
     "ollama-ai-provider-v2": "0.0.8",
     "yaml": "2.8.3",
     "yargs": "18.0.0"
@@ -53,7 +53,7 @@
     "@types/yargs": "17.0.35",
     "@willbooster/biome-config": "3.3.0",
     "@willbooster/prettier-config": "10.3.0",
-    "@willbooster/wb": "13.5.0",
+    "@willbooster/wb": "13.8.1",
     "build-ts": "17.0.24",
     "conventional-changelog-conventionalcommits": "9.3.1",
     "lefthook": "2.1.4",
